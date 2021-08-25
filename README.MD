@@ -1,9 +1,9 @@
-Sistema web para administracion de tareas
+# Sistema web para administracion de tareas
 
-- Creado para Ramo Portafolio titulo DUOC UC 2021
+## - Creado para Ramo Portafolio titulo DUOC UC 2021
 
 
-- URL activadas actualente.
+### - URL activadas actualente.
 -- http://127.0.0.1:8000/
 -- http://127.0.0.1:8000/login
 
