@@ -2,7 +2,7 @@
 
 ## - Creado para Ramo Portafolio titulo DUOC UC 2021
 
-### - URL activadas actualente.
+## - URL activadas actualente.
 
 -- http://127.0.0.1:8000/
 -- http://127.0.0.1:8000/login
@@ -10,6 +10,7 @@
 Estructura del proyecto
 .
 ├── README.MD
+
 ├── controltareas
 │   ├── **init**.py
 │   ├── asgi.py
