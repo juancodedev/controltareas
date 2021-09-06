@@ -20,15 +20,15 @@
   <!-- /.login-logo -->
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
-      <a href="{% url 'home' %}" class="h1"><b>Admin</b>Task</a>
+      <a href="{% url 'dashboard' %}" class="h1"><b>Admin</b>Task</a>
     </div>
     <div class="card-body">
       <p class="login-box-msg">Inicie la sesión</p>
 
-      <form action="{% url 'home' %}" method="post">
+      <form action="{% url 'validate' %}" method="POST">
       {% csrf_token %}
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email">
+          <input class="form-control" placeholder="Usuario" id="username" name="username">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password">
+          <input type="password" class="form-control" placeholder="Password" id="password" name="password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
