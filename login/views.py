@@ -62,16 +62,11 @@ def logout(request):
     if authenticated(request):
         cookie = decodered(request)
         token = cookie['data']['token']
-        rol = cookie['data']['rol']
-        if rol == 1:
-            headers={'Content-Type':'application/json', 'Authorization':'Token '+token}
-            data = requests.get('https://apitasktest.herokuapp.com/logout/', headers=headers)
-            rep = redirect('login')
-            rep.delete_cookie('validate') # elimina el valor de la cookie de usuario establecido previamente en el navegador del usuario
-            return rep
-        else:
-            return redirect('dashboard')
-
+        headers={'Content-Type':'application/json', 'Authorization':'Token '+token}
+        data = requests.get('https://apitasktest.herokuapp.com/logout/', headers=headers)
+        rep = redirect('login')
+        rep.delete_cookie('validate') # elimina el valor de la cookie de usuario establecido previamente en el navegador del usuario
+        return rep
     else:
         return redirect('login')
 
