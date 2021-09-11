@@ -42,18 +42,13 @@ def recoverPassword(request):
     return render(request,'login/recover-password.html')
 
 def validate(request):
-    # username = request.POST.get('username')
-    # password = request.POST.get('password')
     email = request.POST.get('email')
     password = request.POST.get('password')
     payload = json.dumps({'email': email, 'password': password})
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'email': email, 'password': password}
-    # r = requests.post('https://apitasktest.herokuapp.com/login/', data=payload)
     r = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload)
     if r.ok:
         tokenAPI = r.json()
-        print(tokenAPI['data']['token'])
-        #obj = setcookie(tokenAPI['jwt'])
         obj = setcookie(tokenAPI['data']['token'])
         
         return obj
@@ -65,10 +60,8 @@ def Login(request):
     
 def logout(request):
     if authenticated(request):
-        #cookie = decodered(request)
-        # token = cookie['data']['token']
         token = request.COOKIES.get('validate')
-        headers={'Content-Type':'application/json', 'Authorization':'Token '+token}
+        headers={'Content-Type':'aplication/json', 'Authorization':'Token '+token}
         data = requests.get('https://apitasktest.herokuapp.com/logout/', headers=headers)
         rep = redirect('login')
         rep.delete_cookie('validate') # elimina el valor de la cookie de usuario establecido previamente en el navegador del usuario

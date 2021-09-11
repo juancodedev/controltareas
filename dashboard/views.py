@@ -8,13 +8,22 @@ from datetime import datetime
 def dashboard(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
-        print(token)
         data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        r = requests.get('http://localhost:32482/api/usuario/', headers=headers)
+        dataAPI= r.json()
+        imagen = requests.get('https://randomuser.me/api/?inc=picture&results='+str(len(dataAPI['data'])))  #api para imagenes de perfil random
+        img = imagen.json()#api para imagenes de perfil random
+        mylist = zip(dataAPI['data'],img['results']) #Se unen las listas de imagenes random + datos de usuario y se envian al template para mostrarlos
+
         context = {
                 'email' : data['email'],
                 'name': data['unique_name'],
-                'role': data['role'],
+                'role': int(data['role']),
                 'login' : datetime.fromtimestamp(data['nbf']),
+                # 'usuarios' : dataAPI['data'],
+                # 'img' : img['results'],
+                'usuarios': mylist, 
         }
         return render(request,'home/home.html',{'datos': context})
     else:
