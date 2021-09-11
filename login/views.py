@@ -61,8 +61,8 @@ def Login(request):
 def logout(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
-        headers={'Content-Type':'aplication/json', 'Authorization':'Token '+token}
-        data = requests.get('https://apitasktest.herokuapp.com/logout/', headers=headers)
+        # headers={'Content-Type':'aplication/json', 'Authorization':'Token '+token}
+        # data = requests.get('https://apitasktest.herokuapp.com/logout/', headers=headers)
         rep = redirect('login')
         rep.delete_cookie('validate') # elimina el valor de la cookie de usuario establecido previamente en el navegador del usuario
         return rep
