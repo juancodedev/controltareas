@@ -3,10 +3,20 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from login.views import authenticated, decodered
 import requests
+from datetime import datetime
 
 def dashboard(request):
     if authenticated(request):
-        return render(request,'home/dashboard.html')#,{'data': data['data']})
+        token = request.COOKIES.get('validate')
+        print(token)
+        data = decodered(token)
+        context = {
+                'email' : data['email'],
+                'name': data['unique_name'],
+                'role': data['role'],
+                'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request,'home/home.html',{'datos': context})
     else:
         return redirect('login')
 

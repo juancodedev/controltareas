@@ -14,9 +14,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import AuthenticationForm
 import requests, jwt, json
 
-def decodered(request):
-    data = request.COOKIES.get('validate')
-    data_token = jwt.decode(data, algorithms=["HS256"])
+def decodered(data):
+    data_token = jwt.decode(data,SECRET, algorithms=["HS256"])
     return data_token
 
 def authenticated(request):
@@ -51,11 +50,6 @@ def validate(request):
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'email': email, 'password': password}
     # r = requests.post('https://apitasktest.herokuapp.com/login/', data=payload)
     r = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload)
-    print(payload)
-    print(headers)
-    print(r)
-    print(r.ok)
-    
     if r.ok:
         tokenAPI = r.json()
         print(tokenAPI['data']['token'])
