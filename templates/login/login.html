@@ -21,6 +21,11 @@
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
       <a href="{% url 'dashboard' %}" class="h1"><b>Admin</b>Task</a>
+      {% if status == False %}
+        <div class="alert alert-primary" role="alert">
+          This is a primary alert—check it out!
+        </div>
+      {% endif %}
     </div>
     <div class="card-body">
       <p class="login-box-msg">Inicie la sesión</p>

@@ -43,3 +43,17 @@ def personas(request):
 
     else:
         return redirect('login')
+
+def tableTask(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        context = {
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'pages/tables/simple.html',{'datos': context})
+    else: 
+        return redirect('login')
