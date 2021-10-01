@@ -17,13 +17,13 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 from dashboard import views
-from dashboard.views import personas
+# from dashboard.views import personas
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
     path('dashboard/', include('dashboard.urls')),
-    path('persona/',personas, name='personas'),
+    # path('persona/',personas, name='personas'),
     path('', include('login.urls')),
     
 ]

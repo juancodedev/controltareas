@@ -20,16 +20,13 @@ def decodered(data):
 
 def authenticated(request):
     if request.COOKIES.get('validate'):
-        # data_token = decodered(request)
-        # if data_token['exito'] == 202:
-        #     return True
         return True
     else:
         return False
 
 def setcookie(tokenAPI):
     obj = redirect('dashboard')
-    obj.set_cookie('validate',tokenAPI,expires=1800)
+    obj.set_cookie('validate',tokenAPI,expires=43200)
     return obj
 
 def forgotPassword(request):

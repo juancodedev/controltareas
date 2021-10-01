@@ -1,0 +1,186 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="wrapper">
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Carga de trabajo</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">
+                <a href="{% url 'dashboard' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item active">Carga de trabajo</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+                <div class="text-center">
+                  <img
+                    class="profile-user-img img-fluid img-circle"
+                    src="{% static '/img/user2-160x160.jpg' %}"
+                    alt="User profile picture"
+                  />
+                </div>
+
+                <h3 class="profile-username text-center"></h3>
+
+                <p class="text-muted text-center">Software Engineer</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Tareas a tiempo</b> <a class="float-right">32</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Tareas Atrasadas</b> <a class="float-right">8</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Tareas Asignadas</b> <a class="float-right">452</a>
+                  </li>
+                </ul>
+
+                <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#tareas" data-toggle="tab">Tareas</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#evolucion" data-toggle="tab">Evolucion</a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="tareas">
+                    <!-- Tareas -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">First</th>
+                                <th scope="col">Last</th>
+                                <th scope="col">Handle</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">3</th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>@twitter</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="evolucion">
+                    <div class="card">
+                        <div class="card-header">
+                          <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                            Porcentaje de avances
+                          </h3>
+          
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-6 col-md-3 text-center">
+                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
+                                <input type="text" class="knob" value="6.5%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#3c8dbc" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(60, 141, 188); padding: 0px; appearance: none;"></div>
+                              <div class="knob-label">Tareas Asignadas</div>
+                              
+                            </div>
+                            <!-- ./col -->
+                            <div class="col-6 col-md-3 text-center">
+                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
+                              <input type="text" class="knob" value="1.6%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#f56954" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(245, 105, 84); padding: 0px; appearance: none;">
+                              </div>
+          
+                              <div class="knob-label">Tareas Atrasadas</div>
+                            </div>
+                            <!-- ./col -->
+                            <div class="col-6 col-md-3 text-center">
+                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
+                            <input type="text" class="knob" value="91%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#00a65a" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(0, 166, 90); padding: 0px; appearance: none;">
+                              </div>
+          
+                              <div class="knob-label">Tareas a tiempo</div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <!-- /.card-body -->
+                      </div>
+                  </div>
+
+                  <!-- /.tab-pane -->
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+</div>
+<!-- ./wrapper -->
+
+{% endblock content %}
