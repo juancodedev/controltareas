@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="wrapper">
+    <div class="content-wrapper" style="min-height: 2171.31px">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Listado de usuarios</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'dashboard' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Listado de usuarios</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header"></div>
+                                <form action="">
+                                    <!-- card-body -->
+                                    <div class="card card-body">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h3 class="card-title">Mantenedor Usuarios</h3>
+
+                                                <div class="card-tools">
+                                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                                        <input type="text" name="table_search"
+                                                            class="form-control float-right" placeholder="Search">
+
+                                                        <div class="input-group-append">
+                                                            <button type="submit" class="btn btn-default">
+                                                                <i class="fas fa-search"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /.card-header -->
+                                            <div class="card-body table-responsive p-0">
+                                                <table class="table table-hover text-nowrap">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Apellidos</th>
+                                                            <th>Rut</th>
+                                                            <th>Departamento</th>
+                                                            <th>Correo</th>
+                                                            <th>Rol</th>
+                                                            <th>Accion</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="text-start">Castor</td>
+                                                            <td class="text-start">Willis Cleveland</td>
+                                                            <td class="text-start">45.507.389-8</td>
+                                                            <td class="text-start">Administracion</td>
+                                                            <td class="text-start">libero@fermentummetus.edu</td>
+                                                            <td class="text-start">Administrador</td>
+                                                            <td class="text-start">
+                                                                <a class="btn btn-primary btn-sm" href="#">
+                                                                    <i class="fas fa-folder">
+                                                                    </i>
+                                                                    View
+                                                                </a>
+                                                                <a class="btn btn-info btn-sm" href="#">
+                                                                    <i class="fas fa-pencil-alt">
+                                                                    </i>
+                                                                    Edit
+                                                                </a>
+                                                                <a class="btn btn-danger btn-sm" href="#">
+                                                                    <i class="fas fa-trash">
+                                                                    </i>
+                                                                    Delete
+                                                                </a>
+
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Apellidos</th>
+                                                            <th>Rut</th>
+                                                            <th>Departamento</th>
+                                                            <th>Correo</th>
+                                                            <th>Rol</th>
+                                                            <th>Accion</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <!-- /.card-body -->
+                                        </div>
+
+                                    </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <ul class="nav nav-pills card-header-pills">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" href="{% url 'newuser' %}">Nuevo
+                                                    Usuario</a>
+                                            </li>
+
+                                        </ul>
+                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock content %}

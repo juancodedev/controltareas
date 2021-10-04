@@ -12,8 +12,7 @@ def dashboard(request):
         rol = data['role']
         if int(rol) == 1:
             headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-            r = requests.get('http://localhost:32482/api/usuario/', headers=headers)
-            dataAPI= r.json()
+            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
             imagen = requests.get('https://randomuser.me/api/?inc=picture&results='+str(len(dataAPI['data'])))  #api para imagenes de perfil random
             img = imagen.json()#api para imagenes de perfil random
             mylist = zip(dataAPI['data'],img['results']) #Se unen las listas de imagenes random + datos de usuario y se envian al template para mostrarlos
@@ -138,7 +137,7 @@ def admin(request):
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
         }
-        return render(request, 'tasklist/tasklist.html',{'datos': context})
+        return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
     
@@ -193,6 +192,16 @@ def newuser(request):
     }
     return render(request, 'users/users.html',{'datos': context})
 
+def listusers(request):
+    context = {
+    'menu' : 'listusers',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'users/userlist.html',{'datos': context})
+
 
 def newunits(request):
     context = {
@@ -204,6 +213,19 @@ def newunits(request):
     }
     return render(request, 'units/units.html',{'datos': context})
 
+def listunits(request):
+    context = {
+    'menu' : 'listunits',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'units/unitslist.html',{'datos': context})
+
+
+
+
 def newrole(request):
     context = {
     'menu' : 'newrole',
@@ -213,6 +235,27 @@ def newrole(request):
     'login' : datetime.now(),
     }
     return render(request, 'role/role.html',{'datos': context})
+
+
+def workflowlist(request):
+    context = {
+    'menu' : 'workflowlist',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'workflow/workflowlist.html',{'datos': context})
+
+def workflownew(request):
+    context = {
+    'menu' : 'workflownew',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'workflow/workflow.html',{'datos': context})
 
 
 
