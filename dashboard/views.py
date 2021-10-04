@@ -257,5 +257,12 @@ def workflownew(request):
     }
     return render(request, 'workflow/workflow.html',{'datos': context})
 
-
-
+def listrole(request):
+    context = {
+    'menu' : 'listrole',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'role/rolelist.html',{'datos': context})

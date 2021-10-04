@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib import admin
 # from django.contrib.auth import logout
 from django.urls import include, path
-from dashboard.views import dashboard, tasklist, teamwork,admin,workload, taskdetails, tasknew,newuser,newunits,newrole,workflowlist, workflownew,listusers, listunits
+from dashboard.views import dashboard, tasklist, teamwork,admin,workload, taskdetails, tasknew,newuser,newunits,newrole,workflowlist, workflownew,listusers, listunits, listrole
 from login.views import logout
 
 urlpatterns = [
@@ -25,7 +25,10 @@ urlpatterns = [
 
     path('newunits/', newunits, name='newunits'), #creacion de nuevas unidades internas
     path('listunits/', listunits, name='listunits'), #creacion de nuevas unidades internas
+    
     path('newrole/', newrole, name='newrole'), #creacion de nuevo rol
+    path('listrole/', listrole, name='listrole'), #creacion de nuevas unidades internas
+    
     path('admin/', admin, name='admin'), # Admin de django
     path('logout/',logout, name='logout'), #cierra sesion
     
