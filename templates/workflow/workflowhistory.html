@@ -7,14 +7,14 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Flujo de tareas</h1>
+                        <h1>Historial de flujos de tareas</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item">
                                 <a href="{% url 'dashboard' %}">Home</a>
                             </li>
-                            <li class="breadcrumb-item active">Flujo de tareas</li>
+                            <li class="breadcrumb-item active">Historial de flujos de tareas</li>
                         </ol>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                                     <div class="card card-body">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h3 class="card-title">Mantenedor Flujo Tareas</h3>
+                                                <h3 class="card-title">Mantenedor Historial de flujos de tareas</h3>
 
                                                 <div class="card-tools">
                                                     <div class="input-group input-group-sm" style="width: 150px;">
@@ -56,7 +56,6 @@
                                                             <th class="text-center">ID</th>
                                                             <th class="text-center">Nombre</th>
                                                             <th class="text-center">Descripcion</th>
-                                                            <th class="text-center">Accion</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -64,43 +63,17 @@
                                                             <td class="text-center">183</td>
                                                             <td class="text-center">Tarea mantención servidor</td>
                                                             <td class="text-center">Mantencion mensual del servidor de produccion</td>
-                                                            <td class="text-center">
-                                                                <a class="btn btn-primary btn-sm" href="{% url 'workflowview' %}">
-                                                                    <i class="fas fa-folder">
-                                                                    </i>
-                                                                    View
-                                                                </a>
-                                                                <a class="btn btn-info btn-sm" href="#">
-                                                                    <i class="fas fa-pencil-alt">
-                                                                    </i>
-                                                                    Edit
-                                                                </a>
-                                                                <a class="btn btn-danger btn-sm" href="#">
-                                                                    <i class="fas fa-trash">
-                                                                    </i>
-                                                                    Delete
-                                                                </a>
-
-                                                            </td>
                                                         </tr>
 
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <!-- /.card-body -->
+
                                         </div>
 
                                     </div>
                                     <!-- /.card-body -->
-                                    <div class="card-footer">
-                                        <ul class="nav nav-pills card-header-pills">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" href="{% url 'workflownew' %}">Nuevo Flujo</a>
-                                            </li>
 
-                                        </ul>
-                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
-                                    </div>
 
                                 </form>
                             </div>

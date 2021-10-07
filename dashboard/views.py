@@ -1,3 +1,4 @@
+import json
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -114,6 +115,18 @@ def teamwork(request):
                 'teams': dataAPI['data'],
             }
             return render(request, 'teamwork/teamwork.html',{'datos': context})
+        elif int(rol) == 2:
+            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+            context = {
+                'menu' : 'teamwork',
+                'email' : data['email'],
+                'name': data['unique_name'],
+                'role': int(data['role']),
+                'login' : datetime.fromtimestamp(data['nbf']),
+                'teams': dataAPI['data'],
+            }
+            return render(request, 'teamwork/teamwork.html',{'datos': context})
         else:
             context = {
                     'menu' : 'dashboard',
@@ -182,6 +195,49 @@ def tasknew(request):
     }
     return render(request, 'task/task.html',{'datos': context})
 
+def createnewuser(request):
+    if authenticated(request):
+        if request.method == 'POST':
+            token = request.COOKIES.get('validate')
+    #form = 
+    # rut = 
+    # nombre = 
+    # segundonombre = 
+    # apellido = 
+    # segundoapellido = 
+    # telefono = 
+    
+            payload = json.dumps({
+                'RutUsuario': request.POST.get('rut'),
+                'NombreUsuario': request.POST.get('name'),
+                'SegundoNombre': request.POST.get('secondName'),
+                'ApellidoUsuario': request.POST.get('lastName'),
+                'SegundoApellido': request.POST.get('secondlastName'),
+                'CorreoElectronico': request.POST.get('email'),
+                'NumTelefono': request.POST.get('phoneNumber'),
+                'Password': request.POST.get('password'),
+                'IdRolUsuario': request.POST.get('role'),
+                'IdUnidadInternaUsuario': request.POST.get('unidadInterna')
+                
+            })
+            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+
+    # password = request.POST.get('password')
+    # payload = json.dumps({'email': email, 'password': password})
+            r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+            if r.ok:
+                print('Usuario creado correctamente')
+            else:
+                print('Error')
+    else: 
+        return redirect('login')
+    
+    
+#     {
+
+
+# }
+    
 def newuser(request):
     context = {
     'menu' : 'newuser',
@@ -190,7 +246,7 @@ def newuser(request):
     'role': 1,
     'login' : datetime.now(),
     }
-    return render(request, 'users/users.html',{'datos': context})
+    return render(request, 'users/newuser.html',{'datos': context})
 
 def listusers(request):
     context = {
@@ -242,7 +298,7 @@ def workflowlist(request):
     'menu' : 'workflowlist',
     'email' : 'juan@micorreo.cl',
     'name': 'juan muñoz',
-    'role': 1,
+    'role': 3,
     'login' : datetime.now(),
     }
     return render(request, 'workflow/workflowlist.html',{'datos': context})
@@ -255,7 +311,28 @@ def workflownew(request):
     'role': 1,
     'login' : datetime.now(),
     }
-    return render(request, 'workflow/workflow.html',{'datos': context})
+    return render(request, 'workflow/workflownew.html',{'datos': context})
+
+def workflowview(request):
+    context = {
+    'menu' : 'workflowview',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 1,
+    'login' : datetime.now(),
+    }
+    return render(request, 'workflow/workflowview.html',{'datos': context})
+
+def workflowhistory(request):
+    context = {
+    'menu' : 'workflowhistory',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 3,
+    'login' : datetime.now(),
+    }
+    return render(request, 'workflow/workflowhistory.html',{'datos': context})
+
 
 def listrole(request):
     context = {
@@ -266,3 +343,46 @@ def listrole(request):
     'login' : datetime.now(),
     }
     return render(request, 'role/rolelist.html',{'datos': context})
+
+#Metodos para perfil funcionario
+
+def taskfuncionario(request):
+    context = {
+    'menu' : 'taskfuncionario',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 2,
+    'login' : datetime.now(),
+    }
+    return render(request, 'task/tasklist.html',{'datos': context})
+
+
+def messagelist(request):
+    context = {
+    'menu' : 'messagelist',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 2,
+    'login' : datetime.now(),
+    }
+    return render(request, 'messages/messagelist.html',{'datos': context})
+
+def messagereaded(request):
+    context = {
+    'menu' : 'messagereaded',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 2,
+    'login' : datetime.now(),
+    }
+    return render(request, 'messages/messagereaded.html',{'datos': context})
+
+def messageresponded(request):
+    context = {
+    'menu' : 'messageresponded',
+    'email' : 'juan@micorreo.cl',
+    'name': 'juan muñoz',
+    'role': 2,
+    'login' : datetime.now(),
+    }
+    return render(request, 'messages/messageresponded.html',{'datos': context})

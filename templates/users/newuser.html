@@ -1,0 +1,108 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="wrapper">
+    <div class="content-wrapper" style="min-height: 2171.31px">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Creacion de usuarios</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'dashboard' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Creacion de usuarios</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header"></div>
+                                <form action="{% url 'createnewuser' %}" method="post">
+                                {% csrf_token %}
+                                    <!-- card-body -->
+                                    <div class="card card-body">
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Nombre</label> {% endcomment %}
+                                            <input type="text" class="form-control" id="rut" placeholder="Rut" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Nombre</label> {% endcomment %}
+                                            <input type="text" class="form-control" id="name" placeholder="Nombre" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Segundo Nombre</label>
+                                            {% endcomment %}
+                                            <input type="text" class="form-control" id="secondName"
+                                                placeholder="Segundo Nombre" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Apellido</label> {% endcomment %}
+                                            <input type="text" class="form-control" id="lastName"
+                                                placeholder="Apellido" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Segundo Apellido</label>
+                                            {% endcomment %}
+                                            <input type="text" class="form-control" id="secondlastName"
+                                                placeholder="Segundo Apellido" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="nombretarea">Telefono</label> {% endcomment %}
+                                            <input type="text" class="form-control" id="phoneNumber"
+                                                placeholder="Telefono" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="Proceso">Rol</label> {% endcomment %}
+                                            <select class="form-control" name="role">
+                                                <option selected>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="Proceso">Unidad Interna</label> {% endcomment %}
+                                            <select class="form-control" name="unidadInterna">
+                                                <option selected>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="exampleInputEmail1">Email address</label>
+                                            {% endcomment %}
+                                            <input type="email" class="form-control" id="email"
+                                                placeholder="Email">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            {% comment %} <label for="exampleInputPassword1">Password</label>
+                                            {% endcomment %}
+                                            <input type="password" class="form-control" id="password"
+                                                placeholder="Password" />
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-info" value="OK">Guardar</button>
+                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}

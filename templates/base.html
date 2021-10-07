@@ -77,7 +77,7 @@
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
             <span class="dropdown-item dropdown-header">4 Notifications</span>
             <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
+            <a href="{% url 'messagelist' %}" class="dropdown-item">
               <i class="fas fa-envelope mr-2"></i> 4 new messages
               <span class="float-right text-muted text-sm">3 mins</span>
             </a>
@@ -336,7 +336,7 @@
               </a>
               <ul class="nav nav-treeview" style="display: none;">
                 <li class="nav-item">
-                  <a href="{% url 'admin' %}" class="nav-link {% if datos.menu == 'admin' %} active {% endif %}">
+                  <a href="{% url 'taskfuncionario' %}" class="nav-link {% if datos.menu == 'taskfuncionario' %} active {% endif %}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>
                       Lista de tareas
@@ -345,11 +345,41 @@
                   </a>
                 </li>
                 </ul>
+                <ul class="nav nav-treeview" style="display: none;">
+                <li class="nav-item">
+                  <a href="{% url 'teamwork' %}" class="nav-link {% if datos.menu == 'teamwork' %} active {% endif %}">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Equipo de Trabajo
+                      <i class="right fas"></i>
+                    </p>
+                  </a>
+                </li>
+                </ul>
+
             </li>
-            <a href="#" class="d-block">Menu Funcionario</a>
             {% endif %}
             {% if datos.role == 3 %}
-            <a href="#" class="d-block">Menu Diseñador</a>
+            <li class="nav-item">
+              <a href="{% url 'workflowhistory' %}" class="nav-link {% if datos.menu == 'workflowhistory' %} active {% endif %}">
+                <i class="nav-icon"></i>
+                <p>
+                  Historial de flujos
+                  <i class="right fas "></i>
+                </p>
+              </a>
+
+            </li>
+              <li class="nav-item">
+              <a href="{% url 'workflowlist' %}" class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
+                <i class="nav-icon"></i>
+                <p>
+                  Flujos de tareas en proceso
+                  <i class="right fas "></i>
+                </p>
+              </a>
+
+            </li>
             {% endif %}
 
           </ul>
