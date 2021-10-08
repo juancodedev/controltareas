@@ -24,9 +24,12 @@ urlpatterns = [
     
     # Administracion
     path('newuser/', views.newuser, name='newuser'), # Creacion de usuarios
-    path('newuser/createnewuser', views.createnewuser, name='createnewuser'), # Creacion de usuarios
+    path('createnewuser/', views.createnewuser, name='createnewuser'), # Creacion de usuarios
     
     path('listusers/', views.listusers, name='listusers'), # Creacion de usuarios
+    path('userdetails/', views.userdetails, name='userdetails'), # Creacion de usuarios
+
+
 
     path('newunits/', views.newunits, name='newunits'), #creacion de nuevas unidades internas
     path('listunits/', views.listunits, name='listunits'), #creacion de nuevas unidades internas

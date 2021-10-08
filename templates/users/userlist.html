@@ -63,15 +63,17 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                    {% for user in datos.usuarios %}
+
                                                         <tr>
-                                                            <td class="text-start">Castor</td>
-                                                            <td class="text-start">Willis Cleveland</td>
-                                                            <td class="text-start">45.507.389-8</td>
-                                                            <td class="text-start">Administracion</td>
-                                                            <td class="text-start">libero@fermentummetus.edu</td>
-                                                            <td class="text-start">Administrador</td>
+                                                            <td class="text-start">{{user.nombreUsuario}}</td>
+                                                            <td class="text-start">{{user.apellidoUsuario}} {{user.segundoApellido}}</td>
+                                                            <td class="text-start">{{user.rutUsuario}}</td>
+                                                            <td class="text-start">{{user.idUnidadInternaUsuario}}</td>
+                                                            <td class="text-start">{{user.correoElectronico}}</td>
+                                                            <td class="text-start">{{user.idRolUsuario}}</td>
                                                             <td class="text-start">
-                                                                <a class="btn btn-primary btn-sm" href="#">
+                                                                <a class="btn btn-primary btn-sm" href="{% url 'userdetails' %}">
                                                                     <i class="fas fa-folder">
                                                                     </i>
                                                                     View
@@ -89,6 +91,7 @@
 
                                                             </td>
                                                         </tr>
+                                                    {% endfor %}
 
                                                     </tbody>
                                                     <tfoot>

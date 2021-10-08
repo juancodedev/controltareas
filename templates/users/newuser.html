@@ -26,38 +26,38 @@
                         <div class="row">
                             <div class="card">
                                 <div class="card-header"></div>
-                                <form action="{% url 'createnewuser' %}" method="post">
+                                <form method="post" action="{% url 'createnewuser' %}">
                                 {% csrf_token %}
                                     <!-- card-body -->
                                     <div class="card card-body">
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Nombre</label> {% endcomment %}
-                                            <input type="text" class="form-control" id="rut" placeholder="Rut" />
+                                            <input type="text" class="form-control" name="rut" placeholder="Rut" />
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Nombre</label> {% endcomment %}
-                                            <input type="text" class="form-control" id="name" placeholder="Nombre" />
+                                            <input type="text" class="form-control" name="name" placeholder="Nombre" />
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Segundo Nombre</label>
                                             {% endcomment %}
-                                            <input type="text" class="form-control" id="secondName"
+                                            <input type="text" class="form-control" name="secondName"
                                                 placeholder="Segundo Nombre" />
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Apellido</label> {% endcomment %}
-                                            <input type="text" class="form-control" id="lastName"
+                                            <input type="text" class="form-control" name="lastName"
                                                 placeholder="Apellido" />
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Segundo Apellido</label>
                                             {% endcomment %}
-                                            <input type="text" class="form-control" id="secondlastName"
+                                            <input type="text" class="form-control" name="secondlastName"
                                                 placeholder="Segundo Apellido" />
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="nombretarea">Telefono</label> {% endcomment %}
-                                            <input type="text" class="form-control" id="phoneNumber"
+                                            <input type="number" class="form-control" name="phoneNumber"
                                                 placeholder="Telefono" />
                                         </div>
                                         <div class="form-group col-md-6">
@@ -80,13 +80,13 @@
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="exampleInputEmail1">Email address</label>
                                             {% endcomment %}
-                                            <input type="email" class="form-control" id="email"
+                                            <input type="email" class="form-control" name="email"
                                                 placeholder="Email">
                                         </div>
                                         <div class="form-group col-md-6">
                                             {% comment %} <label for="exampleInputPassword1">Password</label>
                                             {% endcomment %}
-                                            <input type="password" class="form-control" id="password"
+                                            <input type="password" class="form-control" name="password"
                                                 placeholder="Password" />
                                         </div>
                                     </div>

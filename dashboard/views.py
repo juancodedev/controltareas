@@ -41,21 +41,6 @@ def dashboard(request):
     else:
         return redirect('login')
 
-# def personas(request):
-#     if authenticated(request):
-#         cookie = decodered(request)
-#         token = cookie['data']['token']
-#         rol = cookie['data']['rol']
-#         if rol == 1:
-#             headers={'Content-Type':'application/json', 'Authorization':'Token '+token}
-#             data = requests.get('https://apitasktest.herokuapp.com/API/persona/', headers=headers)
-#             return HttpResponse(data, content_type='application/json')
-#         else:
-#             return redirect('dashboard')
-
-#     else:
-#         return redirect('login')
-
 def tasklist(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -72,23 +57,6 @@ def tasklist(request):
         return redirect('login')
 
 def teamwork(request):
-    # if authenticated(request):
-    #     token1 = request.COOKIES.get('validate')
-    #     cookie = decodered(request)
-    #     print(token1)
-    #     token = cookie['data']['token']
-    #     rol = cookie['rol']
-    #     if rol == 1:
-    #         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-    #         r = requests.get('http://localhost:32482/api/usuario/', headers=headers)
-    #         dataAPI= r.json()
-    #         return HttpResponse(dataAPI, content_type='application/json')
-    #     else:
-    #         return redirect('dashboard')
-
-    # else:
-    #     return redirect('login')
-    
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
@@ -153,7 +121,7 @@ def admin(request):
         return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
-    
+   
 def workload(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -168,7 +136,8 @@ def workload(request):
         return render(request, 'teamwork/workload.html',{'datos': context})
     else: 
         return redirect('login')
-    
+
+#Lista de detalle de las tareas creadas
 def taskdetails(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -184,79 +153,129 @@ def taskdetails(request):
     else: 
         return redirect('login')
     
-    
+#Creacion de tareas 
 def tasknew(request):
-    context = {
-    'menu' : 'tasknew',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'task/task.html',{'datos': context})
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        payload = json.dumps({
+            'rutUsuario': request.POST.get('rut'),
+            'nombreUsuario': request.POST.get('name'),
+            'segundoNombre': request.POST.get('secondName'),
+            'apellidoUsuario': request.POST.get('lastName'),
+            'segundoApellido': request.POST.get('secondlastName'),
+            'correoElectronico': request.POST.get('email'),
+            'numTelefono': int(request.POST.get('phoneNumber')),
+            'password': request.POST.get('password'),
+            'idRolUsuario': int(request.POST.get('role')),
+            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
 
+        })
+        r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+        if r.ok:
+            print('Usuario creado correctamente')
+        else:
+            print('Error')
+        context = {
+            'menu' : 'tasknew',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'task/task.html',{'datos': context})
+    else: 
+        return redirect('login')
+
+    
+
+#Creacion de nuevos usuarios
 def createnewuser(request):
     if authenticated(request):
-        if request.method == 'POST':
-            token = request.COOKIES.get('validate')
-    #form = 
-    # rut = 
-    # nombre = 
-    # segundonombre = 
-    # apellido = 
-    # segundoapellido = 
-    # telefono = 
-    
-            payload = json.dumps({
-                'RutUsuario': request.POST.get('rut'),
-                'NombreUsuario': request.POST.get('name'),
-                'SegundoNombre': request.POST.get('secondName'),
-                'ApellidoUsuario': request.POST.get('lastName'),
-                'SegundoApellido': request.POST.get('secondlastName'),
-                'CorreoElectronico': request.POST.get('email'),
-                'NumTelefono': request.POST.get('phoneNumber'),
-                'Password': request.POST.get('password'),
-                'IdRolUsuario': request.POST.get('role'),
-                'IdUnidadInternaUsuario': request.POST.get('unidadInterna')
-                
-            })
-            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        payload = json.dumps({
+            'rutUsuario': request.POST.get('rut'),
+            'nombreUsuario': request.POST.get('name'),
+            'segundoNombre': request.POST.get('secondName'),
+            'apellidoUsuario': request.POST.get('lastName'),
+            'segundoApellido': request.POST.get('secondlastName'),
+            'correoElectronico': request.POST.get('email'),
+            'numTelefono': int(request.POST.get('phoneNumber')),
+            'password': request.POST.get('password'),
+            'idRolUsuario': int(request.POST.get('role')),
+            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
+            
+        })
+        r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+        if r.ok:
+            print('Usuario creado correctamente')
+        else:
+            print('Error')
+        context = {
+        'menu' : 'newuser',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'users/newuser.html',{'datos': context})
 
-    # password = request.POST.get('password')
-    # payload = json.dumps({'email': email, 'password': password})
-            r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
-            if r.ok:
-                print('Usuario creado correctamente')
-            else:
-                print('Error')
     else: 
         return redirect('login')
     
-    
-#     {
 
-
-# }
-    
+#Renderizado de template de creacion de usuarios 
 def newuser(request):
-    context = {
-    'menu' : 'newuser',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'users/newuser.html',{'datos': context})
-
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        context = {
+            'menu' : 'newuser',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'users/newuser.html',{'datos': context})
+    else: 
+        return redirect('login')
+def userdetails(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        context = {
+            'menu' : 'userdetails',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'users/userdetails.html',{'datos': context})
+    else: 
+        return redirect('login')
+    
+#Listado de usuarios en perfil de administrador
 def listusers(request):
-    context = {
-    'menu' : 'listusers',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'users/userlist.html',{'datos': context})
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        print(usuarios['data'])
+        context = {
+        'menu' : 'listusers',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'usuarios': usuarios['data'],
+        }
+        return render(request, 'users/userlist.html',{'datos': context})
+    else: 
+        return redirect('login')
 
 
 def newunits(request):
