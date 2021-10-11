@@ -242,6 +242,7 @@ def newuser(request):
         return render(request, 'users/newuser.html',{'datos': context})
     else: 
         return redirect('login')
+    
 def userdetails(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -277,28 +278,135 @@ def listusers(request):
     else: 
         return redirect('login')
 
+def createnewunits(request):
+    token = request.COOKIES.get('validate')
+    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+    payload = json.dumps({
+        'NombreUnidad': request.POST.get('nombreunit'),
+        'DescripcionUnidad': request.POST.get('descriptunit') 
+    })
+    r = requests.post('http://localhost:32482/api/unidadInterna/add/', headers=headers, data=payload)
+    if r.ok:
+
+        return redirect('listunits')
+    else:
+        return redirect('dashboard')
+    
 
 def newunits(request):
-    context = {
-    'menu' : 'newunits',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'units/units.html',{'datos': context})
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        context = {
+        'menu' : 'newunits',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'units/units.html',{'datos': context})
+    else:
+        return redirect('login')
+
+def viewunits(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        for i in units['data']:
+            if i['idUnidadInterna'] == id:
+                unidad = i
+                
+        context = {
+        'menu' : 'viewunits',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'unidad': unidad,
+        }
+        return render(request, 'units/units.html',{'datos': context})
+    else:
+        return redirect('login')
+    
+def editunits(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        for i in units['data']:
+            if i['idUnidadInterna'] == id:
+                unidad = i
+                
+        context = {
+        'menu' : 'editunits',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'unidad': unidad,
+        }
+        return render(request, 'units/units.html',{'datos': context})
+    else:
+        return redirect('login')
+
+def updateunits(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        payload = json.dumps(
+            {
+        'NombreUnidad': request.POST.get('nombreunit'),
+        'DescripcionUnidad': request.POST.get('descriptunit') 
+        }
+            )
+        update = requests.put('http://localhost:32482/api/unidadInterna/update/'+str(id), headers=headers, data = payload)
+        if update.ok:
+            return redirect('listunits')
+        else:
+            return redirect('dashboard') #envia al dashboard si da error
+    else:
+        return redirect('login')
+    
+def deleteunits(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        payload = json.dumps({'IdUnidadInterna': id})
+        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        deleted = requests.delete('http://localhost:32482/api/unidadInterna/delete/'+str(id), headers=headers)
+        
+        print(deleted)
+
+        if deleted.ok:
+            message  = "Eliminado correctamente"
+        else:
+            message = "Ocurrio un error en el proceso, favor intente nuevamente"
+        
+        return redirect('listunits')
+    else:
+        return redirect('login')
 
 def listunits(request):
-    context = {
-    'menu' : 'listunits',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'units/unitslist.html',{'datos': context})
-
-
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        context = {
+        'menu' : 'listunits',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'unidades': units['data'],
+        }
+        return render(request, 'units/unitslist.html',{'datos': context})
+    else: 
+        return redirect('login')
 
 
 def newrole(request):

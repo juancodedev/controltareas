@@ -28,29 +28,33 @@
                         <div class="row">
                             <div class="card">
                                 <div class="card-header"></div>
-                                <form action="">
+                                <form method="post" action="{% if datos.menu == 'editunits' %} {% url 'updateunits' id=datos.unidad.idUnidadInterna %} {% endif %} {% if datos.menu == 'newunits' %} {% url 'createnewunits' %} {% endif %}">
+                                {% csrf_token %}
                                     <!-- card-body -->
                                     <div class="card card-body">
                                         <div class="form-group col-md-6">
-                                            <label for="nombretarea">Nombre</label>
-                                            <input type="text" class="form-control" id="nombretarea"
-                                                placeholder="Nombre" />
+                                            <label for="Nombreunidad">Nombre</label>
+                                            <input type="text" class="form-control" name="nombreunit"
+                                            {% if datos.menu == 'newunits' %} placeholder="Nombre" {% endif %} 
+                                            {% if datos.menu == 'viewunits' %} disabled value = "{{datos.unidad.nombreUnidad}}"{% endif %}
+                                            {% if datos.menu == 'editunits' %} value = "{{datos.unidad.nombreUnidad}}"{% endif %}
+                                            />
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <!-- textarea -->
                                                 <div class="form-group">
                                                     <label>Descripción</label>
-                                                    <textarea class="form-control" rows="3" placeholder="..."
-                                                        style="resize: none;"></textarea>
+                                                    <textarea class="form-control" rows="3" name="descriptunit" {% if datos.menu != 'viewunits' %} placeholder = "Descripción" {% endif %} 
+                                                        style="resize: none;" {% if datos.menu == 'viewunits' %} disabled {% endif %}>{{datos.unidad.descripcionUnidad}}</textarea>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.card-body -->
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-info">Guardar</button>
-                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                        <button type="submit" class="btn btn-info" value="OK" {% if datos.menu == 'viewunits' %} hidden {% endif %}>Guardar</button>
+                                        <button type="button" onclick="history.back()" class="btn btn-default float-right">Cancelar</button>
                                     </div>
 
                                 </form>

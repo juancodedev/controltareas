@@ -29,10 +29,14 @@ urlpatterns = [
     path('listusers/', views.listusers, name='listusers'), # Creacion de usuarios
     path('userdetails/', views.userdetails, name='userdetails'), # Creacion de usuarios
 
-
-
     path('newunits/', views.newunits, name='newunits'), #creacion de nuevas unidades internas
+    path('viewunits/<int:id>', views.viewunits, name='viewunits'), #ver de nuevas unidades internas
     path('listunits/', views.listunits, name='listunits'), #creacion de nuevas unidades internas
+    path('editunits/<int:id>', views.editunits, name='editunits'), #editar nuevas unidades internas
+    path('deleteunits/<int:id>', views.deleteunits, name='deleteunits'), #editar nuevas unidades internas
+    path('createnewunits/', views.createnewunits, name='createnewunits'), #editar nuevas unidades internas
+    path('updateunits/<int:id>', views.updateunits, name='updateunits'), #editar nuevas unidades internas
+
     
     path('newrole/', views.newrole, name='newrole'), #creacion de nuevo rol
     path('listrole/', views.listrole, name='listrole'), #creacion de nuevas unidades internas

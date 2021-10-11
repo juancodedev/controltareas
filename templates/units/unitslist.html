@@ -61,30 +61,32 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                    {% for units in datos.unidades %}
+
                                                         <tr>
-                                                            <td class="text-center">183</td>
-                                                            <td class="text-center">John Doe</td>
-                                                            <td class="text-center">John Doe</td>
+                                                            <td class="text-center">{{units.idUnidadInterna}}</td>
+                                                            <td class="text-center">{{units.nombreUnidad}}</td>
+                                                            <td class="text-center">{{units.descripcionUnidad}}</td>
                                                             <td class="text-center">
-                                                                <a class="btn btn-primary btn-sm" href="#">
+                                                                <a class="btn btn-primary btn-sm" href="{% url 'viewunits' id=units.idUnidadInterna %}">
                                                                     <i class="fas fa-folder">
                                                                     </i>
-                                                                    View
+                                                                    Ver
                                                                 </a>
-                                                                <a class="btn btn-info btn-sm" href="#">
+                                                                <a class="btn btn-info btn-sm" href="{% url 'editunits' id=units.idUnidadInterna %}">
                                                                     <i class="fas fa-pencil-alt">
                                                                     </i>
-                                                                    Edit
+                                                                    Editar
                                                                 </a>
-                                                                <a class="btn btn-danger btn-sm" href="#">
+                                                                <a class="btn btn-danger btn-sm" href="#" onclick="confirmOption('{{units.nombreUnidad}}', '/dashboard/deleteunits/{{units.idUnidadInterna}}')">
                                                                     <i class="fas fa-trash">
                                                                     </i>
-                                                                    Delete
+                                                                    Eliminar
                                                                 </a>
 
                                                             </td>
                                                         </tr>
-
+                                                    {% endfor %}
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -96,11 +98,11 @@
                                     <div class="card-footer">
                                         <ul class="nav nav-pills card-header-pills">
                                             <li class="nav-item">
-                                                <a class="nav-link active" href="{% url 'listunits' %}">Nuevo Flujo</a>
+                                                <a class="nav-link active" href="{% url 'newunits' %}">Nueva Unidad</a>
                                             </li>
 
                                         </ul>
-                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                        <button type="button" onclick="history.back()" class="btn btn-default float-right">Cancelar</button>
                                     </div>
 
                                 </form>
@@ -112,5 +114,11 @@
         </section>
     </div>
 </div>
-
+<script>
+  function confirmOption(opcion, direccion){
+    if(confirm("Esta seguro que desea Eliminar el registro "+ opcion)){
+      window.location.href = direccion;
+    }
+  }
+</script>
 {% endblock content %}
