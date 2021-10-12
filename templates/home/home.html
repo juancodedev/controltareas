@@ -223,7 +223,8 @@
                   <ul class="users-list clearfix">
                     {% for team,img in datos.usuarios %}
                     <li>
-                      <img src="{{img.picture.large}}" alt="User Image">
+                    
+                      <img src="{% static 'img/profile/' %}{{img.picture.large}}" alt="User Image">
                       <a class="users-list-name" href="#">{{team.nombreUsuario}} {{team.apellidoUsuario}}
                       </a>
                       <span class="users-list-date">Email : {{team.correoElectronico}}</span>

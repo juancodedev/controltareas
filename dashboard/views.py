@@ -6,6 +6,25 @@ from login.views import authenticated, decodered
 import requests
 from datetime import datetime
 
+#modulos extras solo para pruebas
+import random
+
+def imgprofiletemp(largo):
+    # profile/0-41.jpg
+    img={}
+    img['results']=[]
+    for i in range(largo):
+        print(i)
+        numero = random.randint(0,41) 
+        print('numero :',numero)
+        img['results'].append({
+            'picture': {
+            'large': str(numero)+'.jpg',
+                }  
+                    }
+        )
+    return img
+
 def dashboard(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -14,8 +33,7 @@ def dashboard(request):
         if int(rol) == 1:
             headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-            imagen = requests.get('https://randomuser.me/api/?inc=picture&results='+str(len(dataAPI['data'])))  #api para imagenes de perfil random
-            img = imagen.json()#api para imagenes de perfil random
+            img = imgprofiletemp(len(dataAPI['data']))# imagenes de perfil random tomadas desde el static
             mylist = zip(dataAPI['data'],img['results']) #Se unen las listas de imagenes random + datos de usuario y se envian al template para mostrarlos
 
             context = {
@@ -24,8 +42,7 @@ def dashboard(request):
                     'name': data['unique_name'],
                     'role': int(data['role']),
                     'login' : datetime.fromtimestamp(data['nbf']),
-                    # 'usuarios' : dataAPI['data'],
-                    # 'img' : img['results'],
+
                     'usuarios': mylist, 
             }
             return render(request,'home/home.html',{'datos': context})
@@ -189,7 +206,6 @@ def tasknew(request):
         return redirect('login')
 
     
-
 #Creacion de nuevos usuarios
 def createnewuser(request):
     if authenticated(request):
@@ -410,14 +426,135 @@ def listunits(request):
 
 
 def newrole(request):
-    context = {
-    'menu' : 'newrole',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'role/role.html',{'datos': context})
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        
+        context = {
+        'menu' : 'newrole',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'role/role.html',{'datos': context})
+    else:
+        return redirect('login')
+
+def viewrole(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        rollist = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        print(rollist)
+        for i in rollist['data']:
+            if i['rolId'] == id:
+                rol = i
+        print(rol) 
+        context = {
+        'menu' : 'viewrole',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'rollist': rol,
+        }
+        return render(request, 'role/role.html',{'datos': context})
+    else:
+        return redirect('login')
+
+
+def editrole(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        rollist = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        print(rollist)
+        for i in rollist['data']:
+            if i['rolId'] == id:
+                rol = i
+        print(rol) 
+                
+        context = {
+        'menu' : 'editrole',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'rollist': rol,
+        }
+        return render(request, 'role/role.html',{'datos': context})
+    else:
+        return redirect('login')
+
+def updaterole(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        payload = json.dumps(
+            {
+        'nombreRol': request.POST.get('nombrerol'),
+        'descripcion': request.POST.get('descriptrole') 
+        }
+            )
+        update = requests.put('http://localhost:32482/api/rol/update/'+str(id), headers=headers, data = payload)
+        if update.ok:
+            return redirect('listrole')
+        else:
+            return redirect('dashboard') #envia al dashboard si da error
+    else:
+        return redirect('login')
+    
+def deleterole(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        deleted = requests.delete('http://localhost:32482/api/rol/delete/'+str(id), headers=headers)
+
+        if deleted.ok:
+            message  = "Eliminado correctamente"
+        else:
+            message = "Ocurrio un error en el proceso, favor intente nuevamente"
+        
+        return redirect('listrole')
+    else:
+        return redirect('login')
+
+def listrole(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        context = {
+        'menu' : 'listrole',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'roles': roles['data'],
+        }
+        return render(request, 'role/rolelist.html',{'datos': context})
+    else: 
+        return redirect('login')
+
+def createnewrole(request):
+    token = request.COOKIES.get('validate')
+    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+    payload = json.dumps({
+        'nombreRol': request.POST.get('nombrerol'),
+        'descripcion': request.POST.get('descriptrole') 
+    })
+    r = requests.post('http://localhost:32482/api/rol/add/', headers=headers, data=payload)
+    if r.ok:
+
+        return redirect('listrole')
+    else:
+        return redirect('dashboard')
+    
+
 
 
 def workflowlist(request):
@@ -460,16 +597,6 @@ def workflowhistory(request):
     }
     return render(request, 'workflow/workflowhistory.html',{'datos': context})
 
-
-def listrole(request):
-    context = {
-    'menu' : 'listrole',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 1,
-    'login' : datetime.now(),
-    }
-    return render(request, 'role/rolelist.html',{'datos': context})
 
 #Metodos para perfil funcionario
 

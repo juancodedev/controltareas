@@ -37,9 +37,18 @@ urlpatterns = [
     path('createnewunits/', views.createnewunits, name='createnewunits'), #editar nuevas unidades internas
     path('updateunits/<int:id>', views.updateunits, name='updateunits'), #editar nuevas unidades internas
 
-    
+    #grupo administrador de roles de usuarios.
     path('newrole/', views.newrole, name='newrole'), #creacion de nuevo rol
     path('listrole/', views.listrole, name='listrole'), #creacion de nuevas unidades internas
+   
+    path('viewrole/<int:id>', views.viewrole, name='viewrole'), #ver de nuevas unidades internas
+    path('editrole/<int:id>', views.editrole, name='editrole'), #editar nuevas unidades internas
+    path('deleterole/<int:id>', views.deleterole, name='deleterole'), #editar nuevas unidades internas
+    path('createnewrole/', views.createnewrole, name='createnewrole'), #editar nuevas unidades internas
+    path('updaterole/<int:id>', views.updaterole, name='updaterole'), #editar nuevas unidades internas
+
+    
+    
     
     path('admin/', views.admin, name='admin'), # Admin de django
     path('logout/', logout, name='logout'), #cierra sesion
