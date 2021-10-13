@@ -138,7 +138,7 @@ def admin(request):
         return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
-   
+
 def workload(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -205,7 +205,6 @@ def tasknew(request):
     else: 
         return redirect('login')
 
-    
 #Creacion de nuevos usuarios
 def createnewuser(request):
     if authenticated(request):
@@ -242,7 +241,6 @@ def createnewuser(request):
     else: 
         return redirect('login')
     
-
 #Renderizado de template de creacion de usuarios 
 def newuser(request):
     if authenticated(request):
@@ -258,17 +256,21 @@ def newuser(request):
         return render(request, 'users/newuser.html',{'datos': context})
     else: 
         return redirect('login')
-    
-def userdetails(request):
+
+#Listo los datos del usuario existente
+def viewusers(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
         context = {
-            'menu' : 'userdetails',
+            'menu' : 'viewusers',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
-            'login' : datetime.fromtimestamp(data['nbf']),
+            'login': datetime.fromtimestamp(data['nbf']),
+            'user': user['data'][0],
         }
         return render(request, 'users/userdetails.html',{'datos': context})
     else: 
@@ -281,7 +283,6 @@ def listusers(request):
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        print(usuarios['data'])
         context = {
         'menu' : 'listusers',
         'email' : data['email'],
@@ -293,6 +294,76 @@ def listusers(request):
         return render(request, 'users/userlist.html',{'datos': context})
     else: 
         return redirect('login')
+
+def editusers(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
+        rol = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        unidades = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        context = {
+        'menu' : 'editusers',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'user': user['data'][0],
+        'unidad': unidades['data'],
+        'rol': rol['data'],
+        }
+        return render(request, 'users/newuser.html',{'datos': context})
+    else:
+        return redirect('login')
+
+def deleteusers(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        payload = json.dumps({'IdUnidadInterna': id})
+        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        deleted = requests.delete('http://localhost:32482/api/usuario/delete/'+str(id), headers=headers)
+        
+        print(deleted)
+
+        if deleted.ok:
+            message  = "Eliminado correctamente"
+        else:
+            message = "Ocurrio un error en el proceso, favor intente nuevamente"
+        
+        return redirect('listusers')
+    else:
+        return redirect('login')
+
+
+def updateusers(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        payload = json.dumps(
+            {
+            'rutUsuario': request.POST.get('rut'),
+            'nombreUsuario': request.POST.get('name'),
+            'segundoNombre': request.POST.get('secondName'),
+            'apellidoUsuario': request.POST.get('lastName'),
+            'segundoApellido': request.POST.get('secondlastName'),
+            'correoElectronico': request.POST.get('email'),
+            'numTelefono': int(request.POST.get('phoneNumber')),
+            # 'password': request.POST.get('password'),
+            'idRolUsuario': int(request.POST.get('role')),
+            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
+        }
+            )
+        update = requests.put('http://localhost:32482/api/usuario/update/'+str(id), headers=headers, data = payload)
+        if update.ok:
+            return redirect('listusers')
+        else:
+            return redirect('dashboard') #envia al dashboard si da error
+    else:
+        return redirect('login')
+    
 
 def createnewunits(request):
     token = request.COOKIES.get('validate')
@@ -496,7 +567,7 @@ def updaterole(request, id):
         payload = json.dumps(
             {
         'nombreRol': request.POST.get('nombrerol'),
-        'descripcion': request.POST.get('descriptrole') 
+        'DescripcionRol': request.POST.get('descriptrole') 
         }
             )
         update = requests.put('http://localhost:32482/api/rol/update/'+str(id), headers=headers, data = payload)
@@ -545,7 +616,7 @@ def createnewrole(request):
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
     payload = json.dumps({
         'nombreRol': request.POST.get('nombrerol'),
-        'descripcion': request.POST.get('descriptrole') 
+        'DescripcionRol': request.POST.get('descriptrole') 
     })
     r = requests.post('http://localhost:32482/api/rol/add/', headers=headers, data=payload)
     if r.ok:

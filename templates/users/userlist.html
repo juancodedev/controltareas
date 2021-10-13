@@ -73,17 +73,17 @@
                                                             <td class="text-start">{{user.correoElectronico}}</td>
                                                             <td class="text-start">{{user.idRolUsuario}}</td>
                                                             <td class="text-start">
-                                                                <a class="btn btn-primary btn-sm" href="{% url 'userdetails' %}">
+                                                                <a class="btn btn-primary btn-sm" href="{% url 'viewusers' id=user.rutUsuario %}">
                                                                     <i class="fas fa-folder">
                                                                     </i>
                                                                     View
                                                                 </a>
-                                                                <a class="btn btn-info btn-sm" href="#">
+                                                                <a class="btn btn-info btn-sm" href="{% url 'editusers' id=user.rutUsuario %}">
                                                                     <i class="fas fa-pencil-alt">
                                                                     </i>
                                                                     Edit
                                                                 </a>
-                                                                <a class="btn btn-danger btn-sm" href="#">
+                                                                <a class="btn btn-danger btn-sm" href="#"onclick="confirmOption('{{user.nombreUsuario}}', '/dashboard/deleteusers/{{user.rutUsuario}}')">
                                                                     <i class="fas fa-trash">
                                                                     </i>
                                                                     Delete
@@ -132,5 +132,11 @@
         </section>
     </div>
 </div>
-
+<script>
+  function confirmOption(opcion, direccion){
+    if(confirm("Esta seguro que desea Eliminar el registro "+ opcion)){
+      window.location.href = direccion;
+    }
+  }
+</script>
 {% endblock content %}

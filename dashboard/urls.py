@@ -24,10 +24,18 @@ urlpatterns = [
     
     # Administracion
     path('newuser/', views.newuser, name='newuser'), # Creacion de usuarios
-    path('createnewuser/', views.createnewuser, name='createnewuser'), # Creacion de usuarios
-    
+    path('viewusers/<str:id>/', views.viewusers, name='viewusers'), # Creacion de usuarios
     path('listusers/', views.listusers, name='listusers'), # Creacion de usuarios
-    path('userdetails/', views.userdetails, name='userdetails'), # Creacion de usuarios
+    path('createnewuser/', views.createnewuser, name='createnewuser'), # Creacion de usuarios
+    path('editusers/<str:id>', views.editusers, name='editusers'), #editar nuevas unidades internas
+
+    
+    path('deleteusers/<str:id>', views.deleteusers, name='deleteusers'), #editar nuevas unidades internas
+    path('updateusers/<str:id>', views.updateusers, name='updateusers'), #editar nuevas unidades internas
+
+
+    
+    
 
     path('newunits/', views.newunits, name='newunits'), #creacion de nuevas unidades internas
     path('viewunits/<int:id>', views.viewunits, name='viewunits'), #ver de nuevas unidades internas
