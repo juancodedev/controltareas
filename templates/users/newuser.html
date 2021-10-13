@@ -75,7 +75,7 @@
                                             {% if datos.menu == 'newuser' %}
                                             <select class="form-control" name="role">
                                                 {% for roles in datos.rol %}
-                                                <option {% if roles.rolId == datos.user.idRolUsuario  %} selected  {% endif %} value="{{roles.rolId}}">{{roles.nombreRol}}</option>
+                                                <option value="{{roles.rolId}}">{{roles.nombreRol}}</option>
                                                 {% endfor %}
                                             </select>
                                             {% endif %}
@@ -86,6 +86,15 @@
                                                 {% for unidades in datos.unidad %}
                                                 
                                                 <option {% if unidades.idUnidadInterna == datos.user.idUnidadInternaUsuario  %} selected {% endif %}value="{{unidades.idUnidadInterna}}">{{unidades.nombreUnidad}}
+                                                </option>
+                                                
+                                                {% endfor %}
+                                            </select>
+                                            {% endif %}
+                                            {% if datos.menu == 'newuser' %}
+                                            <select class="form-control" name="unidadInterna">
+                                                {% for unidades in datos.unidad %}
+                                                <option value="{{unidades.idUnidadInterna}}">{{unidades.nombreUnidad}}
                                                 </option>
                                                 
                                                 {% endfor %}

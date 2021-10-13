@@ -246,12 +246,17 @@ def newuser(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        rol = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        unidades = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
         context = {
             'menu' : 'newuser',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
+            'unidad': unidades['data'],
+            'rol': rol['data'],
         }
         return render(request, 'users/newuser.html',{'datos': context})
     else: 
@@ -264,6 +269,7 @@ def viewusers(request, id):
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
+        
         context = {
             'menu' : 'viewusers',
             'email' : data['email'],
