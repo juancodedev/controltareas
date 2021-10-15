@@ -70,6 +70,10 @@ urlpatterns = [
     path('messagereaded/',views.messagereaded, name='messagereaded'),
     path('messageresponded/',views.messageresponded, name='messageresponded'),
     
+    #Tareas subordinadas
+    
+    path('tareasubordinada/',views.tareasubordinada, name='tareasubordinada'),
+    
     
     
 ]

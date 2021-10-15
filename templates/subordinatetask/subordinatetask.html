@@ -5,12 +5,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Creacion de tarea</h1>
+                        <h1>Creacion de tarea subordinadas</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-                            <li class="breadcrumb-item active">Creacion de tarea</li>
+                            <li class="breadcrumb-item active">Creacion de tarea subordinadas</li>
                         </ol>
                     </div>
                 </div>
@@ -31,42 +31,21 @@
                                         <div class="row">
                                             <div class="form-group col-md-6">
                                                 <label for="nombretarea">Nombre</label>
-                                                <input type="text" class="form-control" id="nombretarea"
+                                                <input type="text" class="form-control" id="nombretareasubordinada"
                                                     placeholder="Nombre" />
                                             </div>
                                             <div class="form-group col-md-6">
-                                            {% if datos.menu == 'tasknew' %}
-                                            <label for="Proceso">Proceso</label>
-                                            <select class="form-control">
-                                                {% for usuario in datos.usuarios %}
-                                                <option value="{{usuario.rutUsuario}}">{{usuario.nombreUsuario}} {{ usuario.apellidoUsuario}}</option>
-                                                {% endfor %}
-                                            </select>
-                                            {% endif %}
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label>Fecha:</label>
-                                                <div class="input-group date" id="reservationdate"
-                                                    data-target-input="nearest">
-                                                    <input type="text" class="form-control datetimepicker-input"
-                                                        data-target="#reservationdate">
-                                                    <div class="input-group-append" data-target="#reservationdate"
-                                                        data-toggle="datetimepicker">
-                                                        <div class="input-group-text"><i class="fa fa-calendar"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                            {% if datos.menu == 'tasknew' %}
-                                                <label for="Proceso">Responsable</label>
-                                                <select class="form-control" name="responsable">
-                                                {% for usuario in datos.usuarios %}
-                                                <option value="{{usuario.rutUsuario}}">{{usuario.nombreUsuario}} {{ usuario.apellidoUsuario}}</option>
-                                                {% endfor %}
 
-                                                </select>
-                                            {% endif %}
+                                            <label for="Proceso">Tarea</label>
+                                            <select class="form-control">
+
+                                                <option value="Tarea 1">Tarea 1</option>
+                                                <option value="Tarea 1">Tarea 2</option>
+                                                <option value="Tarea 1">Tarea 3</option>
+                                                <option value="Tarea 1">Tarea 4</option>
+
+                                            </select>
+
                                             </div>
                                         </div>
                                         <div class="row">
@@ -75,7 +54,7 @@
                                                 <div class="form-group">
                                                     <label>Descripción</label>
                                                     <textarea class="form-control" rows="3"
-                                                        placeholder="..." style="resize: none;"></textarea>
+                                                        placeholder="..." style="resize: none;" name="descripciontareasubordinada"></textarea>
                                                 </div>
                                             </div>
 

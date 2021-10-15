@@ -170,8 +170,28 @@ def taskdetails(request):
     else: 
         return redirect('login')
     
-#Creacion de tareas 
+#Creacion de tareas renderizado del template
 def tasknew(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        context = {
+            'menu' : 'tasknew',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+            'usuarios': usuarios['data'],
+        }
+        return render(request, 'task/task.html',{'datos': context})
+    else: 
+        return redirect('login')
+
+
+#Salvar datos de la nueva tarea
+def savenewtask(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
@@ -717,3 +737,24 @@ def messageresponded(request):
     'login' : datetime.now(),
     }
     return render(request, 'messages/messageresponded.html',{'datos': context})
+
+
+
+
+#Creacion de tareas subordinada renderizado del template
+def tareasubordinada(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+
+        context = {
+            'menu' : 'tareasubordinada',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request, 'subordinatetask/subordinatetask.html',{'datos': context})
+    else: 
+        return redirect('login')
+    
