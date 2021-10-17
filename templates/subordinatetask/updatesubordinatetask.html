@@ -5,12 +5,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Creacion de tarea subordinada</h1>
+                        <h1>Editar tarea subordinada</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-                            <li class="breadcrumb-item active">Creacion de tarea subordinada</li>
+                            <li class="breadcrumb-item active">Editar tarea subordinada</li>
                         </ol>
                     </div>
                 </div>
@@ -27,23 +27,24 @@
                                 </div>
                                 <form method="POST">
                                     {% csrf_token %}
+                                    {% for x in data.oneTareaSubordinada %}
                                     <div class="card card-body">
                                         <div class="row">
                                             <div class="form-group col-md-6">
-                                                <label for="nombretarea">Nombre</label>
+                                                <label for="nombretarea">{{x.nombreSubordinada}}</label>
                                                 <input type="text" class="form-control" name="nombreTareaSubordinada" id="nombreTareaSubordinada"
                                                     placeholder="Nombre Tarea Subordinada" />
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                    <label class="bmd-label-floating">Id Tarea</label>
+                                                    <label class="bmd-label-floating">{{x.fkIdTarea}}</label>
                                                     <input type="text" class="form-control" name="selectTarea" placeholder="Id Tarea">
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <div class="form-group">
-                                                    <label>Descripción Tarea Subordinada</label>
+                                                    <label>{{x.descripcionSubordinada}}</label>
                                                     <textarea class="form-control" rows="3"
                                                         placeholder="Descripción Tarea Subordinada" style="resize: none;" name="descripcionTareaSubordinada" ></textarea>
                                                 </div>
@@ -54,9 +55,11 @@
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-info">Crear Tarea Subordinada</button>
+                                        <button type="submit" class="btn btn-info">Editar Tarea Subordinada</button>
                                         <button type="submit" class="btn btn-default float-right">Cancelar</button>
                                     </div>
+
+                                    {% endfor %}
                                 </form>
                             </div>
 
