@@ -764,7 +764,7 @@ def AddTareaSubordinadaSection(request):
         # Method: GET
         token = request.COOKIES.get('validate')
         headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
-        resTarea = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers)
+        resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
         dataTarea = resTarea.json()
         listTarea = dataTarea['data']
 
