@@ -100,8 +100,8 @@
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Estado</label>
                                                 <select class="form-control" name="estadotarea">
-                                                {% if datos.menu == 'tasknew' %}
-                                                
+                                                    {% if datos.menu == 'tasknew' %}
+
                                                     {% for estado in datos.estado %}
                                                     {% if estado.descripcionEstadoTarea == 'Creada' %}
                                                     <option selected value="{{estado.idEstadoTarea}}">
@@ -112,36 +112,37 @@
                                                     {% endif %}
 
                                                     {% endfor %}
-                                                {% endif %}
-                                                {% if datos.menu == 'taskedit' %}
+                                                    {% endif %}
+                                                    {% if datos.menu == 'taskedit' %}
                                                     {% for estado in datos.estado %}
-                                                    <option value="{{estado.idEstadoTarea}}" {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %} selected{% endif %}>
+                                                    <option value="{{estado.idEstadoTarea}}"
+                                                        {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
+                                                        selected{% endif %}>
                                                         {{estado.descripcionEstadoTarea}}</option>
 
                                                     {% endfor %}
-                                                {% endif %}
+                                                    {% endif %}
 
                                                 </select>
                                             </div>
-                                            
+
                                             {% if datos.menu == 'taskedit' %}
                                             <div class="form-group col-md-6">
                                                 <label for="reporteProblema">Reporte de problema</label>
                                                 <input type="text" class="form-control" name="reporteProblema"
-
-                                                    value="{{datos.tareas.reporteProblema}}"  />
+                                                    value="{{datos.tareas.reporteProblema}}" />
                                             </div>
-                                                <div class="form-group col-md-6">
+                                            <div class="form-group col-md-6">
                                                 <label for="Justificacion">Justificacion</label>
 
 
                                                 <select class="form-control" name="Justificacion">
-                                                {% for justificacion in datos.justificacion %}
-                                                <option value="{{justificacion.idJustificacion}}" 
-                                                {% if datos.menu == 'taskedit' and justificacion.idJustificacion == datos.tareas.fkIdJustificacion %}
+                                                    {% for justificacion in datos.justificacion %}
+                                                    <option value="{{justificacion.idJustificacion}}"
+                                                        {% if datos.menu == 'taskedit' and justificacion.idJustificacion == datos.tareas.fkIdJustificacion %}
                                                         selected {% endif %}>
                                                         {{justificacion.descripcion}}</option>
-                                                {% endfor %}
+                                                    {% endfor %}
 
                                                 </select>
                                             </div>
@@ -154,8 +155,10 @@
                                                 <!-- textarea -->
                                                 <div class="form-group">
                                                     <label>Descripción</label>
-                                                    <textarea class="form-control" rows="3" {% if datos.menu == 'tasknew' %} placeholder="..." {% endif %}
-                                                        style="resize: none;" name="descripciontarea">{% if datos.menu == 'taskedit' %} {{datos.tareas.descripcionTarea}} {% endif %}</textarea>
+                                                    <textarea class="form-control" rows="3"
+                                                        {% if datos.menu == 'tasknew' %} placeholder="..." {% endif %}
+                                                        style="resize: none;"
+                                                        name="descripciontarea">{% if datos.menu == 'taskedit' %} {{datos.tareas.descripcionTarea}} {% endif %}</textarea>
                                                 </div>
                                             </div>
 
