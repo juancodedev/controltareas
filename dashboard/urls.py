@@ -9,7 +9,15 @@ urlpatterns = [
     # Tareas
     path('', views.dashboard, name='dashboard'), #dashboard con resumen de tareas
     path('tasklist/', views.tasklist, name='tasklist'), #Listado de tareas
-    path('tasknew/', views.tasknew, name='tasknew'), # Creacion de tarea nueva
+    path('tasknew/', views.tasknew, name='tasknew'), # renderizado de formulario de tarea nueva
+    path('updatetask/<int:id>', views.updatetask, name='updatetask'), # Guardar tarea nueva
+    path('taskedit/<int:id>', views.taskedit, name='taskedit'), # Guardar tarea nueva
+    path('savenewtask/', views.savenewtask, name='savenewtask'), # Guardar tarea nueva
+
+    path('taskdetails/<int:id>', views.taskdetails, name='taskdetails'), # Guardar tarea nueva
+    path('taskdelete/<int:id>', views.taskdelete, name='taskdelete'), # Guardar tarea nueva
+
+    
     
     #workflow
     path('workflowlist/', views.workflowlist, name='workflowlist'), # Creacion nuevo flujo de tareas
@@ -19,9 +27,7 @@ urlpatterns = [
     
     # Equipo
     path('teamwork/', views.teamwork, name='teamwork'), # Listado de equipo de trabajo
-    path('workload/', views.workload, name='workload'), # Lista la carga de trabajo por cada integrante del equipo
-    path('taskdetails/', views.taskdetails, name='taskdetails'), # Detalle de la tarea asignada
-    
+    path('workload/', views.workload, name='workload'), # Lista la carga de trabajo por cada integrante del equipo    
     # Administracion
     path('newuser/', views.newuser, name='newuser'), # Creacion de usuarios
     path('viewusers/<str:id>/', views.viewusers, name='viewusers'), # Creacion de usuarios

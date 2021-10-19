@@ -25,32 +25,59 @@
                             <div class="card">
                                 <div class="card-header">
                                 </div>
-                                <form action="">
+                                <form method="POST"
+                                    action="{% if datos.menu == 'taskedit' %} {% url 'updatetask' id=datos.tareas.idTarea %} {% endif %}{% if datos.menu == 'tasknew' %} {% url 'savenewtask' %} {% endif %}">
                                     <!-- card-body -->
+                                    {% csrf_token %}
                                     <div class="card card-body">
                                         <div class="row">
                                             <div class="form-group col-md-6">
                                                 <label for="nombretarea">Nombre</label>
-                                                <input type="text" class="form-control" id="nombretarea"
-                                                    placeholder="Nombre" />
+                                                <input type="text" class="form-control" name="nombretarea"
+                                                    {% if datos.menu == 'tasknew' %} placeholder="Nombre" {% endif %}
+                                                    {% if datos.menu == 'taskedit' %}
+                                                    value="{{datos.tareas.nombreTarea}}" {% endif %} />
                                             </div>
                                             <div class="form-group col-md-6">
-                                            {% if datos.menu == 'tasknew' %}
-                                            <label for="Proceso">Proceso</label>
-                                            <select class="form-control">
-                                                {% for usuario in datos.usuarios %}
-                                                <option value="{{usuario.rutUsuario}}">{{usuario.nombreUsuario}} {{ usuario.apellidoUsuario}}</option>
-                                                {% endfor %}
-                                            </select>
-                                            {% endif %}
+                                                <label for="Proceso">Creado por</label>
+                                                <select class="form-control" name="creadopor">
+
+
+                                                    {% for creado in datos.creadopor %}
+                                                    <option value="{{creado.rutUsuario}}"
+                                                        {% if datos.menu == 'taskedit' and creado.rutUsuario == datos.tareas.fkRutUsuario %}
+                                                        selected {% endif %}>
+                                                        {{creado.nombreUsuario}}
+                                                        {{ creado.apellidoUsuario}}</option>
+                                                    {% endfor %}
+
+                                                </select>
+
+
+
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label>Fecha:</label>
-                                                <div class="input-group date" id="reservationdate"
+                                                <label for="Proceso">Prioridad</label>
+                                                <select class="form-control" name="prioridadtarea">
+                                                    {% for prioridad in datos.prioridad %}
+                                                    <option value="{{prioridad.idPrioridad}}"
+                                                        {% if datos.menu == 'taskedit' and prioridad.idPrioridad == datos.tareas.fkPrioridadTarea %}
+                                                        selected {% endif %}>{{prioridad.descripcion}}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label>Fecha plazo:</label>
+                                                <div class="input-group date" id="fechaplazo"
                                                     data-target-input="nearest">
+
                                                     <input type="text" class="form-control datetimepicker-input"
-                                                        data-target="#reservationdate">
-                                                    <div class="input-group-append" data-target="#reservationdate"
+                                                        data-target="#fechaplazo" name="fechaplazo"
+                                                        {% if datos.menu == 'taskedit' %}
+                                                        value="{{datos.tareas.fechaPlazo}}" {% endif %}>
+                                                    <div class="input-group-append" data-target="#fechaplazo"
                                                         data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i>
                                                         </div>
@@ -58,24 +85,77 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-6">
-                                            {% if datos.menu == 'tasknew' %}
-                                                <label for="Proceso">Responsable</label>
-                                                <select class="form-control" name="responsable">
-                                                {% for usuario in datos.usuarios %}
-                                                <option value="{{usuario.rutUsuario}}">{{usuario.nombreUsuario}} {{ usuario.apellidoUsuario}}</option>
+
+                                                <label for="Proceso">Asignado a:</label>
+                                                <select class="form-control" name="asignadoa">
+                                                    {% for usuario in datos.usuarios %}
+                                                    <option value="{{usuario.rutUsuario}}"
+                                                        {% if datos.menu == 'taskedit' and usuario.rutUsuario == datos.tareas.fkRutUsuario %}
+                                                        selected {% endif %}>{{usuario.nombreUsuario}}
+                                                        {{ usuario.apellidoUsuario}}</option>
+                                                    {% endfor %}
+                                                </select>
+
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="Proceso">Estado</label>
+                                                <select class="form-control" name="estadotarea">
+                                                {% if datos.menu == 'tasknew' %}
+                                                
+                                                    {% for estado in datos.estado %}
+                                                    {% if estado.descripcionEstadoTarea == 'Creada' %}
+                                                    <option selected value="{{estado.idEstadoTarea}}">
+                                                        {{estado.descripcionEstadoTarea}}</option>
+                                                    {% else %}
+                                                    <option value="{{estado.idEstadoTarea}}">
+                                                        {{estado.descripcionEstadoTarea}}</option>
+                                                    {% endif %}
+
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if datos.menu == 'taskedit' %}
+                                                    {% for estado in datos.estado %}
+                                                    <option value="{{estado.idEstadoTarea}}" {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %} selected{% endif %}>
+                                                        {{estado.descripcionEstadoTarea}}</option>
+
+                                                    {% endfor %}
+                                                {% endif %}
+
+                                                </select>
+                                            </div>
+                                            
+                                            {% if datos.menu == 'taskedit' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="reporteProblema">Reporte de problema</label>
+                                                <input type="text" class="form-control" name="reporteProblema"
+
+                                                    value="{{datos.tareas.reporteProblema}}"  />
+                                            </div>
+                                                <div class="form-group col-md-6">
+                                                <label for="Justificacion">Justificacion</label>
+
+
+                                                <select class="form-control" name="Justificacion">
+                                                {% for justificacion in datos.justificacion %}
+                                                <option value="{{justificacion.idJustificacion}}" 
+                                                {% if datos.menu == 'taskedit' and justificacion.idJustificacion == datos.tareas.fkIdJustificacion %}
+                                                        selected {% endif %}>
+                                                        {{justificacion.descripcion}}</option>
                                                 {% endfor %}
 
                                                 </select>
-                                            {% endif %}
                                             </div>
+                                            {% endif %}
+
                                         </div>
+
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <!-- textarea -->
                                                 <div class="form-group">
                                                     <label>Descripción</label>
-                                                    <textarea class="form-control" rows="3"
-                                                        placeholder="..." style="resize: none;"></textarea>
+                                                    <textarea class="form-control" rows="3" {% if datos.menu == 'tasknew' %} placeholder="..." {% endif %}
+                                                        style="resize: none;" name="descripciontarea">{% if datos.menu == 'taskedit' %} {{datos.tareas.descripcionTarea}} {% endif %}</textarea>
                                                 </div>
                                             </div>
 
@@ -84,7 +164,9 @@
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-info">Guardar</button>
+                                        <button type="submit" class="btn btn-info"
+                                            value="OK">{% if datos.menu == 'taskedit' %}Actualizar{% endif %}
+                                            {% if datos.menu == 'tasknew' %}Guardar{% endif %}</button>
                                         <button type="submit" class="btn btn-default float-right">Cancelar</button>
                                     </div>
 

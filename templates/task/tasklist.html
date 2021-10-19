@@ -5,146 +5,166 @@
 
 
 <body class="hold-transition sidebar-mini">
-<!-- Site wrapper -->
-<div class="wrapper">
+  <!-- Site wrapper -->
+  <div class="wrapper">
 
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>Projects</h1>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>Projects</h1>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item active">Lista de Tareas</li>
+              </ol>
+            </div>
           </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-              <li class="breadcrumb-item active">Lista de Tareas</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
+        </div><!-- /.container-fluid -->
+      </section>
 
-    <!-- Main content -->
-    <section class="content">
+      <!-- Main content -->
+      <section class="content">
 
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-header">
-          <ul class="nav nav-pills card-header-pills">
-            <li class="nav-item">
-              <a class="nav-link active" href="{% url 'tasknew' %}">Nueva Tarea</a>
-            </li>
-            <!-- <li class="nav-item">
+        <!-- Default box -->
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-pills card-header-pills">
+              <li class="nav-item">
+                <a class="nav-link active" href="{% url 'tasknew' %}">Nueva Tarea</a>
+              </li>
+              <!-- <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
             </li>
             <li class="nav-item">
               <a class="nav-link disabled" href="#">Disabled</a>
             </li> -->
-          </ul>
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-              <i class="fas fa-minus"></i>
-            </button>
+            </ul>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-hover projects">
+              <thead>
+                <tr>
+                  <th style="width: 1%">
+                    #
+                  </th>
+                  <th style="width: 20%">
+                    Nombre
+                  </th>
+                  <th style="width: 30%">
+                    Asignada a
+                  </th>
+                  <th>
+                    Progreso de tarea
+                  </th>
+                  <th style="width: 8%" class="text-center">
+                    Estado
+                  </th>
+                  <th style="width: 20%">
+                    Accion
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for tarea in datos.tk %}
+                <tr>
+                  <td>
+                    {{tarea.idTarea}}
+                  </td>
+                  <td>
+                    <a>
+                      {{tarea.nombreTarea}}
+                    </a>
+                    <br />
+                    <small>
+                      Fecha Plazo: {{tarea.fechaPlazo}}
+                    </small>
+                  </td>
+                  <td>
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar.png' %}">
+                      </li>
+
+
+                      {% for us in datos.usuarios %}
+
+                      {% if  us.rutUsuario == tarea.fkRutUsuario %}
+                      {{us.nombreUsuario}} {{us.apellidoUsuario}}
+                      {% endif %}
+                      {% endfor %}
+
+                      {% comment %} <li class="list-inline-item">
+                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar2.png' %}">
+                      </li>
+                      <li class="list-inline-item">
+                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar3.png' %}">
+                      </li>
+                      <li class="list-inline-item">
+                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar4.png' %}">
+                      </li> {% endcomment %}
+                    </ul>
+                  </td>
+                  <td class="project_progress">
+                    <div class="progress progress-sm">
+                      <div class="progress-bar bg-green" role="progressbar" aria-valuenow="57" aria-valuemin="0"
+                        aria-valuemax="100" style="width: 57%">
+                      </div>
+                    </div>
+                    <small>
+                      57% Complete
+                    </small>
+                  </td>
+                  <td class="project-state">
+                    {% if tarea.fkEstadoTarea == 1 %}
+                    <span class="badge badge-success">Completada</span>
+                    {% endif %}
+                    {% if tarea.fkEstadoTarea == 44 %}<span class="badge badge-warning">Pendiente</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 41 %}<span class="badge badge-danger">Atrasada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 21 %}<span class="badge badge-primary">Creada</span>{% endif %}
+                  </td> 
+                  <td class="project-actions text-right">
+                    <a class="btn btn-primary btn-sm" href="{% url 'taskdetails' id=tarea.idTarea%}">
+                      <i class="fas fa-folder">
+                      </i>
+                      View
+                    </a>
+                    <a class="btn btn-info btn-sm" href="{% url 'taskedit' id=tarea.idTarea %}">
+                      <i class="fas fa-pencil-alt">
+                      </i>
+                      Edit
+                    </a>
+                    <a class="btn btn-danger btn-sm" href="{% url 'taskdelete' id=tarea.idTarea %}">
+                      <i class="fas fa-trash">
+                      </i>
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+
+                {% endfor %}
+
+
+
+
+
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="card-body p-0">
-            <table class="table table-hover projects">
-                <thead>
-                    <tr>
-                        <th style="width: 1%">
-                            #                                     
-                        </th>
-                        <th style="width: 20%">
-                            Nombre
-                        </th>
-                        <th style="width: 30%">
-                            Asignada a
-                        </th>
-                        <th>
-                            Progreso de tarea
-                        </th>
-                        <th style="width: 8%" class="text-center">
-                            Estado
-                        </th>
-                        <th style="width: 20%">
-                        Accion
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            #
-                        </td>
-                        <td>
-                            <a>
-                                AdminLTE v3
-                            </a>
-                            <br/>
-                            <small>
-                                Created 01.01.2019
-                            </small>
-                        </td>
-                        <td>
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar.png' %}">
-                                </li>
-                                <li class="list-inline-item">
-                                    <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar2.png' %}">
-                                </li>
-                                <li class="list-inline-item">
-                                    <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar3.png' %}">
-                                </li>
-                                <li class="list-inline-item">
-                                    <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar4.png' %}">
-                                </li>
-                            </ul>
-                        </td>
-                        <td class="project_progress">
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-green" role="progressbar" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100" style="width: 57%">
-                                </div>
-                            </div>
-                            <small>
-                                57% Complete
-                            </small>
-                        </td>
-                        <td class="project-state">
-                            <span class="badge badge-success">Completada</span>
-                        </td>
-                        <td class="project-actions text-right">
-                            <a class="btn btn-primary btn-sm" href="{% url 'taskdetails' %}">
-                                <i class="fas fa-folder">
-                                </i>
-                                View
-                            </a>
-                            <a class="btn btn-info btn-sm" href="{% url 'tasknew' %}">
-                                <i class="fas fa-pencil-alt">
-                                </i>
-                                Edit
-                            </a>
-                            <a class="btn btn-danger btn-sm" href="#">
-                                <i class="fas fa-trash">
-                                </i>
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
 
-
-
-                </tbody>
-            </table>
-        </div>
-      </div>
-    </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
-
-</div>
-{% endblock content %}
+  {% endblock content %}

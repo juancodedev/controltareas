@@ -28,25 +28,15 @@
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
-            <h3 class="card-title">
-            <i class="fa fa-clipboard-list"></i>    Tarea XXXXX
+          <h3 class="card-title">
+            <i class="fa fa-clipboard-list"></i> Tarea {{datos.tareas.nombreTarea}}
           </h3>
 
           <div class="card-tools">
-            <button
-              type="button"
-              class="btn btn-tool"
-              data-card-widget="collapse"
-              title="Collapse"
-            >
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
             </button>
-            <button
-              type="button"
-              class="btn btn-tool"
-              data-card-widget="remove"
-              title="Remove"
-            >
+            <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -55,39 +45,27 @@
           <div class="row">
             <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
               <div class="row">
-                <div class="col-12 col-sm-4">
+                <div class="col-12 col-sm-6">
                   <div class="info-box bg-light">
                     <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted"
-                        >Fecha Creación</span
-                      >
-                      <span class="info-box-number text-center text-muted mb-0"
-                        >Lunes 27-Octubre-2021</span
-                      >
+                      <span class="info-box-text text-center text-muted">Fecha Plazo</span>
+                      <span class="info-box-number text-center text-muted mb-0">{{datos.tareas.fechaPlazo}}</span>
                     </div>
                   </div>
                 </div>
-                <div class="col-12 col-sm-4">
+                {% comment %} <div class="col-12 col-sm-4">
                   <div class="info-box bg-light">
                     <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted"
-                        >Proceso</span
-                      >
-                      <span class="info-box-number text-center text-muted mb-0"
-                        >Documentación</span
-                      >
+                      <span class="info-box-text text-center text-muted">Proceso</span>
+                      <span class="info-box-number text-center text-muted mb-0">Documentación</span>
                     </div>
                   </div>
-                </div>
-                <div class="col-12 col-sm-4">
+                </div> {% endcomment %}
+                <div class="col-12 col-sm-6">
                   <div class="info-box bg-light">
                     <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted"
-                        >Estado</span
-                      >
-                      <span class="info-box-number text-center text-muted mb-0"
-                        >Completada</span
-                      >
+                      <span class="info-box-text text-center text-muted">Estado</span>
+                      <span class="info-box-number text-center text-muted mb-0">Completada</span>
                     </div>
                   </div>
                 </div>
@@ -97,43 +75,29 @@
                   <h4>Actividad reciente</h4>
                   <div class="post">
                     <div class="user-block">
-                      <img
-                        class="img-circle img-bordered-sm"
-                        src="{% static 'img/user1-128x128.jpg' %}"
-                        alt="user image"
-                      />
+                      <img class="img-circle img-bordered-sm" src="{% static 'img/user1-128x128.jpg' %}"
+                        alt="user image" />
                       <span class="username">
-                        <a href="#">Justificacion</a>
+                        <label>Actividad</label>
                       </span>
-                      <span class="description"
-                        >Fecha - 7:45 PM Hoy</span
-                      >
+                      {% comment %} <span class="description">Fecha - 7:45 PM Hoy</span> {% endcomment %}
                     </div>
                     <!-- /.user-block -->
                     <p>
-                      Lorem ipsum represents a long-held tradition for
-                      designers, typographers and the like. Some people hate it
-                      and argue for its demise, but others ignore.
+                      {{datos.tareas.reporteProblema}}
                     </p>
-                                        <p>
-                      <a href="#" class="link-black text-sm"
-                        ><i class="fas fa-link mr-1"></i> Detalle</a
-                      >
+                    <p>
+                      <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Detalle</a>
                     </p>
                   </div>
-                  <div class="post clearfix">
+                  {% comment %} <div class="post clearfix">
                     <div class="user-block">
-                      <img
-                        class="img-circle img-bordered-sm"
-                        src="{% static 'img/user7-128x128.jpg' %}"
-                        alt="User Image"
-                      />
-                    <span class="username">
+                      <img class="img-circle img-bordered-sm" src="{% static 'img/user7-128x128.jpg' %}"
+                        alt="User Image" />
+                      <span class="username">
                         <a href="#">Problema</a>
                       </span>
-                      <span class="description"
-                        >Fecha - 7:45 PM Hoy</span
-                      >
+                      <span class="description">Fecha - 7:45 PM Hoy</span>
                     </div>
                     <!-- /.user-block -->
                     <p>
@@ -142,74 +106,66 @@
                       and argue for its demise, but others ignore.
                     </p>
                     <p>
-                      <a href="#" class="link-black text-sm"
-                        ><i class="fas fa-link mr-1"></i> Detalle</a
-                      >
+                      <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Detalle</a>
                     </p>
-                  </div>
+                  </div> {% endcomment %}
 
                 </div>
               </div>
             </div>
             <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-<div class="card">
-    <div class="car-header">
-        <h3 class="text-primary">
-           Descripción
-        </h3>
-    </div>
-      <p class="text-muted">
-        Raw denim you probably haven't heard of them jean shorts Austin.
-        Nesciunt tofu stumptown aliqua butcher retro keffiyeh
-        dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.
-      </p>
-      <br />
-      <div class="text-muted">
-        <p class="text-sm">
-          Cliente
-          <b class="d-block">Deveint Inc</b>
-        </p>
-        <p class="text-sm">
-          Subordinada por
-          <b class="d-block">Jean Lopez
-</b>
-        </p>
-      </div>
+              <div class="card">
+                <div class="car-header">
+                  <h3 class="text-primary">
+                    Descripción
+                  </h3>
+                </div>
+                <p class="text-muted">
+                  {{datos.tareas.descripcionTarea}}
+                </p>
+                <br />
+                <div class="text-muted">
+                  <p class="text-sm">
+                    Asignada a
+                    {% for us in datos.usuarios %}
+                    {% if  us.rutUsuario == datos.tareas.fkRutUsuario %}
+                    <b class="d-block">{{us.nombreUsuario}} {{us.apellidoUsuario}}</b>
+                    {% endif %}
+                    {% endfor %}
 
-      <h5 class="mt-5 text-muted">Enviar actualizacion</h5>
-      {% comment %} <ul class="list-unstyled">
-        <li>
-          <a href="" class="btn-link text-secondary"
-            ><i class="far fa-fw fa-file-word"></i>
-            Functional-requirements.docx</a
-          >
-        </li>
-        <li>
-          <a href="" class="btn-link text-secondary"
-            ><i class="far fa-fw fa-file-pdf"></i> UAT.pdf</a
-          >
-        </li>
-        <li>
-          <a href="" class="btn-link text-secondary"
-            ><i class="far fa-fw fa-envelope"></i>
-            Email-from-flatbal.mln</a
-          >
-        </li>
-        <li>
-          <a href="" class="btn-link text-secondary"
-            ><i class="far fa-fw fa-image"></i> Logo.png</a
-          >
-        </li>
-        <li>
-          <a href="" class="btn-link text-secondary"
-            ><i class="far fa-fw fa-file-word"></i>
-            Contract-10_12_2014.docx</a
-          >
-        </li>
-      </ul> {% endcomment %}
-      <div class="input-group input-group mb-3">
+                  </p>
+                  {% comment %} <p class="text-sm">
+                    Subordinada por
+                    <b class="d-block">Jean Lopez
+                    </b>
+                  </p> {% endcomment %}
+                </div>
+
+                <h5 class="mt-5 text-muted">Enviar actualizacion</h5>
+                {% comment %} <ul class="list-unstyled">
+                  <li>
+                    <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>
+                      Functional-requirements.docx</a>
+                  </li>
+                  <li>
+                    <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-pdf"></i> UAT.pdf</a>
+                  </li>
+                  <li>
+                    <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-envelope"></i>
+                      Email-from-flatbal.mln</a>
+                  </li>
+                  <li>
+                    <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-image"></i> Logo.png</a>
+                  </li>
+                  <li>
+                    <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i>
+                      Contract-10_12_2014.docx</a>
+                  </li>
+                </ul> {% endcomment %}
+                <div class="input-group input-group mb-3">
                   <div class="input-group-prepend">
-                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown"
+                      aria-expanded="false">
                       Accion
                     </button>
                     <ul class="dropdown-menu" style="">
@@ -224,11 +180,11 @@
                     <button type="button" class="btn btn-info btn-flat"><i class="fas fa-check"></i></button>
                   </div>
                 </div>
-      <div class="text-center mt-5 mb-3">
-        <!-- <a href="#" class="btn btn-sm btn-primary">Enviar</a> -->
-        <a href="#" class="btn btn-sm btn-danger">Cancelar</a>
-      </div>
-</div>
+                <div class="text-center mt-5 mb-3">
+                  <!-- <a href="#" class="btn btn-sm btn-primary">Enviar</a> -->
+                  <a href="#" class="btn btn-sm btn-danger">Cancelar</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -14,9 +14,7 @@ def imgprofiletemp(largo):
     img={}
     img['results']=[]
     for i in range(largo):
-        print(i)
-        numero = random.randint(0,41) 
-        print('numero :',numero)
+        numero = random.randint(0,41)
         img['results'].append({
             'picture': {
             'large': str(numero)+'.jpg',
@@ -62,16 +60,73 @@ def tasklist(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        
         context = {
             'menu' : 'tableTask',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
+            'tk': tareas['data'],
+            'usuarios': usuarios['data'],
         }
         return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
+    
+
+
+
+def taskdelete(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        deleted = requests.delete('http://localhost:32482/api/tarea/delete/'+str(id), headers=headers)
+
+        if deleted.ok:
+            message  = "Eliminado correctamente"
+        else:
+            message = "Ocurrio un error en el proceso, favor intente nuevamente"
+        
+        return redirect('tasklist')
+    else: 
+        return redirect('login')
+
+
+def taskedit(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        actividad = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
+        creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
+        justificacion = requests.get('http://localhost:32482/api/justificacionTarea/', headers=headers).json()
+        tarea = list(e for e in tareas['data'] if e['idTarea']  == int(id))[0]
+        
+        context = {
+        'menu' : 'taskedit',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'tareas' : tarea,
+        'usuarios': usuarios['data'],
+        'prioridad': prioridad['data'],
+        'estado': estado['data'],
+        'creadopor': creadopor['data'],
+        'justificacion': justificacion['data'],
+        }
+        return render(request, 'task/task.html',{'datos': context})
+    else:
+        return redirect('login')
+
 
 def teamwork(request):
     if authenticated(request):
@@ -155,16 +210,25 @@ def workload(request):
         return redirect('login')
 
 #Lista de detalle de las tareas creadas
-def taskdetails(request):
+def taskdetails(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        actividad = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
+        
+        
         context = {
             'menu' : 'taskdetails',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
+            'tareas': list(e for e in tareas['data'] if e['idTarea']  == int(id))[0],
+            'usuarios': usuarios['data'],
+            'actividad': actividad['data'],
         }
         return render(request, 'task/taskdetails.html',{'datos': context})
     else: 
@@ -177,6 +241,10 @@ def tasknew(request):
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
+        creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
+                
         context = {
             'menu' : 'tasknew',
             'email' : data['email'],
@@ -184,44 +252,77 @@ def tasknew(request):
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
             'usuarios': usuarios['data'],
+            'prioridad': prioridad['data'],
+            'estado': estado['data'],
+            'creadopor': creadopor['data'],
         }
         return render(request, 'task/task.html',{'datos': context})
     else: 
         return redirect('login')
 
 
+def updatetask(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        payload = json.dumps(
+            {
+            'idTarea': id,
+            'nombreTarea':request.POST.get('nombretarea'),
+            'descripcionTarea': request.POST.get('descripciontarea'),
+            'fechaPlazo': request.POST.get('fechaplazo'),
+            
+            'reporteProblema': request.POST.get('reporteProblema'),
+            
+            'asignacionTarea': request.POST.get('asignadoa'),
+            'fkRutUsuario' : request.POST.get('creadopor'),
+            
+            'fkIdJustificacion': request.POST.get('Justificacion'),
+            
+            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
+            'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
+        }
+            )
+        update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
+        print(update)
+        print(payload)
+        if update.ok:
+            return redirect('tasklist')
+        else:
+            return redirect('dashboard') #envia al dashboard si da error
+    else:
+        return redirect('login')
+
 #Salvar datos de la nueva tarea
 def savenewtask(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
-        data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        
         payload = json.dumps({
-            'rutUsuario': request.POST.get('rut'),
-            'nombreUsuario': request.POST.get('name'),
-            'segundoNombre': request.POST.get('secondName'),
-            'apellidoUsuario': request.POST.get('lastName'),
-            'segundoApellido': request.POST.get('secondlastName'),
-            'correoElectronico': request.POST.get('email'),
-            'numTelefono': int(request.POST.get('phoneNumber')),
-            'password': request.POST.get('password'),
-            'idRolUsuario': int(request.POST.get('role')),
-            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
+            'nombreTarea':request.POST.get('nombretarea'),
+            'descripcionTarea': request.POST.get('descripciontarea'),
+            'fechaPlazo': request.POST.get('fechaplazo'),
+            
+            'reporteProblema': 'Ninguno',
+            
+            'asignacionTarea': request.POST.get('asignadoa'),
+            'fkRutUsuario' : request.POST.get('creadopor'),
+            
+            'fkIdJustificacion': int(3),
+            
+            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
+            'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
         })
-        r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+        r = requests.post('http://localhost:32482/api/tarea/add', headers=headers, data=payload)
+
         if r.ok:
-            print('Usuario creado correctamente')
+            print('Tarea creado correctamente')
         else:
             print('Error')
-        context = {
-            'menu' : 'tasknew',
-            'email' : data['email'],
-            'name': data['unique_name'],
-            'role': int(data['role']),
-            'login' : datetime.fromtimestamp(data['nbf']),
-        }
-        return render(request, 'task/task.html',{'datos': context})
+
+        return redirect('tasklist')
     else: 
         return redirect('login')
 
@@ -231,6 +332,7 @@ def createnewuser(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        
         payload = json.dumps({
             'rutUsuario': request.POST.get('rut'),
             'nombreUsuario': request.POST.get('name'),
@@ -350,8 +452,6 @@ def deleteusers(request, id):
         payload = json.dumps({'IdUnidadInterna': id})
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
         deleted = requests.delete('http://localhost:32482/api/usuario/delete/'+str(id), headers=headers)
-        
-        print(deleted)
 
         if deleted.ok:
             message  = "Eliminado correctamente"
