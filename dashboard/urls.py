@@ -76,10 +76,14 @@ urlpatterns = [
     path('messagereaded/',views.messagereaded, name='messagereaded'),
     path('messageresponded/',views.messageresponded, name='messageresponded'),
     
+
     #Tareas subordinadas
-    
-    path('tareasubordinada/',views.tareasubordinada, name='tareasubordinada'),
-    
+    path('tareaSubordinadaSection/', views.TareaSubordinadaSection, name='TareaSubordinadaSection'),
+    path('addTareaSubordinadaSection/', views.AddTareaSubordinadaSection, name="AddTareaSubordinadaSection"),
+    path('tareaSubordinadaSection/deleteTareaSubordinadaSection/<int:idTareaSub>', views.DeleteTareaSubordinadaSection, name="DeleteTareaSubordinadaSection"),
+    path('tareaSubordinadaSection/updateTareaSubordinadaSection/<int:idTareaSub>', views.EditTareaSubordinadaSection, name="EditTareaSubordinadaSection"),
+
+   
     
     
 ]
