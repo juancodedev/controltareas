@@ -124,23 +124,19 @@
                     {% if tarea.fkEstadoTarea == 41 %}<span class="badge badge-danger">Atrasada</span>{% endif %}
                     {% if tarea.fkEstadoTarea == 21 %}<span class="badge badge-primary">Creada</span>{% endif %}
                   </td>
-                  <td class="project-actions text-right">
+                  <td class="project-actions">
                     {% if  datos.role == 1 %}
-
                     <a class="btn btn-primary btn-sm" href="{% url 'taskdetails' id=tarea.idTarea%}">
-                      <i class="fas fa-folder">
-                      </i>
-                      View
+                      <i class="fas fa-eye"></i>
+                      Ver
                     </a>
                     <a class="btn btn-info btn-sm" href="{% url 'taskedit' id=tarea.idTarea %}">
                       <i class="fas fa-pencil-alt">
                       </i>
-                      Edit
                     </a>
                     <a class="btn btn-danger btn-sm" href="{% url 'taskdelete' id=tarea.idTarea %}">
                       <i class="fas fa-trash">
                       </i>
-                      Delete
                     </a>
                     {% else %}
                     <button type="button" class="btn btn-block btn-success btn-sm" data-toggle="modal"

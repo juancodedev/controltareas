@@ -478,7 +478,6 @@ def updateusers(request, id):
             'segundoApellido': request.POST.get('secondlastName'),
             'correoElectronico': request.POST.get('email'),
             'numTelefono': int(request.POST.get('phoneNumber')),
-            # 'password': request.POST.get('password'),
             'idRolUsuario': int(request.POST.get('role')),
             'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
         }
@@ -805,23 +804,20 @@ def taskfuncionario(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-         
+        tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'])
+
         context = {
         'menu' : 'taskfuncionario',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'tk': tareas['data'],
+        'tk': tareasf,
         'usuarios': usuarios['data'],
         }
         return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
-    
-
-    
-
 
 def messagelist(request):
     context = {
