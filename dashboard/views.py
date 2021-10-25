@@ -799,14 +799,28 @@ def workflowhistory(request):
 #Metodos para perfil funcionario
 
 def taskfuncionario(request):
-    context = {
-    'menu' : 'taskfuncionario',
-    'email' : 'juan@micorreo.cl',
-    'name': 'juan muñoz',
-    'role': 2,
-    'login' : datetime.now(),
-    }
-    return render(request, 'task/tasklist.html',{'datos': context})
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+         
+        context = {
+        'menu' : 'taskfuncionario',
+        'email' : data['email'],
+        'name': data['unique_name'],
+        'role': int(data['role']),
+        'login' : datetime.fromtimestamp(data['nbf']),
+        'tk': tareas['data'],
+        'usuarios': usuarios['data'],
+        }
+        return render(request, 'task/tasklist.html',{'datos': context})
+    else: 
+        return redirect('login')
+    
+
+    
 
 
 def messagelist(request):
@@ -846,17 +860,24 @@ def TareaSubordinadaSection(request):
     if authenticated(request):
         # Return Section
         token = request.COOKIES.get('validate')
+        data = decodered(token)
         headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
-        req = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers)
-        dataAPI = req.json()
+        dataAPI = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers).json()
         listTareaSubordinada = dataAPI['data']
 
         # Variables con data a enviar a la vista
+        
         context = {
+            'menu' : 'TareaSubordinadaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
             'tareaSubordinada': listTareaSubordinada
         }
-
         return render(request, 'subordinatetask/list_subordinatetask.html', {'data': context})
+    else: 
+        return redirect('login')
 
 def AddTareaSubordinadaSection(request):
     if authenticated(request):

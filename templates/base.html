@@ -221,12 +221,8 @@
                   </a>
                 </li>
                 <li class="nav-item">
-<<<<<<< HEAD
-                  <a href="{% url 'tareasubordinada' %}"
-                    class="nav-link {% if datos.menu == 'tareasubordinada' %} active {% endif %}">
-=======
-                  <a href="{% url 'TareaSubordinadaSection' %}">
->>>>>>> origin/Dennisse
+                  <a href="{% url 'TareaSubordinadaSection' %}"
+                    class="nav-link {% if datos.menu == 'TareaSubordinadaSection' %} active {% endif %}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>
                       Lista de Tareas Subordinadas
@@ -459,12 +455,16 @@
 
   {% comment %} <script src="https://cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.2/js/dataTables.bootstrap5.min.js"></script> {% endcomment %}
-<script>
-  $(function () {
-    //Date and time picker
-    $('#fechaplazo').datetimepicker({ icons: { time: 'far fa-clock' } });
-  })
-</script>
+  <script>
+    $(function () {
+      //Date and time picker
+      $('#fechaplazo').datetimepicker({
+        icons: {
+          time: 'far fa-clock'
+        }
+      });
+    })
+  </script>
 </body>
 
 </html>
