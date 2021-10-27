@@ -69,7 +69,8 @@ urlpatterns = [
     #rutas funcionario
     
     path('taskfuncionario/',views.taskfuncionario, name='taskfuncionario'), #lista de tareas del rol funcionario
-    
+    path('acceptTask/<str:idTask>', views.AcceptTask, name="AcceptTask"),
+
     #Lista de mensajes 
     
     path('message/',views.messagelist, name='messagelist'),
