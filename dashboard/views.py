@@ -1081,5 +1081,48 @@ def AcceptTask(request, idTask):
         redirect('login')
 
 
+# Metodo Rechazar
+
+def RejectTask(request, idTask):
+    if authenticated:
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+        
+        try:
+            descripcion = request.POST.get('descripcion')
+            print(descripcion)
+            status = ''
+            if descripcion == '':
+                status = 'ERROR'
+            elif descripcion != '':
+                status = 'OK'
+            else:
+                status
+            if  status == 'OK':
+                Addjustificacion(request,descripcion,idTask)
+
+            print(reqAcceptTask)
+            return redirect('taskfuncionario')
+
+        except:
+            print('ERROR')
+            return redirect('taskfuncionario')
+    
+    else: 
+        redirect('login')
+
+
+def Addjustificacion(request,description,idTask):
+    if authenticated:
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+
+        # Datos a enviar a la petición POST
+        payload = json.dumps({
+                                'Descripcion': description,
+        })
+        r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
+
 # DENNISSE SECTION
 
