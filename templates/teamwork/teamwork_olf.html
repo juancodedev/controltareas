@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="wrapper">
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Contenido cabecera (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Equipo de Trabajo</h1>
+          </div>
+          <!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">
+                <a href="{% url 'dashboard' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item active">Equipo de Trabajo</li>
+            </ol>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </div>
+    <!-- /.Contenido cabecera -->
+
+    <!--Contenido Principal -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card">
+          <div class="car-body">
+            <table id="teams" class="table table-hover" style="width: 100%">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellidos</th>
+                  <th>Rut</th>
+                  <th>Departamento</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for teams in datos.teams %}
+                <tr data-href="{% url 'workload' %}" target="_blank">
+                  <td>{{teams.nombreUsuario}}</td>
+                  <td>
+                    {{teams.apellidoUsuario}}
+                    {% if teams.segundoApellido %}{{teams.segundoApellido}}{% endif %}
+                  </td>
+                  <td>{{teams.rutUsuario}}</td>
+                  <td>{{teams.idUnidadInternaUsuario}}</td>
+                  <td>{{teams.correoElectronico}}</td>
+                  <td>{{teams.idRolUsuario}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellidos</th>
+                  <th>Rut</th>
+                  <th>Departamento</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!--/. container-fluid -->
+    </section>
+    <!-- /.Contenido Principal -->
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block sript %}
+<script type="text/javascript" language="javascript" class="init">
+  $(document).ready(function () {
+    $("#teams").DataTable({
+      scrollY: "50vh",
+      scrollCollapse: true,
+      paging: false,
+    });
+  });
+
+  $('#teams').on('click', 'tbody tr', function () {
+    window.location.href = `{% url 'workload' %}`;
+  });
+  $('tr').css('cursor', 'pointer');
+</script>
+{% endblock sript %}

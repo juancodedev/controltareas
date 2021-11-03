@@ -69,20 +69,25 @@
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                <label>Fecha plazo:</label>
+                                               <label>Fecha plazo:</label>
                                                 <div class="input-group date" id="fechaplazo"
                                                     data-target-input="nearest">
+                                                    <input type="text" class="form-control" name="fechaplazo"{% if datos.menu == 'taskedit' %}
+                                                    placeholder="{{datos.tareas.fechaPlazo}}" {% endif %} >
 
-                                                    <input type="text" class="form-control datetimepicker-input"
+                                                    {% comment %} <input type="text" id="datepicker" class="form-control"
                                                         data-target="#fechaplazo" name="fechaplazo"
                                                         {% if datos.menu == 'taskedit' %}
-                                                        value="{{datos.tareas.fechaPlazo}}" {% endif %}>
+                                                        placeholder="{{datos.tareas.fechaPlazo}}" {% endif %}>
                                                     <div class="input-group-append" data-target="#fechaplazo"
                                                         data-toggle="datetimepicker">
-                                                        <div class="input-group-text"><i class="fa fa-calendar"></i>
+                                                        <div class="input-group-text"><i
+                                                                class="fas fa-calendar input-prefix" tabindex=0></i>
                                                         </div>
-                                                    </div>
+                                                    </div> {% endcomment %}
+
                                                 </div>
+
                                             </div>
                                             <div class="form-group col-md-6">
 
@@ -184,5 +189,17 @@
 
     </div>
 </div>
+{% block script %}
+
+{% comment %} <script>
+    $(function () {
+        //Date and time picker
+        $('#fechaplazo').datetimepicker({
+            format: 'YYYY-MM-DD',
+        });
+
+    });
+</script> {% endcomment %}
+{% endblock script %}
 
 {% endblock content %}

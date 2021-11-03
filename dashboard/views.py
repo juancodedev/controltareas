@@ -19,8 +19,8 @@ def imgprofiletemp(largo):
         img['results'].append({
             'picture': {
             'large': str(numero)+'.jpg',
-                }  
-                    }
+                }
+            }
         )
     return img
 
@@ -30,7 +30,7 @@ def dashboard(request):
         data = decodered(token)
         rol = data['role']
         if int(rol) == 1:
-            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
             img = imgprofiletemp(len(dataAPI['data']))# imagenes de perfil random tomadas desde el static
             mylist = zip(dataAPI['data'],img['results']) #Se unen las listas de imagenes random + datos de usuario y se envian al template para mostrarlos
@@ -61,7 +61,7 @@ def tasklist(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         
@@ -101,7 +101,7 @@ def taskedit(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         actividad = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
@@ -135,17 +135,25 @@ def teamwork(request):
         data = decodered(token)
         rol = data['role']
         if int(rol) == 1:
-            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
             roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
             unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-            # print(type(roles['data']))
-            # print(roles['data'][0])
-            # print(unidadinterna['data'])
-            # # [9 if value==5 else value for value in my_list]
-            
-            # for item in dataAPI['data']:
-            #     item['idRolUsuario'] = item['idRolUsuario'].replace('$home', item['id'])
+            usuario={}
+            usuario['data']= []
+            for datos in dataAPI['data']:
+                usuario['data'].append({
+                    'rutUsuario': datos['rutUsuario'],
+                    'nombreUsuario': datos['nombreUsuario'] ,
+                    'segundoNombre': datos['segundoNombre'] ,
+                    'apellidoUsuario': datos['apellidoUsuario'] ,
+                    'segundoApellido': datos['segundoApellido'] ,
+                    'numTelefono': datos['numTelefono'] ,
+                    'correoElectronico': datos['correoElectronico'] ,
+                    'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                    'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                }
+                )
 
             context = {
                 'menu' : 'teamwork',
@@ -153,7 +161,8 @@ def teamwork(request):
                 'name': data['unique_name'],
                 'role': int(data['role']),
                 'login' : datetime.fromtimestamp(data['nbf']),
-                'teams': dataAPI['data'],
+                'teams': usuario['data'],
+                # 'teams': myList,
             }
             return render(request, 'teamwork/teamwork.html',{'datos': context})
         elif int(rol) == 2:
@@ -195,7 +204,7 @@ def admin(request):
     else: 
         return redirect('login')
 
-def workload(request):
+def workload(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
@@ -265,28 +274,21 @@ def tasknew(request):
 def updatetask(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
-        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         payload = json.dumps(
             {
-            'idTarea': id,
-            'nombreTarea':request.POST.get('nombretarea'),
-            'descripcionTarea': request.POST.get('descripciontarea'),
-            'fechaPlazo': request.POST.get('fechaplazo'),
-            
-            'reporteProblema': request.POST.get('reporteProblema'),
-            
-            'asignacionTarea': request.POST.get('asignadoa'),
-            'fkRutUsuario' : request.POST.get('creadopor'),
-            
-            'fkIdJustificacion': request.POST.get('Justificacion'),
-            
-            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
-            'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
+            "nombreTarea":request.POST.get('nombretarea'),
+            "descripcionTarea": request.POST.get('descripciontarea'),
+            "fechaPlazo": request.POST.get('fechaplazo'), #error en el tipo de datos.
+            "reporteProblema": request.POST.get('reporteProblema'),
+            "asignacionTarea": request.POST.get('asignadoa'),
+            "fkRutUsuario" : request.POST.get('creadopor'),
+            "fkIdJustificacion": request.POST.get('Justificacion'),
+            "fkEstadoTarea" : int(request.POST.get('estadotarea')),
+            "fkPrioridadTarea" : int(request.POST.get('prioridadtarea'))
         }
             )
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        print(update)
-        print(payload)
         if update.ok:
             return redirect('tasklist')
         else:
@@ -467,8 +469,7 @@ def deleteusers(request, id):
 def updateusers(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
-        data = decodered(token)
-        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         payload = json.dumps(
             {
             'rutUsuario': request.POST.get('rut'),
@@ -493,7 +494,7 @@ def updateusers(request, id):
 
 def createnewunits(request):
     token = request.COOKIES.get('validate')
-    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
     payload = json.dumps({
         'NombreUnidad': request.POST.get('nombreunit'),
         'DescripcionUnidad': request.POST.get('descriptunit') 
@@ -569,7 +570,7 @@ def updateunits(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         payload = json.dumps(
             {
         'NombreUnidad': request.POST.get('nombreunit'),
@@ -697,6 +698,7 @@ def updaterole(request, id):
         }
             )
         update = requests.put('http://localhost:32482/api/rol/update/'+str(id), headers=headers, data = payload)
+        
         if update.ok:
             return redirect('listrole')
         else:
@@ -739,7 +741,7 @@ def listrole(request):
 
 def createnewrole(request):
     token = request.COOKIES.get('validate')
-    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
     payload = json.dumps({
         'nombreRol': request.POST.get('nombrerol'),
         'DescripcionRol': request.POST.get('descriptrole') 
@@ -801,7 +803,7 @@ def taskfuncionario(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
@@ -857,7 +859,7 @@ def TareaSubordinadaSection(request):
         # Return Section
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         dataAPI = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers).json()
         listTareaSubordinada = dataAPI['data']
 
@@ -880,7 +882,7 @@ def AddTareaSubordinadaSection(request):
         # Consumo de API: Tarea 
         # Method: GET
         token = request.COOKIES.get('validate')
-        headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
         dataTarea = resTarea.json()
         listTarea = dataTarea['data']
@@ -1036,7 +1038,7 @@ def EditTareaSubordinadaSection(request, idTareaSub):
 def AddTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk):
     if authenticated:
         token = request.COOKIES.get('validate')
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+token, 'Accept': '*/*' }
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
 
         # Datos a enviar a la petición POST
         payload = json.dumps({'nombreSubordinada' : nombre,

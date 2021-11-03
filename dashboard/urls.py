@@ -27,7 +27,7 @@ urlpatterns = [
     
     # Equipo
     path('teamwork/', views.teamwork, name='teamwork'), # Listado de equipo de trabajo
-    path('workload/', views.workload, name='workload'), # Lista la carga de trabajo por cada integrante del equipo    
+    path('workload/<str:id>', views.workload, name='workload'), # Lista la carga de trabajo por cada integrante del equipo    
     # Administracion
     path('newuser/', views.newuser, name='newuser'), # Creacion de usuarios
     path('viewusers/<str:id>/', views.viewusers, name='viewusers'), # Creacion de usuarios
