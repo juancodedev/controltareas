@@ -316,7 +316,7 @@ def savenewtask(request):
             
             'fkIdJustificacion': int(3),
             
-            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
+            'fkEstadoTarea' : int(1),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
         })
@@ -763,7 +763,7 @@ def workflowlist(request):
     'menu' : 'workflowlist',
     'email' : 'juan@micorreo.cl',
     'name': 'juan muñoz',
-    'role': 3,
+    'role': 1,
     'login' : datetime.now(),
     }
     return render(request, 'workflow/workflowlist.html',{'datos': context})
@@ -822,6 +822,8 @@ def taskfuncionario(request):
         return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
+
+#Grupo elementos de mensajes, lista, leer y responder.
 
 def messagelist(request):
     context = {
@@ -883,7 +885,9 @@ def AddTareaSubordinadaSection(request):
     if authenticated(request):
         # Consumo de API: Tarea 
         # Method: GET
+        
         token = request.COOKIES.get('validate')
+        data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
         resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
         dataTarea = resTarea.json()
@@ -895,17 +899,19 @@ def AddTareaSubordinadaSection(request):
         dataPrioridad = resPrioridad.json()
         listPrioridad = dataPrioridad['data']
 
+
         # Consumo de API: Estado Tarea
         # Method: GET
         resEstado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers)
         dataEstado = resEstado.json()
         listEstado = dataEstado['data']
 
+
         # Consumo de API: Tarea Subordinada
         nombre = request.POST.get('nombreTareaSubordinada')
         descripcion = request.POST.get('descripcionTareaSubordinada')
         prioridadFk = request.POST.get('selectPrioridadTarea')
-        estadoFk = request.POST.get('selectEstadoTarea')
+        estadoFk = int(1)#request.POST.get('selectEstadoTarea')
         tareaFk = request.POST.get('selectTarea')
 
         status = ''
@@ -918,9 +924,15 @@ def AddTareaSubordinadaSection(request):
         
         if status == 'OK':
             AddTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk)
+            return redirect('TareaSubordinadaSection')
 
         # Variables con data para enviar a la vista
         context = {
+            'menu' : 'AddTareaSubordinadaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
             'tarea': listTarea,
             'prioridad': listPrioridad,
             'estado': listEstado,
@@ -928,7 +940,7 @@ def AddTareaSubordinadaSection(request):
         }
 
         # Return Section
-        return render(request, 'subordinatetask/subordinatetask.html', {'data': context})
+        return render(request, 'subordinatetask/subordinatetask.html', {'datos': context})
     
     else: 
         return redirect('login')
@@ -959,11 +971,9 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
 
         if r.ok:
             status = 'DELETED'
-            print(status)
             return redirect('TareaSubordinadaSection')
         else: 
             status = 'ERROR'
-            print(status)
             return render(request, 'subordinatetask/list_subordinatetask.html', {'data': context})
         
     else:
@@ -989,13 +999,27 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         tareaSub = str(idTareaSub)
         resOneTareaSub = requests.get('http://localhost:32482/api/TareaSubordinada/oneTareaSubordinada/'+ tareaSub, headers=headers)
         dataTareaSub = resOneTareaSub.json()
-        OneTareaSubordinada = dataTareaSub['data']
+        OneTareaSubordinada = dataTareaSub['data'][0]
+        
+        # Consumo de API: Prioridad Tarea
+        # Method: GET
+        resPrioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers)
+        dataPrioridad = resPrioridad.json()
+        listPrioridad = dataPrioridad['data']
 
-        # Asignación del ID de Tarea Subordinada a Buscar
-        idTareaSubordinadaToSearch = ''
-        for x in OneTareaSubordinada:
-            idTareaSubordinadaToSearch = x['idTareaSubordinada']
-        # print(idTareaSubordinadaToSearch)
+
+        # Consumo de API: Estado Tarea
+        # Method: GET
+        resEstado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers)
+        dataEstado = resEstado.json()
+        listEstado = dataEstado['data']
+
+
+        # # Asignación del ID de Tarea Subordinada a Buscar
+        # idTareaSubordinadaToSearch = ''
+        # for x in OneTareaSubordinada:
+        #     idTareaSubordinadaToSearch = x['idTareaSubordinada']
+        # # print(idTareaSubordinadaToSearch)
 
         # Validate Data Extraction
         if request.method == 'POST':
@@ -1014,27 +1038,29 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         # Método Update User
         try:
             if status == 'OK':
-                EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, idTareaSubordinadaToSearch)
+                # EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, idTareaSubordinadaToSearch)
+                EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, OneTareaSubordinada['idTareaSubordinada'])
 
             
         except:
             status = 'ERROR'
         
 
-
         context = {
-            'menu' : 'TareaSubordinadaSection',
+            'menu' : 'EditTareaSubordinadaSection',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
             'tarea': listTarea,
             'statusUpdate': status,
+            'prioridad': listPrioridad,
+            'estado': listEstado,
             'oneTareaSubordinada': OneTareaSubordinada,
         }
 
         # Return Section
-        return render(request, 'subordinatetask/updatesubordinatetask.html', {'datos':context})
+        return render(request, 'subordinatetask/subordinatetask.html', {'datos':context})
 
     else:
         return redirect('login')

@@ -5,12 +5,17 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Creacion de tarea subordinada</h1>
+                        <h1> {% if datos.menu == 'AddTareaSubordinadaSection'  %}Creacion de tarea
+                            subordinada{% endif %} {% if datos.menu == 'EditTareaSubordinadaSection'  %}Editar tarea
+                            subordinada{% endif %} </h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
-                            <li class="breadcrumb-item active">Creacion de tarea subordinada</li>
+                            <li class="breadcrumb-item active">
+                                {% if datos.menu == 'AddTareaSubordinadaSection'  %}Creacion de tarea
+                                subordinada{% endif %} {% if datos.menu == 'EditTareaSubordinadaSection'  %}Editar tarea
+                                subordinada{% endif %}</li>
                         </ol>
                     </div>
                 </div>
@@ -31,23 +36,76 @@
                                         <div class="row">
                                             <div class="form-group col-md-6">
                                                 <label for="nombretarea">Nombre Tarea Subordinada</label>
-                                                <input type="text" class="form-control" name="nombreTareaSubordinada" id="nombreTareaSubordinada"
-                                                    placeholder="Nombre Tarea Subordinada" />
+                                                <input type="text" class="form-control" name="nombreTareaSubordinada"
+                                                    id="nombreTareaSubordinada"
+                                                    {% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                                    placeholder="Nombre Tarea Subordinada" {% endif %}
+                                                    {% if datos.menu == 'EditTareaSubordinadaSection'  %}value="{{datos.oneTareaSubordinada.nombreSubordinada}}"
+                                                    {% endif %} />
+
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                    <label class="bmd-label-floating">Id Tarea</label>
-                                                    <input type="text" class="form-control" name="selectTarea" placeholder="Id Tarea">
+                                                <label class="bmd-label-floating">Tarea asignada</label>
+                                                <select class="form-control" name="selectTarea">
+                                                    {% for tarea in datos.tarea %}
+                                                    <option value="{{tarea.idTarea}}"
+                                                        {% if datos.menu == 'EditTareaSubordinadaSection' and tarea.idTarea == datos.oneTareaSubordinada.fkIdTarea %}
+                                                        selected {% endif %}>
+                                                        {{tarea.nombreTarea}}</option>
+                                                    {% endfor %}
+
+                                                </select>
+
+                                                {% comment %} <input type="text" class="form-control" name="selectTarea"
+                                                    {% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                                    placeholder="Tarea" {% endif %}
+                                                    {% if datos.menu == 'EditTareaSubordinadaSection'  %}value="{{datos.oneTareaSubordinada.fkIdTarea}}"
+                                                    {% endif %}> {% endcomment %}
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                <label class="bmd-label-floating">Id Prioridad Tarea</label>
-                                                <input type="text" class="form-control" name="selectPrioridadTarea" placeholder="Id Tarea">
+                                            
+                                                <label class="bmd-label-floating">Prioridad Tarea</label>
+                                                <select class="form-control" name="selectPrioridadTarea"> {{ datos.prioridad}}
+                                                    {% for prioridad in datos.prioridad %}
+                                                    <option value="{{prioridad.idPrioridad}}"
+                                                        {% if datos.menu == 'EditTareaSubordinadaSection' and prioridad.idPrioridad == datos.tarea.idPrioridad %}
+                                                        selected {% endif %}>
+                                                        {{prioridad.descripcion}}</option>
+                                                    {% endfor %}
+
+                                                </select>
+                                                {% comment %} <input type="text" class="form-control" name="selectPrioridadTarea"
+                                                    {% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                                    placeholder="Prioridad Tarea" {% endif %}
+                                                    {% if datos.menu == 'EditTareaSubordinadaSection'  %}value="{{datos.oneTareaSubordinada.fkIdTarea}}"
+                                                    {% endif %}> {% endcomment %}
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                <label class="bmd-label-floating">Id Estado Tarea</label>
-                                                <input type="text" class="form-control" name="selectEstadoTarea" placeholder="Id Tarea">
+                                                <label class="bmd-label-floating">Estado Tarea</label>
+                                                {% if datos.menu == 'AddTareaSubordinadaSection' %}
+                                                <input type="text" class="form-control" name="selectEstadoTarea" value="Creada" disabled/>
+                                                {% else %}
+                                                <select class="form-control" name="selectEstadoTarea">
+                                                    {% if datos.menu == 'EditTareaSubordinadaSection' %}
+                                                    {% for estado in datos.estado %}
+                                                    <option value="{{estado.idEstadoTarea}}"
+                                                        {% if estado.idEstadoTarea == datos.tarea.fkEstadoTarea %}
+                                                        selected{% endif %}>
+                                                        {{estado.descripcionEstadoTarea}}</option>
+                                                    {% endfor %}
+                                                    {% endif %}
+                                                </select>
+                                                {% endif %}
+
+                                                </select>
+                                                {% comment %} <input type="text" class="form-control" name="selectEstadoTarea"
+                                                    {% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                                    placeholder="Estado Tarea" {% endif %}
+                                                    {% if datos.menu == 'EditTareaSubordinadaSection'  %}value="{{datos.oneTareaSubordinada.fkIdTarea}}"
+                                                    {% endif %}> {% endcomment %}
                                             </div>
                                         </div>
                                         <div class="row">
@@ -55,7 +113,13 @@
                                                 <div class="form-group">
                                                     <label>Descripción Tarea Subordinada</label>
                                                     <textarea class="form-control" rows="3"
-                                                        placeholder="Descripción Tarea Subordinada" style="resize: none;" name="descripcionTareaSubordinada" ></textarea>
+                                                        placeholder="Descripción Tarea Subordinada"
+                                                        style="resize: none;" name="descripcionTareaSubordinada"
+                                                        {% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                                        placeholder="..." {% endif %}>{% if datos.menu == 'EditTareaSubordinadaSection'  %}{{datos.oneTareaSubordinada.descripcionSubordinada}}
+                                                    {% endif %}</textarea>
+
+
                                                 </div>
                                             </div>
 
@@ -64,7 +128,12 @@
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-info">Crear Tarea Subordinada</button>
+                                        <button type="submit"
+                                            class="btn btn-info">{% if datos.menu == 'AddTareaSubordinadaSection'  %}
+                                            Guardar
+                                            {% endif %}
+                                            {% if datos.menu == 'EditTareaSubordinadaSection'  %}Actualizar
+                                            {% endif %}</button>
                                         <button type="submit" class="btn btn-default float-right">Cancelar</button>
                                     </div>
                                 </form>
@@ -75,67 +144,67 @@
                 </div>
             </div>
 
-            <!--Sección de Listado de Tareas-->
-        <section class="content">
-            <!-- Default box -->
-            <div class="card">
-              <div class="card-header">
-                <ul class="nav nav-pills card-header-pills"></ul>
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
+            {% comment %} <!--Sección de Listado de Tareas-->
+            <section class="content">
+                <!-- Default box -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-pills card-header-pills"></ul>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover projects">
+                            <thead>
+                                <tr>
+                                    <th style="width: 1%">
+                                        Id
+                                    </th>
+                                    <th style="width: 20%">
+                                        Rut Encargado
+                                    </th>
+                                    <th style="width: 30%">
+                                        Nombre
+                                    </th>
+                                    <th style="width: 30%">
+                                        Descripción
+                                    </th>
+                                    <th style="width: 30%">
+                                        Fecha Plazo
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tarea in datos.tarea %}
+                                <tr>
+                                    <td>
+                                        {{tarea.idTarea}}
+                                    </td>
+                                    <td>
+                                        {{tarea.fkRutUsuario}}
+                                    </td>
+                                    <td>
+                                        {{tarea.nombreTarea}}
+                                    </td>
+                                    <td>
+                                        {{tarea.descripcionTarea}}
+                                    </td>
+                                    <td>
+                                        {{tarea.fechaPlazo}}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-              </div>
-              <div class="card-body p-0">
-                  <table class="table table-hover projects">
-                      <thead>
-                          <tr>
-                                <th style="width: 1%">
-                                    Id                                     
-                                </th>
-                                <th style="width: 20%">
-                                    Rut Encargado
-                                </th>
-                                <th style="width: 30%">
-                                    Nombre
-                                </th>
-                                <th style="width: 30%">
-                                    Descripción
-                                </th>
-                                <th style="width: 30%">
-                                    Fecha Plazo
-                                </th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        {% for tarea in data.tarea %}
-                          <tr>        
-                            <td>
-                                {{tarea.idTarea}}
-                            </td>
-                            <td>
-                                {{tarea.fkRutUsuario}}
-                            </td>
-                            <td>
-                                {{tarea.nombreTarea}}
-                            </td>
-                            <td>
-                                {{tarea.descripcionTarea}}
-                            </td>
-                            <td>
-                                {{tarea.fechaPlazo}}
-                            </td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                  </table>
-              </div>
-            </div>
-          </section>
+            </section> {% endcomment %}
 
         </section>
-        
+
     </div>
 </div>
 {% endblock content %}

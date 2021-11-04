@@ -69,14 +69,15 @@
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                               <label>Fecha plazo:</label>
+                                                <label>Fecha plazo:</label>
                                                 <div class="input-group date" id="fechaplazo"
                                                     data-target-input="nearest">
-                                                    <input type="text" class="form-control" name="fechaplazo"{% if datos.menu == 'taskedit' %}
-                                                    placeholder="{{datos.tareas.fechaPlazo}}" {% endif %} >
+                                                    <input type="text" class="form-control" name="fechaplazo"
+                                                        {% if datos.menu == 'taskedit' %}
+                                                        placeholder="{{datos.tareas.fechaPlazo}}" {% endif %}>
 
-                                                    {% comment %} <input type="text" id="datepicker" class="form-control"
-                                                        data-target="#fechaplazo" name="fechaplazo"
+                                                    {% comment %} <input type="text" id="datepicker"
+                                                        class="form-control" data-target="#fechaplazo" name="fechaplazo"
                                                         {% if datos.menu == 'taskedit' %}
                                                         placeholder="{{datos.tareas.fechaPlazo}}" {% endif %}>
                                                     <div class="input-group-append" data-target="#fechaplazo"
@@ -104,33 +105,21 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Estado</label>
+                                                {% if datos.menu == 'tasknew' %}
+                                                <input type="text" class="form-control" name="estadotarea" value="Creada" disabled/>
+                                                {% else %}
                                                 <select class="form-control" name="estadotarea">
-                                                    {% if datos.menu == 'tasknew' %}
-
-                                                    {% for estado in datos.estado %}
-                                                    {% if estado.descripcionEstadoTarea == 'Creada' %}
-                                                    <option selected value="{{estado.idEstadoTarea}}">
-                                                        {{estado.descripcionEstadoTarea}}</option>
-                                                    {% else %}
-                                                    <option value="{{estado.idEstadoTarea}}">
-                                                        {{estado.descripcionEstadoTarea}}</option>
-                                                    {% endif %}
-
-                                                    {% endfor %}
-                                                    {% endif %}
                                                     {% if datos.menu == 'taskedit' %}
                                                     {% for estado in datos.estado %}
                                                     <option value="{{estado.idEstadoTarea}}"
                                                         {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
                                                         selected{% endif %}>
                                                         {{estado.descripcionEstadoTarea}}</option>
-
                                                     {% endfor %}
                                                     {% endif %}
-
                                                 </select>
+                                                {% endif %}
                                             </div>
-
                                             {% if datos.menu == 'taskedit' %}
                                             <div class="form-group col-md-6">
                                                 <label for="reporteProblema">Reporte de problema</label>
@@ -193,7 +182,7 @@
 {% endblock content %}
 {% block script %}
 
- <script>
+<script>
     $(function () {
         //Date and time picker
         $('#fechaplazo').datetimepicker({
@@ -201,5 +190,5 @@
         });
 
     });
-</script> 
+</script>
 {% endblock script %}

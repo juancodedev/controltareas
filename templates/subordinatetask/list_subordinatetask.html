@@ -80,7 +80,7 @@
                                 </i>
                                 Editar
                             </a>
-                            <a class="btn btn-danger btn-sm" href="#" onclick="confirmOption('eliminar', 'deleteTareaSubordinadaSection/{{tareaSubordinada.idTareaSubordinada}}')">
+                            <a class="btn btn-danger btn-sm" href="#" onclick="confirmOption('{{tareaSubordinada.idTareaSubordinada}}')">
                                 <i class="fas fa-trash">
                                 </i>
                             </a>
@@ -100,8 +100,14 @@
 {% block script %}
 <script>
   function confirmOption(opcion, direccion){
-  if(confirm("Esta seguro que desea "+ opcion)){
-    window.location.href = direccion;
+  if(confirm("Esta seguro que desea eliminar la tarea por id: "+ opcion)){
+    var uri = "{% url 'DeleteTareaSubordinadaSection' 728 %}"
+    window.location.href = uri.replace('728',opcion);
+
+                
+                
+
+ 
   }
 }
 </script>
