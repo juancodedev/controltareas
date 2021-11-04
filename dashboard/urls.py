@@ -81,10 +81,10 @@ urlpatterns = [
     #Tareas subordinadas
     path('tareaSubordinadaSection/', views.TareaSubordinadaSection, name='TareaSubordinadaSection'),
     path('addTareaSubordinadaSection/', views.AddTareaSubordinadaSection, name="AddTareaSubordinadaSection"),
-    path('tareaSubordinadaSection/deleteTareaSubordinadaSection/<int:idTareaSub>', views.DeleteTareaSubordinadaSection, name="DeleteTareaSubordinadaSection"),
-    path('tareaSubordinadaSection/updateTareaSubordinadaSection/<int:idTareaSub>', views.EditTareaSubordinadaSection, name="EditTareaSubordinadaSection"),
+    path('deleteTareaSubordinadaSection/<int:idTareaSub>', views.DeleteTareaSubordinadaSection, name="DeleteTareaSubordinadaSection"),
+    path('EditTareaSubordinadaSection/<int:idTareaSub>', views.EditTareaSubordinadaSection, name="EditTareaSubordinadaSection"),
+    
 
-   
     
     
 ]

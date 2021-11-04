@@ -10,6 +10,8 @@ from datetime import datetime
 #modulos extras solo para pruebas
 import random
 
+# HEADERS = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
 def imgprofiletemp(largo):
     # profile/0-41.jpg
     img={}
@@ -873,7 +875,7 @@ def TareaSubordinadaSection(request):
             'login' : datetime.fromtimestamp(data['nbf']),
             'tareaSubordinada': listTareaSubordinada
         }
-        return render(request, 'subordinatetask/list_subordinatetask.html', {'data': context})
+        return render(request, 'subordinatetask/list_subordinatetask.html', {'datos': context})
     else: 
         return redirect('login')
 
@@ -973,6 +975,7 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         # Configuración Header
         status = 'NO_CONTENT'
         token = request.COOKIES.get('validate')
+        data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
 
         # Consumo de API: Tarea
@@ -992,7 +995,7 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         idTareaSubordinadaToSearch = ''
         for x in OneTareaSubordinada:
             idTareaSubordinadaToSearch = x['idTareaSubordinada']
-           # print(idTareaSubordinadaToSearch)
+        # print(idTareaSubordinadaToSearch)
 
         # Validate Data Extraction
         if request.method == 'POST':
@@ -1012,18 +1015,26 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         try:
             if status == 'OK':
                 EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, idTareaSubordinadaToSearch)
+
             
         except:
             status = 'ERROR'
         
+
+
         context = {
+            'menu' : 'TareaSubordinadaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
             'tarea': listTarea,
             'statusUpdate': status,
             'oneTareaSubordinada': OneTareaSubordinada,
         }
 
         # Return Section
-        return render(request, 'Tarea_Subordinada/updateTareaSubordinada.html', {'data':context})
+        return render(request, 'subordinatetask/updatesubordinatetask.html', {'datos':context})
 
     else:
         return redirect('login')
@@ -1063,7 +1074,9 @@ def EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, ta
                               'fkEstadoTarea': int(estadoFk),
                               'fkIdTarea': int(tareaFk),
         })
+        print(payload)
         r = requests.put('http://localhost:32482/api/TareaSubordinada/update/' + str(idTareaSubordinadaToSearch), headers=headers, data=payload)
+        return redirect('TareaSubordinadaSection')
 
 
 # Método para Aceptar Tareas

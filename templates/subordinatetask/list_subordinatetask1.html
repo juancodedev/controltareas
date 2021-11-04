@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Tareas Subordinadas</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                            <li class="breadcrumb-item active">Lista de Tareas Subordinadas</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <section class="content">
+{{data.role}}
+        </section>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    function confirmOption(opcion, direccion) {
+        if (confirm("Esta seguro que desea " + opcion)) {
+            window.location.href = direccion;
+        }
+    }
+</script>
+{% endblock script %}

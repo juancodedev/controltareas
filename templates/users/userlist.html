@@ -50,7 +50,7 @@
                                             </div>
                                             <!-- /.card-header -->
                                             <div class="card-body p-0">
-                                                <table class="table table-hover">
+                                                <table class="table table-hover projects">
                                                     <thead>
                                                         <tr>
                                                             <th>Nombre</th>
@@ -81,12 +81,10 @@
                                                                 <a class="btn btn-info btn-sm" href="{% url 'editusers' id=user.rutUsuario %}">
                                                                     <i class="fas fa-pencil-alt">
                                                                     </i>
-                                                                    Edit
                                                                 </a>
                                                                 <a class="btn btn-danger btn-sm" href="#"onclick="confirmOption('{{user.nombreUsuario}}', '/dashboard/deleteusers/{{user.rutUsuario}}')">
                                                                     <i class="fas fa-trash">
                                                                     </i>
-                                                                    Delete
                                                                 </a>
 
                                                             </td>

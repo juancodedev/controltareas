@@ -27,26 +27,27 @@
                                 </div>
                                 <form method="POST">
                                     {% csrf_token %}
-                                    {% for x in data.oneTareaSubordinada %}
+                                    {% for x in datos.oneTareaSubordinada %}
                                     <div class="card card-body">
                                         <div class="row">
                                             <div class="form-group col-md-6">
-                                                <label for="nombretarea">{{x.nombreSubordinada}}</label>
+                                                <label for="nombretarea">Nombre Tarea Subordinada</label>
                                                 <input type="text" class="form-control" name="nombreTareaSubordinada" id="nombreTareaSubordinada"
-                                                    placeholder="Nombre Tarea Subordinada" />
+                                                    value ="{{x.nombreSubordinada}}" />
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                    <label class="bmd-label-floating">{{x.fkIdTarea}}</label>
-                                                    <input type="text" class="form-control" name="selectTarea" placeholder="Id Tarea">
+                                                    <label class="bmd-label-floating">Id Tarea</label>
+                                                    <input type="text" class="form-control" name="selectTarea"
+                                                    value = "{{x.fkIdTarea}}">
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <div class="form-group">
-                                                    <label>{{x.descripcionSubordinada}}</label>
+                                                    <label>Descripción Tarea Subordinada</label>
                                                     <textarea class="form-control" rows="3"
-                                                        placeholder="Descripción Tarea Subordinada" style="resize: none;" name="descripcionTareaSubordinada" ></textarea>
+                                                        style="resize: none;" name="descripcionTareaSubordinada">{{x.descripcionSubordinada}}</textarea>
                                                 </div>
                                             </div>
 
@@ -55,7 +56,7 @@
                                     <!-- /.card-body -->
 
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-info">Editar Tarea Subordinada</button>
+                                        <button type="submit" class="btn btn-info">Actualizar</button>
                                         <button type="submit" class="btn btn-default float-right">Cancelar</button>
                                     </div>
 

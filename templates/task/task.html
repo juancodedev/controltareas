@@ -189,9 +189,11 @@
 
     </div>
 </div>
+
+{% endblock content %}
 {% block script %}
 
-{% comment %} <script>
+ <script>
     $(function () {
         //Date and time picker
         $('#fechaplazo').datetimepicker({
@@ -199,7 +201,5 @@
         });
 
     });
-</script> {% endcomment %}
+</script> 
 {% endblock script %}
-
-{% endblock content %}
