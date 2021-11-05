@@ -119,10 +119,10 @@
                     </small>
                   </td>
                   <td class="project-state">
-                    {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-success">Completada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 44 %}<span class="badge badge-warning">Pendiente</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 41 %}<span class="badge badge-danger">Atrasada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 21 %}<span class="badge badge-primary">Creada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-primary">Creada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-warning">Asignado</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-success">Aceptada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazado</span>{% endif %}
                   </td>
                   <td class="project-actions">
                     {% if  datos.role == 1 %}

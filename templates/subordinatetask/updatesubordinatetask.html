@@ -40,6 +40,31 @@
                                                     <label class="bmd-label-floating">{{x.fkIdTarea}}</label>
                                                     <input type="text" class="form-control" name="selectTarea" placeholder="Id Tarea">
                                             </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="Proceso">Prioridad</label>
+                                                <select class="form-control" name="prioridadtarea">
+                                                    {% for prioridad in data.listPrioridadTarea %}
+                                                        <option value="{{prioridad.idPrioridad}}"
+                                                            {% if datos.menu == 'taskedit' and prioridad.idPrioridad == datos.tareas.fkPrioridadTarea %}
+                                                            selected {% endif %}>{{prioridad.descripcion}}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="estadoTarea">Estado Tarea</label>
+                                                <select class="form-control" name="estadoTarea">
+                                                    {% for estadoTareaList in data.listEstadoTarea %}
+                                                        <option value="{{estadoTareaList.idEstadoTarea}}">
+                                                            {{estadoTareaList.descripcionEstadoTarea}}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-12">

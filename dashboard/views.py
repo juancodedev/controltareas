@@ -2,7 +2,7 @@ import json
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from requests.api import head, request
+from requests.api import delete, head, request
 from login.views import authenticated, decodered
 import requests, jwt, json
 from datetime import datetime
@@ -86,7 +86,8 @@ def taskdelete(request, id):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         deleted = requests.delete('http://localhost:32482/api/tarea/delete/'+str(id), headers=headers)
-
+        
+        print(deleted.status_code)
         if deleted.ok:
             message  = "Eliminado correctamente"
         else:
@@ -266,28 +267,22 @@ def updatetask(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+
+
         payload = json.dumps(
-            {
+        {
             'idTarea': id,
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
             'fechaPlazo': request.POST.get('fechaplazo'),
-            
-            'reporteProblema': request.POST.get('reporteProblema'),
-            
-            'asignacionTarea': request.POST.get('asignadoa'),
             'fkRutUsuario' : request.POST.get('creadopor'),
-            
-            'fkIdJustificacion': request.POST.get('Justificacion'),
-            
-            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
+            'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
-        }
-            )
+        })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
         print(update)
         print(payload)
-        if update.ok:
+        if update.ok: 
             return redirect('tasklist')
         else:
             return redirect('dashboard') #envia al dashboard si da error
@@ -300,6 +295,8 @@ def savenewtask(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         
+        fecha = request.POST.get('fechaplazo')
+        print(fecha)
         payload = json.dumps({
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
@@ -310,9 +307,7 @@ def savenewtask(request):
             'asignacionTarea': request.POST.get('asignadoa'),
             'fkRutUsuario' : request.POST.get('creadopor'),
             
-            'fkIdJustificacion': int(3),
-            
-            'fkEstadoTarea' : int(request.POST.get('estadotarea')),
+            'fkEstadoTarea' : int(1),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
         })
@@ -320,8 +315,11 @@ def savenewtask(request):
 
         if r.ok:
             print('Tarea creado correctamente')
+            print(r.status_code)
         else:
             print('Error')
+            print(r.status_code)
+
 
         return redirect('tasklist')
     else: 
@@ -453,7 +451,6 @@ def deleteusers(request, id):
         payload = json.dumps({'IdUnidadInterna': id})
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
         deleted = requests.delete('http://localhost:32482/api/usuario/delete/'+str(id), headers=headers)
-
         if deleted.ok:
             message  = "Eliminado correctamente"
         else:
@@ -901,7 +898,7 @@ def AddTareaSubordinadaSection(request):
         nombre = request.POST.get('nombreTareaSubordinada')
         descripcion = request.POST.get('descripcionTareaSubordinada')
         prioridadFk = request.POST.get('selectPrioridadTarea')
-        estadoFk = request.POST.get('selectEstadoTarea')
+        estadoFk = 1
         tareaFk = request.POST.get('selectTarea')
 
         status = ''
@@ -921,6 +918,7 @@ def AddTareaSubordinadaSection(request):
             'prioridad': listPrioridad,
             'estado': listEstado,
             'statusCreation': status,
+            'listPrioridadTarea': listPrioridad
         }
 
         # Return Section
@@ -986,6 +984,18 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         dataTareaSub = resOneTareaSub.json()
         OneTareaSubordinada = dataTareaSub['data']
 
+        # Consumo de API: Estado Tarea
+        # Method: GET
+        resEstado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers)
+        dataEstado = resEstado.json()
+        listEstado = dataEstado['data']
+
+        # Consumo de API: Prioridad Tarea
+        # Method: GET
+        resPrioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers)
+        dataPrioridad = resPrioridad.json()
+        listPrioridad = dataPrioridad['data']
+
         # Asignación del ID de Tarea Subordinada a Buscar
         idTareaSubordinadaToSearch = ''
         for x in OneTareaSubordinada:
@@ -998,8 +1008,8 @@ def EditTareaSubordinadaSection(request, idTareaSub):
                 #Recuperación de data proveniente del HTML
                 nombre = request.POST.get('nombreTareaSubordinada')
                 descripcion = request.POST.get('descripcionTareaSubordinada')
-                prioridadFk = request.POST.get('selectPrioridadTarea')
-                estadoFk = request.POST.get('selectEstadoTarea')
+                prioridadFk = request.POST.get('prioridadtarea')
+                estadoFk = request.POST.get('estadoTarea')
                 tareaFk = request.POST.get('selectTarea')
                 status = 'OK'
                 #print(nombre, descripcion, tareaFk)
@@ -1018,10 +1028,12 @@ def EditTareaSubordinadaSection(request, idTareaSub):
             'tarea': listTarea,
             'statusUpdate': status,
             'oneTareaSubordinada': OneTareaSubordinada,
+            'listPrioridadTarea': listPrioridad,
+            'listEstadoTarea':listEstado,
         }
 
         # Return Section
-        return render(request, 'Tarea_Subordinada/updateTareaSubordinada.html', {'data':context})
+        return render(request, 'subordinatetask/updatesubordinatetask.html', {'data':context})
 
     else:
         return redirect('login')
@@ -1101,7 +1113,6 @@ def RejectTask(request, idTask):
             if  status == 'OK':
                 Addjustificacion(request,descripcion,idTask)
 
-            print(reqAcceptTask)
             return redirect('taskfuncionario')
 
         except:

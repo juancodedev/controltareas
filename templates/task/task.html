@@ -39,7 +39,7 @@
                                                     value="{{datos.tareas.nombreTarea}}" {% endif %} />
                                             </div>
                                             <div class="form-group col-md-6">
-                                                <label for="Proceso">Creado por</label>
+                                                <label for="Proceso">Asignado a:</label>
                                                 <select class="form-control" name="creadopor">
 
 
@@ -73,7 +73,7 @@
                                                 <div class="input-group date" id="fechaplazo"
                                                     data-target-input="nearest">
 
-                                                    <input type="text" class="form-control datetimepicker-input"
+                                                    <!-- <input type="date" class="form-control datetimepicker-input" style="border: solid 1px blue !important;"
                                                         data-target="#fechaplazo" name="fechaplazo"
                                                         {% if datos.menu == 'taskedit' %}
                                                         value="{{datos.tareas.fechaPlazo}}" {% endif %}>
@@ -81,73 +81,31 @@
                                                         data-toggle="datetimepicker">
                                                         <div class="input-group-text"><i class="fa fa-calendar"></i>
                                                         </div>
+                                                    </div> -->
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                          <input type="date" class="form-control" name="fechaplazo">
+                                                        </div>
                                                     </div>
+                                                    
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-6">
-
-                                                <label for="Proceso">Asignado a:</label>
-                                                <select class="form-control" name="asignadoa">
-                                                    {% for usuario in datos.usuarios %}
-                                                    <option value="{{usuario.rutUsuario}}"
-                                                        {% if datos.menu == 'taskedit' and usuario.rutUsuario == datos.tareas.fkRutUsuario %}
-                                                        selected {% endif %}>{{usuario.nombreUsuario}}
-                                                        {{ usuario.apellidoUsuario}}</option>
-                                                    {% endfor %}
-                                                </select>
-
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label for="Proceso">Estado</label>
+                                            
+                                            <!-- <div class="form-group col-md-6">
+                                                <label> Estado Tarea:</label>
                                                 <select class="form-control" name="estadotarea">
-                                                    {% if datos.menu == 'tasknew' %}
-
-                                                    {% for estado in datos.estado %}
-                                                    {% if estado.descripcionEstadoTarea == 'Creada' %}
-                                                    <option selected value="{{estado.idEstadoTarea}}">
-                                                        {{estado.descripcionEstadoTarea}}</option>
-                                                    {% else %}
-                                                    <option value="{{estado.idEstadoTarea}}">
-                                                        {{estado.descripcionEstadoTarea}}</option>
-                                                    {% endif %}
-
-                                                    {% endfor %}
-                                                    {% endif %}
                                                     {% if datos.menu == 'taskedit' %}
-                                                    {% for estado in datos.estado %}
-                                                    <option value="{{estado.idEstadoTarea}}"
-                                                        {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
-                                                        selected{% endif %}>
-                                                        {{estado.descripcionEstadoTarea}}</option>
-
-                                                    {% endfor %}
+                                                            {% for estado in datos.estado %}
+                                                            <option value="{{estado.idEstadoTarea}}"
+                                                                {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
+                                                                selected{% endif %}>
+                                                                {{estado.descripcionEstadoTarea}}</option>
+    
+                                                            {% endfor %}
                                                     {% endif %}
-
                                                 </select>
-                                            </div>
-
-                                            {% if datos.menu == 'taskedit' %}
-                                            <div class="form-group col-md-6">
-                                                <label for="reporteProblema">Reporte de problema</label>
-                                                <input type="text" class="form-control" name="reporteProblema"
-                                                    value="{{datos.tareas.reporteProblema}}" />
-                                            </div>
-                                            <div class="form-group col-md-6">
-                                                <label for="Justificacion">Justificacion</label>
-
-
-                                                <select class="form-control" name="Justificacion">
-                                                    {% for justificacion in datos.justificacion %}
-                                                    <option value="{{justificacion.idJustificacion}}"
-                                                        {% if datos.menu == 'taskedit' and justificacion.idJustificacion == datos.tareas.fkIdJustificacion %}
-                                                        selected {% endif %}>
-                                                        {{justificacion.descripcion}}</option>
-                                                    {% endfor %}
-
-                                                </select>
-                                            </div>
-                                            {% endif %}
-
+                                            </div> -->
+                                           
                                         </div>
 
                                         <div class="row">
