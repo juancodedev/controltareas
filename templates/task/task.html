@@ -90,21 +90,22 @@
                                                     
                                                 </div>
                                             </div>
-                                            
-                                            <!-- <div class="form-group col-md-6">
-                                                <label> Estado Tarea:</label>
-                                                <select class="form-control" name="estadotarea">
-                                                    {% if datos.menu == 'taskedit' %}
-                                                            {% for estado in datos.estado %}
-                                                            <option value="{{estado.idEstadoTarea}}"
-                                                                {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
-                                                                selected{% endif %}>
-                                                                {{estado.descripcionEstadoTarea}}</option>
-    
-                                                            {% endfor %}
-                                                    {% endif %}
-                                                </select>
-                                            </div> -->
+                                            {% if datos.menu == 'taskedit' %}
+                                                <div class="form-group col-md-6">
+                                                    <label> Estado Tarea:</label>
+                                                    <select class="form-control" name="estadotarea">
+                                                    
+                                                                {% for estado in datos.estado %}
+                                                                <option value="{{estado.idEstadoTarea}}"
+                                                                    {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
+                                                                    selected{% endif %}>
+                                                                    {{estado.descripcionEstadoTarea}}</option>
+        
+                                                                {% endfor %}
+                                                    
+                                                    </select>
+                                                </div>
+                                            {% endif %}
                                            
                                         </div>
 
