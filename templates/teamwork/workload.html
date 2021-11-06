@@ -55,7 +55,7 @@
                   </li>
                 </ul>
 
-                <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+ 
               </div>
               <!-- /.card-body -->
             </div>
@@ -85,31 +85,23 @@
                         <table class="table">
                             <thead>
                               <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">First</th>
-                                <th scope="col">Last</th>
-                                <th scope="col">Handle</th>
+                                <th scope="col">ID Tarea</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripcion</th>
+                                <th scope="col">Deadline</th>
                               </tr>
                             </thead>
                             <tbody>
+                            {% for tarea in datos.tareas %}
+                            
                               <tr>
-                                <th scope="row">1</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
+                                <th scope="row">{{tarea.idTarea}}</th>
+                                <td>{{tarea.nombreTarea}}</td>
+                                <td>{{tarea.descripcionTarea}}</td>
+                                <td>{{tarea.fechaPlazo}}</td>
                               </tr>
-                              <tr>
-                                <th scope="row">2</th>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Larry</td>
-                                <td>the Bird</td>
-                                <td>@twitter</td>
-                              </tr>
+                            {% endfor %}
+
                             </tbody>
                           </table>
                     </div>
@@ -168,7 +160,10 @@
                 </div>
               </div>
               <!-- /.card-body -->
+                                        <div class="car-footer d-flex align-items-end flex-column">
+                                <button type="button" class="btn btn-secondary " onclick="history.back()" >Volver</button>
             </div>
+                            </div>
             <!-- /.card -->
           </div>
           <!-- /.col -->
