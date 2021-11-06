@@ -327,10 +327,10 @@ def updatetask(request, id):
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         
-        for e in user['data']:
-            if e['rutUsuario'] == request.POST.get('creadopor'):
-                asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
-                break;
+        # for e in user['data']:
+        #     if e['rutUsuario'] == request.POST.get('creadopor'):
+        #         asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
+        #         break;
 
         payload = json.dumps(
         {
@@ -341,10 +341,10 @@ def updatetask(request, id):
             'fkRutUsuario' : request.POST.get('creadopor'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
-            'asignacionTarea': asignadoa,
+            # 'asignacionTarea': asignadoa,
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        print(update)
+        print(update.content)
         print(payload)
         if update.ok: 
             return redirect('tasklist')
@@ -360,21 +360,21 @@ def savenewtask(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
     
-        print(request.POST.get('creadopor'))
+        # print(request.POST.get('creadopor'))
         
         
         
-        for e in user['data']:
-            if e['rutUsuario'] == request.POST.get('creadopor'):
-                asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
-                break;
+        # for e in user['data']:
+        #     if e['rutUsuario'] == request.POST.get('creadopor'):
+        #         asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
+        #         break;
             
-        print(asignadoa)
+        # print(asignadoa)
         payload = json.dumps({
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
             'fechaPlazo': request.POST.get('fechaplazo'),
-            'asignacionTarea': asignadoa,
+            # 'asignacionTarea': asignadoa,asignadoa
             'fkRutUsuario' : request.POST.get('creadopor'),
             'fkEstadoTarea' : int(1),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
@@ -844,6 +844,7 @@ def createnewrole(request):
         'DescripcionRol': request.POST.get('descriptrole') 
     })
     r = requests.post('http://localhost:32482/api/rol/add/', headers=headers, data=payload)
+    print(r.content)
     if r.ok:
 
         return redirect('listrole')
