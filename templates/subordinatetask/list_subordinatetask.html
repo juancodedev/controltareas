@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %} {% load static %} {% block content %}
 
 
@@ -42,51 +41,56 @@
           </div>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover projects">
-                <thead>
-                    <tr>
-                        <th style="width: 1%">
-                            Id                                    
-                        </th>
-                        <th style="width: 20%">
-                            Nombre
-                        </th>
-                        <th style="width: 30%">
-                            Descripción
-                        </th>
-                        <th style="width: 20%" class="text-right">
-                        Acciones
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                  {% for tareaSubordinada in data.tareaSubordinada %}
-                    <tr>
-                        <td>
-                          {{tareaSubordinada.idTareaSubordinada}}
-                        </td>
-                        <td>
-                          {{tareaSubordinada.nombreSubordinada}}
-                        </td>
-                        <td>
-                          {{tareaSubordinada.descripcionSubordinada}}
-                        </td>
-                        <td class="project-actions text-right">
-                            <a class="btn btn-info btn-sm" href="{% url 'EditTareaSubordinadaSection' idTareaSub=tareaSubordinada.idTareaSubordinada %}">
-                                <i class="fas fa-pencil-alt">
-                                </i>
-                                Editar
-                            </a>
-                            <a class="btn btn-danger btn-sm" href="#" onclick="confirmOption('eliminar', 'deleteTareaSubordinadaSection/{{tareaSubordinada.idTareaSubordinada}}')">
-                                <i class="fas fa-trash">
-                                </i>
-                                Eliminar
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+          <table class="table table-hover projects">
+            <thead>
+              <tr>
+                <th style="width: 1%">
+                  Id
+                </th>
+                <th style="width: 20%">
+                  Nombre
+                </th>
+                <th style="width: 30%">
+                  Descripción
+                </th>
+                <th style="width: 20%" class="text-right">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tareaSubordinada in datos.tareaSubordinada %}
+              <tr>
+                <td>
+                  {{tareaSubordinada.idTareaSubordinada}}
+                </td>
+                <td>
+                  {{tareaSubordinada.nombreSubordinada}}
+                </td>
+                <td>
+                  {{tareaSubordinada.descripcionSubordinada}}
+                </td>
+                <td class="project-actions text-right">
+                  <a class="btn btn-info btn-sm"
+                    href="{% url 'EditTareaSubordinadaSection' idTareaSub=tareaSubordinada.idTareaSubordinada %}">
+                    <i class="fas fa-pencil-alt">
+                    </i>
+                    Editar
+                  </a>
+                  {% comment %} <a class="btn btn-danger btn-sm" href="#"
+                    onclick="confirmOption('eliminar', 'deleteTareaSubordinadaSection/{{tareaSubordinada.idTareaSubordinada}}')">
+                    {% endcomment %}
+                    <a class="btn btn-danger btn-sm" href="#"
+                      onclick="confirmOption('{{tareaSubordinada.idTareaSubordinada}}')">
+                      <i class="fas fa-trash">
+                      </i>
+                      Eliminar
+                    </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -94,11 +98,28 @@
   </div>
   <!-- /.content-wrapper -->
 </div>
-<script>
-  function confirmOption(opcion, direccion){
-  if(confirm("Esta seguro que desea "+ opcion)){
-    window.location.href = direccion;
-  }
-}
-</script>
+
 {% endblock content %}
+{% block script %}
+{% comment %} <script>
+  function confirmOption(opcion, direccion) {
+    if (confirm("Esta seguro que desea " + opcion)) {
+      window.location.href = direccion;
+    }
+  }
+</script> {% endcomment %}
+
+<script>
+  function confirmOption(opcion, direccion) {
+    if (confirm("Esta seguro que desea eliminar la tarea por id: " + opcion)) {
+      var uri = "{% url 'DeleteTareaSubordinadaSection' 728 %}"
+      window.location.href = uri.replace('728', opcion);
+
+
+
+
+
+    }
+  }
+</script>
+{% endblock script %}

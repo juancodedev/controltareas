@@ -105,33 +105,27 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                {% for tarea in datos.tareas %}
                                                     <tr>
-                                                        <th scope="row">1</th>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
+                                                        <th scope="row">{{tarea.idTarea}}</th>
+                                                        <td>{{tarea.nombreTarea}}</td>
+                                                        <td>{{tarea.descripcionTarea}}</td>
+                                                        <td>{{tarea.fechaPlazo}}</td>
                                                         <td class="text-start">
                                                             <a class="btn btn-primary btn-sm"
-                                                                href="{% url 'taskdetails' %}">
+                                                                href="{% url 'taskdetails' tarea.idTarea %}">
                                                                 <i class="fas fa-folder">
                                                                 </i>
                                                                 View
                                                             </a>
-                                                            <a class="btn btn-info btn-sm" href="{% url 'taskdetails' %}">
-                                                                <i class="fas fa-pencil-alt">
-                                                                </i>
-                                                                Edit
-                                                            </a>
-                                                            <a class="btn btn-danger btn-sm" href="#">
-                                                                <i class="fas fa-trash">
-                                                                </i>
-                                                                Delete
-                                                            </a>
+
 
                                                         </td>
                                                     </tr>
+                                                {% endfor %}
 
                                                 </tbody>
+
                                             </table>
                                         </div>
                                     </div>
@@ -202,6 +196,9 @@
 
                                     <!-- /.tab-pane -->
                                 </div>
+                            </div>
+                            <div class="car-footer d-flex align-items-end flex-column">
+                                <button type="button" class="btn btn-secondary " onclick="history.back()" >Volver</button>
                             </div>
                             <!-- /.card-body -->
                         </div>

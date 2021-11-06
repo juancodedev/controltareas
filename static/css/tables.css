@@ -1,7 +1,10 @@
-td.details-control {
-    background: url('../img/details_open.png') no-repeat center center;
-    cursor: pointer;
-}
-tr.shown td.details-control {
-    background: url('../img/details_close.png') no-repeat center center;
-}
+table {
+    overflow-x:auto;
+  }
+  table td {
+    word-wrap: break-word;
+    max-width: 400px;
+  }
+  #datausers td {
+    white-space:inherit;
+  }

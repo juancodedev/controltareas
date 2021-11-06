@@ -20,7 +20,7 @@ from dashboard import views
 # from dashboard.views import personas
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
     path('dashboard/', include('dashboard.urls')),
     # path('persona/',personas, name='personas'),

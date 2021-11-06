@@ -136,6 +136,64 @@ def teamwork(request):
         data = decodered(token)
         rol = data['role']
         if int(rol) == 1:
+            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+            roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+            unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+            usuario={}
+            usuario['data']= []
+            for datos in dataAPI['data']:
+                usuario['data'].append({
+                    'rutUsuario': datos['rutUsuario'],
+                    'nombreUsuario': datos['nombreUsuario'] ,
+                    'segundoNombre': datos['segundoNombre'] ,
+                    'apellidoUsuario': datos['apellidoUsuario'] ,
+                    'segundoApellido': datos['segundoApellido'] ,
+                    'numTelefono': datos['numTelefono'] ,
+                    'correoElectronico': datos['correoElectronico'] ,
+                    'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                    'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                }
+                )
+
+            context = {
+                'menu' : 'teamwork',
+                'email' : data['email'],
+                'name': data['unique_name'],
+                'role': int(data['role']),
+                'login' : datetime.fromtimestamp(data['nbf']),
+                'teams': usuario['data'],
+                # 'teams': myList,
+            }
+            return render(request, 'teamwork/teamwork.html',{'datos': context})
+        elif int(rol) == 2:
+            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+            context = {
+                'menu' : 'teamwork',
+                'email' : data['email'],
+                'name': data['unique_name'],
+                'role': int(data['role']),
+                'login' : datetime.fromtimestamp(data['nbf']),
+                'teams': dataAPI['data'],
+            }
+            return render(request, 'teamwork/teamwork.html',{'datos': context})
+        else:
+            context = {
+                    'menu' : 'dashboard',
+                    'email' : data['email'],
+                    'name': data['unique_name'],
+                    'role': int(data['role']),
+                    'login' : datetime.fromtimestamp(data['nbf']),
+            }
+            return render(request,'teamwork/teamwork.html',{'datos': context})
+    else: 
+        return redirect('login')
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        rol = data['role']
+        if int(rol) == 1:
             headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
             roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
@@ -196,7 +254,7 @@ def admin(request):
     else: 
         return redirect('login')
 
-def workload(request):
+def workload(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
@@ -267,7 +325,12 @@ def updatetask(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-
+        user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        
+        for e in user['data']:
+            if e['rutUsuario'] == request.POST.get('creadopor'):
+                asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
+                break;
 
         payload = json.dumps(
         {
@@ -278,6 +341,7 @@ def updatetask(request, id):
             'fkRutUsuario' : request.POST.get('creadopor'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
+            'asignacionTarea': asignadoa,
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
         print(update)
@@ -294,28 +358,33 @@ def savenewtask(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+    
+        print(request.POST.get('creadopor'))
         
-        fecha = request.POST.get('fechaplazo')
-        print(fecha)
+        
+        
+        for e in user['data']:
+            if e['rutUsuario'] == request.POST.get('creadopor'):
+                asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
+                break;
+            
+        print(asignadoa)
         payload = json.dumps({
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
             'fechaPlazo': request.POST.get('fechaplazo'),
-            
-            'reporteProblema': 'Ninguno',
-            
-            'asignacionTarea': request.POST.get('asignadoa'),
+            'asignacionTarea': asignadoa,
             'fkRutUsuario' : request.POST.get('creadopor'),
-            
             'fkEstadoTarea' : int(1),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
         })
         r = requests.post('http://localhost:32482/api/tarea/add', headers=headers, data=payload)
-
+        print(r.content)
         if r.ok:
             print('Tarea creado correctamente')
-            print(r.status_code)
+            print(r.content)
         else:
             print('Error')
             print(r.status_code)
@@ -333,31 +402,38 @@ def createnewuser(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         
         payload = json.dumps({
-            'rutUsuario': request.POST.get('rut'),
-            'nombreUsuario': request.POST.get('name'),
-            'segundoNombre': request.POST.get('secondName'),
-            'apellidoUsuario': request.POST.get('lastName'),
-            'segundoApellido': request.POST.get('secondlastName'),
-            'correoElectronico': request.POST.get('email'),
-            'numTelefono': int(request.POST.get('phoneNumber')),
-            'password': request.POST.get('password'),
-            'idRolUsuario': int(request.POST.get('role')),
-            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
+            'RutUsuario': request.POST.get('rut'),
+            'NombreUsuario': request.POST.get('name'),
+            'SegundoNombre': request.POST.get('secondName'),
+            'ApellidoUsuario': request.POST.get('secondName'),
+            'SegundoApellido': request.POST.get('secondlastName'),
+            'CorreoElectronico': request.POST.get('email'),
+            'NumTelefono': int(request.POST.get('phoneNumber')),
+            'Password': request.POST.get('password'),
+            'IdRolUsuario': int(request.POST.get('role')),
+            'idUnidadInternaUsuario': int(request.POST.get('unidadInterna')),
             
         })
+
         r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+
         if r.ok:
             print('Usuario creado correctamente')
+            return redirect('listusers')
+            
         else:
             print('Error')
-        context = {
-        'menu' : 'newuser',
-        'email' : data['email'],
-        'name': data['unique_name'],
-        'role': int(data['role']),
-        'login' : datetime.fromtimestamp(data['nbf']),
-        }
-        return render(request, 'users/newuser.html',{'datos': context})
+            #Aca podria ir un mensaje o no?
+            context = {
+            'menu' : 'newuser',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+            }
+            return render(request, 'users/newuser.html',{'datos': context})
+            
+            
 
     else: 
         return redirect('login')
@@ -388,15 +464,20 @@ def viewusers(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
-        
+        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
+
+
+        print(tareas['data'])
+
         context = {
             'menu' : 'viewusers',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login': datetime.fromtimestamp(data['nbf']),
+            'tareas': list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario']),
             'user': user['data'][0],
         }
         return render(request, 'users/userdetails.html',{'datos': context})
@@ -410,13 +491,34 @@ def listusers(request):
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        usuario={}
+        usuario['data']= []
+        for datos in usuarios['data']:
+            usuario['data'].append({
+                'rutUsuario': datos['rutUsuario'],
+                'nombreUsuario': datos['nombreUsuario'] ,
+                'segundoNombre': datos['segundoNombre'] ,
+                'apellidoUsuario': datos['apellidoUsuario'] ,
+                'segundoApellido': datos['segundoApellido'] ,
+                'numTelefono': datos['numTelefono'] ,
+                'correoElectronico': datos['correoElectronico'] ,
+                'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                }
+                )
+            
+        
+        
         context = {
         'menu' : 'listusers',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'usuarios': usuarios['data'],
+        'usuarios': usuario['data'],
         }
         return render(request, 'users/userlist.html',{'datos': context})
     else: 
@@ -868,7 +970,7 @@ def TareaSubordinadaSection(request):
             'login' : datetime.fromtimestamp(data['nbf']),
             'tareaSubordinada': listTareaSubordinada
         }
-        return render(request, 'subordinatetask/list_subordinatetask.html', {'data': context})
+        return render(request, 'subordinatetask/list_subordinatetask.html', {'datos': context})
     else: 
         return redirect('login')
 
@@ -877,6 +979,7 @@ def AddTareaSubordinadaSection(request):
         # Consumo de API: Tarea 
         # Method: GET
         token = request.COOKIES.get('validate')
+        data = decodered(token)
         headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
         resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
         dataTarea = resTarea.json()
@@ -897,7 +1000,7 @@ def AddTareaSubordinadaSection(request):
         # Consumo de API: Tarea Subordinada
         nombre = request.POST.get('nombreTareaSubordinada')
         descripcion = request.POST.get('descripcionTareaSubordinada')
-        prioridadFk = request.POST.get('selectPrioridadTarea')
+        prioridadFk = request.POST.get('prioridadtarea')
         estadoFk = 1
         tareaFk = request.POST.get('selectTarea')
 
@@ -911,9 +1014,15 @@ def AddTareaSubordinadaSection(request):
         
         if status == 'OK':
             AddTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk)
+            return redirect('TareaSubordinadaSection')
 
         # Variables con data para enviar a la vista
         context = {
+            'menu' : 'AddTareaSubordinadaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
             'tarea': listTarea,
             'prioridad': listPrioridad,
             'estado': listEstado,
@@ -922,7 +1031,7 @@ def AddTareaSubordinadaSection(request):
         }
 
         # Return Section
-        return render(request, 'subordinatetask/subordinatetask.html', {'data': context})
+        return render(request, 'subordinatetask/subordinatetask.html', {'datos': context})
     
     else: 
         return redirect('login')
@@ -958,7 +1067,7 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
         else: 
             status = 'ERROR'
             print(status)
-            return render(request, 'subordinatetask/list_subordinatetask.html', {'data': context})
+            return render(request, 'subordinatetask/list_subordinatetask.html', {'datos': context})
         
     else:
         return redirect('login')
@@ -969,6 +1078,7 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         # Configuración Header
         status = 'NO_CONTENT'
         token = request.COOKIES.get('validate')
+        data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
 
         # Consumo de API: Tarea
@@ -1001,6 +1111,7 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         for x in OneTareaSubordinada:
             idTareaSubordinadaToSearch = x['idTareaSubordinada']
            # print(idTareaSubordinadaToSearch)
+        
 
         # Validate Data Extraction
         if request.method == 'POST':
@@ -1020,20 +1131,28 @@ def EditTareaSubordinadaSection(request, idTareaSub):
         try:
             if status == 'OK':
                 EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, idTareaSubordinadaToSearch)
+                return redirect('TareaSubordinadaSection')
             
         except:
             status = 'ERROR'
-        
         context = {
+            'menu' : 'EditTareaSubordinadaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
             'tarea': listTarea,
             'statusUpdate': status,
-            'oneTareaSubordinada': OneTareaSubordinada,
+            'oneTareaSubordinada': OneTareaSubordinada[0],
             'listPrioridadTarea': listPrioridad,
             'listEstadoTarea':listEstado,
         }
 
         # Return Section
-        return render(request, 'subordinatetask/updatesubordinatetask.html', {'data':context})
+        # return render(request, 'subordinatetask/updatesubordinatetask.html', {'datos':context})
+        return render(request, 'subordinatetask/subordinatetask.html', {'datos':context})
+        
+        
 
     else:
         return redirect('login')
@@ -1059,6 +1178,7 @@ def AddTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tar
         })
         r = requests.post('http://localhost:32482/api/TareaSubordinada/add', headers=headers, data=payload)
 
+
 # METHOD: PUT
 def EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tareaFk, idTareaSubordinadaToSearch):
     if authenticated:
@@ -1073,6 +1193,7 @@ def EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, ta
                               'fkEstadoTarea': int(estadoFk),
                               'fkIdTarea': int(tareaFk),
         })
+
         r = requests.put('http://localhost:32482/api/TareaSubordinada/update/' + str(idTareaSubordinadaToSearch), headers=headers, data=payload)
 
 

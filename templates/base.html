@@ -7,7 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin TaskList</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.2/css/dataTables.bootstrap5.min.css">
+  {% comment %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.2/css/dataTables.bootstrap5.min.css"> {% endcomment %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -242,14 +244,14 @@
                     <li class="nav-item">
                       <a href="{% url 'workflowlist' %}"
                         class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{% url 'workflownew' %}"
                         class="nav-link {% if datos.menu == 'workflownew' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>
                     </li>
@@ -265,14 +267,14 @@
                     <li class="nav-item">
                       <a href="{% url 'listusers' %}"
                         class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{% url 'newuser' %}"
                         class="nav-link {% if datos.menu == 'newuser' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>
                     </li>
@@ -288,14 +290,14 @@
                     <li class="nav-item">
                       <a href="{% url 'listunits' %}"
                         class="nav-link {% if datos.menu == 'listunits' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{% url 'newunits' %}"
                         class="nav-link {% if datos.menu == 'newunits' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>
                     </li>
@@ -311,14 +313,14 @@
                     <li class="nav-item">
                       <a href="{% url 'listrole' %}"
                         class="nav-link {% if datos.menu == 'listrole' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{% url 'newrole' %}"
                         class="nav-link {% if datos.menu == 'newrole' %} active {% endif %}">
-                        <i class="far fa-dot-circle nav-icon"></i>
+                        <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>
                     </li>
@@ -423,8 +425,9 @@
   <!-- REQUIRED SCRIPTS -->
   <!-- jQuery -->
   <!-- Datatable -->
-  {% comment %} <script src="https://code.jquery.com/jquery-3.5.1.js"></script> {% endcomment %}
-  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  {% comment %} <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script> {% endcomment %}
+  <script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
   <script src="{% static 'js/pages/dashboard2.js'%}"></script>
   <!-- Bootstrap -->
   <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
@@ -455,16 +458,10 @@
 
   {% comment %} <script src="https://cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.2/js/dataTables.bootstrap5.min.js"></script> {% endcomment %}
-  <script>
-    $(function () {
-      //Date and time picker
-      $('#fechaplazo').datetimepicker({
-        icons: {
-          time: 'far fa-clock'
-        }
-      });
-    })
-  </script>
+
 </body>
+{% block script %}
+
+{% endblock script %}
 
 </html>
