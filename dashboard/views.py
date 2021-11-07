@@ -6,6 +6,7 @@ from requests.api import delete, head, request
 from login.views import authenticated, decodered
 import requests, jwt, json
 from datetime import datetime
+from random import randint
 
 #modulos extras solo para pruebas
 import random
@@ -65,13 +66,29 @@ def tasklist(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         
+        #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
+        tarea={}
+        tarea['data']= []
+        for datos in tareas['data']:
+            tarea['data'].append({
+            'idTarea': datos['idTarea'],
+            'nombreTarea': datos['nombreTarea'] ,
+            'descripcionTarea': datos['descripcionTarea'] ,
+            'fechaPlazo': datos['fechaPlazo'] ,
+            'fkRutUsuario': datos['fkRutUsuario'] ,
+            'fkEstadoTarea': datos['fkEstadoTarea'] ,
+            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+            'percent': randint(0, 100),
+            }
+            )
+        
         context = {
             'menu' : 'tableTask',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
-            'tk': tareas['data'],
+            'tk': tarea['data'],
             'usuarios': usuarios['data']
         }
         return render(request, 'task/tasklist.html',{'datos': context})
@@ -105,7 +122,6 @@ def taskedit(request, id):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        actividad = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
         prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
         estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
         creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
@@ -231,6 +247,25 @@ def workload(request, id):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
+        unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        
+        usuario={}
+        usuario['data']= []
+        usuario['data'].append({
+            'rutUsuario': u['rutUsuario'],
+            'nombreUsuario': u['nombreUsuario'] ,
+            'segundoNombre': u['segundoNombre'] ,
+            'apellidoUsuario': u['apellidoUsuario'] ,
+            'segundoApellido': u['segundoApellido'] ,
+            'numTelefono': u['numTelefono'] ,
+            'correoElectronico': u['correoElectronico'] ,
+            'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == u['idRolUsuario'])[0]['nombreRol'],
+            'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == u['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+            }
+            )
+        print(usuario['data'][0])
+        print(user['data'][0])
 
         context = {
             'menu' : 'workload',
@@ -239,7 +274,7 @@ def workload(request, id):
             'role': int(data['role']),
             'login': datetime.fromtimestamp(data['nbf']),
             'tareas': list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario']),
-            'user': user['data'][0],
+            'user': usuario['data'][0],
         }
         return render(request, 'teamwork/workload.html',{'datos': context})
     else: 
@@ -253,8 +288,8 @@ def taskdetails(request, id):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        actividad = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
-        
+        justificacion = requests.get('http://localhost:32482/api/justificacionTarea', headers=headers).json()
+        tareasDetalle = list(e for e in tareas['data'] if e['idTarea']  == int(id))[0]
         
         context = {
             'menu' : 'taskdetails',
@@ -262,9 +297,9 @@ def taskdetails(request, id):
             'name': data['unique_name'],
             'role': int(data['role']),
             'login' : datetime.fromtimestamp(data['nbf']),
-            'tareas': list(e for e in tareas['data'] if e['idTarea']  == int(id))[0],
+            'tareas': tareasDetalle,
             'usuarios': usuarios['data'],
-            'actividad': actividad['data'],
+            'actividades' : list(e for e in justificacion['data'] if e['fkTareaId']  == tareasDetalle['idTarea']),
         }
         return render(request, 'task/taskdetails.html',{'datos': context})
     else: 
@@ -303,17 +338,13 @@ def updatetask(request, id):
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         
-        # for e in user['data']:
-        #     if e['rutUsuario'] == request.POST.get('creadopor'):
-        #         asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
-        #         break;
 
         payload = json.dumps(
         {
             'idTarea': id,
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
-            'fechaPlazo': request.POST.get('fechaplazo'),
+            # 'fechaPlazo': request.POST.get('fechaplazo'),
             'fkRutUsuario' : request.POST.get('creadopor'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
@@ -336,15 +367,6 @@ def savenewtask(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
     
-        # print(request.POST.get('creadopor'))
-        
-        
-        
-        # for e in user['data']:
-        #     if e['rutUsuario'] == request.POST.get('creadopor'):
-        #         asignadoa = e['nombreUsuario'] + " " + e['apellidoUsuario']
-        #         break;
-            
         # print(asignadoa)
         payload = json.dumps({
             'nombreTarea':request.POST.get('nombretarea'),

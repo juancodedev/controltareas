@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} {% load static %} 
+{% load parse_iso %}
+{% block content %}
 <div class="wrapper">
     <div class="content-wrapper" style="min-height: 2171.31px">
         <section class="content-header">
@@ -67,46 +69,51 @@
                                                     {% endfor %}
                                                 </select>
                                             </div>
-
+                                            {% if datos.menu == 'tasknew' %}
                                             <div class="form-group col-md-6">
                                                 <label>Fecha plazo:</label>
                                                 <div class="input-group date" id="fechaplazo"
                                                     data-target-input="nearest">
 
-                                                    <!-- <input type="date" class="form-control datetimepicker-input" style="border: solid 1px blue !important;"
-                                                        data-target="#fechaplazo" name="fechaplazo"
-                                                        {% if datos.menu == 'taskedit' %}
-                                                        value="{{datos.tareas.fechaPlazo}}" {% endif %}>
-                                                    <div class="input-group-append" data-target="#fechaplazo"
-                                                        data-toggle="datetimepicker">
-                                                        <div class="input-group-text"><i class="fa fa-calendar"></i>
-                                                        </div>
-                                                    </div> -->
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                          <input type="date" class="form-control" name="fechaplazo">
+                                                            <input type="date" class="form-control" name="fechaplazo">
                                                         </div>
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
-                                            {% if datos.menu == 'taskedit' %}
-                                                <div class="form-group col-md-6">
-                                                    <label> Estado Tarea:</label>
-                                                    <select class="form-control" name="estadotarea">
-                                                    
-                                                                {% for estado in datos.estado %}
-                                                                <option value="{{estado.idEstadoTarea}}"
-                                                                    {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
-                                                                    selected{% endif %}>
-                                                                    {{estado.descripcionEstadoTarea}}</option>
-        
-                                                                {% endfor %}
-                                                    
-                                                    </select>
-                                                </div>
                                             {% endif %}
-                                           
+                                            {% if datos.menu == 'taskedit' %}
+                                            <div class="form-group col-md-6">
+                                                <label>Fecha plazo:</label>
+                                                <div class="input-group date">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <input type="text" class="form-control" value = "{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}" disabled>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            {% comment %} {% if datos.menu == 'taskedit' %} {% endcomment %}
+                                            <div class="form-group col-md-6">
+                                                <label> Estado Tarea:</label>
+                                                <select class="form-control" name="estadotarea">
+
+                                                    {% for estado in datos.estado %}
+                                                    <option value="{{estado.idEstadoTarea}}"
+                                                        {% if estado.idEstadoTarea == datos.tareas.fkEstadoTarea %}
+                                                        selected{% endif %}>
+                                                        {{estado.descripcionEstadoTarea}}</option>
+
+                                                    {% endfor %}
+
+                                                </select>
+                                            </div>
+                                            {% endif %}
+
                                         </div>
 
                                         <div class="row">

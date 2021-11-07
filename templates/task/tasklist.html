@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load parse_iso %}
+{% load random_numbers %}
 
 {% block content %}
 
@@ -15,7 +17,7 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1>Mis tareas asignadas</h1>
+              <h1> {% if datos.role == 1 %} Listado de tareas {% endif %}  {% if datos.role !=  1 %}Mis tareas asignadas{% endif %}</h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
@@ -82,7 +84,7 @@
                     </a>
                     <br />
                     <small>
-                      Fecha Plazo: {{tarea.fechaPlazo}}
+                      Fecha Plazo: {{tarea.fechaPlazo|parse_iso|date:'d/m/Y'}}
                     </small>
                   </td>
                   <td>
@@ -110,19 +112,19 @@
                   </td>
                   <td class="project_progress">
                     <div class="progress progress-sm">
-                      <div class="progress-bar bg-green" role="progressbar" aria-valuenow="57" aria-valuemin="0"
-                        aria-valuemax="100" style="width: 57%">
+                      <div class="progress-bar bg-green" role="progressbar" aria-valuenow="{{tarea.percent}}" aria-valuemin="0"
+                        aria-valuemax="100" style="width: {{tarea.percent}}%">
                       </div>
                     </div>
                     <small>
-                      57% Complete
+                      {{tarea.percent}} % Completada   
                     </small>
                   </td>
                   <td class="project-state">
                     {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-primary">Creada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-warning">Asignado</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-warning">Asignada</span>{% endif %}
                     {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-success">Aceptada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazado</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazada</span>{% endif %}
                   </td>
                   <td class="project-actions">
                     {% if  datos.role == 1 %}

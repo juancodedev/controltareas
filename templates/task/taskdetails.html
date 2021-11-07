@@ -73,23 +73,27 @@
               <div class="row">
                 <div class="col-12">
                   <h4>Actividad reciente</h4>
+                  {% for actividad in datos.actividades %}
+
                   <div class="post">
                     <div class="user-block">
                       <img class="img-circle img-bordered-sm" src="{% static 'img/user1-128x128.jpg' %}"
                         alt="user image" />
                       <span class="username">
-                        <label>Actividad</label>
+                        <label>Evento</label>
                       </span>
                       {% comment %} <span class="description">Fecha - 7:45 PM Hoy</span> {% endcomment %}
                     </div>
                     <!-- /.user-block -->
                     <p>
-                      {{datos.tareas.reporteProblema}}
+                      {{actividad.descripcion}}
                     </p>
                     <p>
                       <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Detalle</a>
                     </p>
                   </div>
+                  {% endfor %}
+
                   {% comment %} <div class="post clearfix">
                     <div class="user-block">
                       <img class="img-circle img-bordered-sm" src="{% static 'img/user7-128x128.jpg' %}"
