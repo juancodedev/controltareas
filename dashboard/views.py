@@ -250,6 +250,8 @@ def workload(request, id):
         unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
         roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
         
+        u = user['data'][0]
+        
         usuario={}
         usuario['data']= []
         usuario['data'].append({
