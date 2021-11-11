@@ -78,7 +78,7 @@ def tasklist(request):
             'fkRutUsuario': datos['fkRutUsuario'] ,
             'fkEstadoTarea': datos['fkEstadoTarea'] ,
             'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': randint(0, 100),
+            'percent': randint(1, 100),
             }
             )
         
@@ -904,13 +904,30 @@ def taskfuncionario(request):
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
 
+        #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
+        tarea={}
+        tarea['data']= []
+        for datos in tareasf:
+            tarea['data'].append({
+            'idTarea': datos['idTarea'],
+            'nombreTarea': datos['nombreTarea'] ,
+            'descripcionTarea': datos['descripcionTarea'] ,
+            'fechaPlazo': datos['fechaPlazo'] ,
+            'fkRutUsuario': datos['fkRutUsuario'] ,
+            'fkEstadoTarea': datos['fkEstadoTarea'] ,
+            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+            'percent': randint(1, 100),
+            }
+            )
+
+
         context = {
         'menu' : 'taskfuncionario',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'tk': tareasf,
+        'tk': tarea['data'],
         'usuarios': usuarios['data']
         }
         return render(request, 'task/tasklist.html',{'datos': context})
