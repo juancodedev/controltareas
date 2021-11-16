@@ -25,5 +25,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     # path('persona/',personas, name='personas'),
     path('', include('login.urls')),
+    path('email/', include('messagesMail.urls')),
+
     
 ]
