@@ -7,6 +7,7 @@ from login.views import authenticated, decodered
 import requests, jwt, json
 from datetime import datetime
 from random import randint
+from messagesMail.tasks import sendEmailTask
 
 #modulos extras solo para pruebas
 import random
@@ -339,6 +340,7 @@ def updatetask(request, id):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
         
 
         payload = json.dumps(
@@ -353,9 +355,19 @@ def updatetask(request, id):
             # 'asignacionTarea': asignadoa,
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        print(update.content)
-        print(payload)
+
         if update.ok: 
+            usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('creadopor'))[0]
+            data = {
+                'email': usuario['correoElectronico'],
+                'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
+                'tarea': id,
+                'fechaPlazo': request.POST.get('fechaplazo'),
+                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+                'descripcion': request.POST.get('descripciontarea'),
+            }
+            print(data)
+            sendEmailTask.delay(data)
             return redirect('tasklist')
         else:
             return redirect('dashboard') #envia al dashboard si da error

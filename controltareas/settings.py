@@ -142,17 +142,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Santiago'
 
-# Emails
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-DEFAULT_FROM_EMAIL = 'Picha <picha@example.com>'
-
-
 #Email
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
+EMAIL_PORT = 587
 EMAIL_HOST_USER = 'controltareasnotificaciones@gmail.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'olidata123'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'controltareasnotificaciones@gmail.com'
