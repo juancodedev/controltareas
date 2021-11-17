@@ -8,6 +8,8 @@ import requests, jwt, json
 from datetime import datetime
 from random import randint
 
+from datetime import datetime
+
 #modulos extras solo para pruebas
 import random
 
@@ -300,7 +302,7 @@ def taskdetails(request, id):
             'login' : datetime.fromtimestamp(data['nbf']),
             'tareas': tareasDetalle,
             'usuarios': usuarios['data'],
-            'actividades' : list(e for e in justificacion['data'] if e['fkTareaId']  == tareasDetalle['idTarea']),
+            #'actividades' : list(e for e in justificacion['data'] if e['fkTareaId']  == tareasDetalle['idTarea']),
         }
         return render(request, 'task/taskdetails.html',{'datos': context})
     else: 
@@ -342,14 +344,13 @@ def updatetask(request, id):
 
         payload = json.dumps(
         {
-            'idTarea': id,
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
-            # 'fechaPlazo': request.POST.get('fechaplazo'),
+            'fechaPlazo': request.POST.get('fechaplazo'),
+            'porcentajeAvance': int(request.POST.get('porcentaje')),
             'fkRutUsuario' : request.POST.get('creadopor'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
-            # 'asignacionTarea': asignadoa,
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
         print(update.content)
@@ -367,14 +368,17 @@ def savenewtask(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-    
+        data = decodered(token)
+
         # print(asignadoa)
         payload = json.dumps({
-            'nombreTarea':request.POST.get('nombretarea'),
+            'nombreTarea':request.POST.get('nombretarea'),#
             'descripcionTarea': request.POST.get('descripciontarea'),
             'fechaPlazo': request.POST.get('fechaplazo'),
-            # 'asignacionTarea': asignadoa,asignadoa
-            'fkRutUsuario' : request.POST.get('creadopor'),
+            'porcentajeAvance':0,
+            'fechaCreacion': request.POST.get('fechaplazo'),
+            'creadaPor': data['nameid'],
+            'fkRutUsuario': data['nameid'],
             'fkEstadoTarea' : int(1),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
@@ -1282,7 +1286,8 @@ def EmpresasList(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         empresas = requests.get('http://localhost:32482/api/business/',headers=headers).json()
         listEmpresa = empresas['data']
-
+        data = decodered(token)
+        print(data)
 
         context = {
             'empresas': listEmpresa
@@ -1292,7 +1297,7 @@ def EmpresasList(request):
     else: 
         return redirect('login')
 
-def AddTareaSection(request):
+def AddEmpresaSection(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}

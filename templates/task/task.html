@@ -40,6 +40,7 @@
                                                     {% if datos.menu == 'taskedit' %}
                                                     value="{{datos.tareas.nombreTarea}}" {% endif %} />
                                             </div>
+                                            {% if datos.menu == 'taskedit' %}
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Asignado a:</label>
                                                 <select class="form-control" name="creadopor">
@@ -54,10 +55,16 @@
                                                     {% endfor %}
 
                                                 </select>
-
-
-
                                             </div>
+                                            {% endif %}
+
+                                            {% if datos.menu == 'taskedit' %}
+                                            <div class="form-group col-md-6">
+                                                <label for="Proceso">Porcentaje avance:</label>
+                                                <input type="number" class="form-control" name= "porcentaje" min="0" max="100" value="{{ datos.tareas.porcentajeAvance }}">
+                                            </div>
+                                            {% endif %}
+
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Prioridad</label>
                                                 <select class="form-control" name="prioridadtarea">
@@ -90,7 +97,7 @@
                                                 <div class="input-group date">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <input type="text" class="form-control" value = "{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}" disabled>
+                                                            <input type="date" class="form-control" name="fechaplazo" value = "{{ datos.tareas.fechaPlazo|date:'m/d/Y' }}" >
                                                         </div>
                                                     </div>
 
