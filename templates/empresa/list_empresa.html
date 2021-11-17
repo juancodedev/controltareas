@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load parse_iso %}
+{% load random_numbers %}
+
+
+
+{% block content %}
+
+
+
+<div class="wrapper">
+    <div class="content-wrapper" style="min-height: 2171.31px">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Listado de Empresa</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'dashboard' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Listado de Empresa</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header"></div>
+                                <form action="">
+                                    <!-- card-body -->
+                                    <div class="card card-body">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h3 class="card-title">Mantenedor Empresa</h3>
+
+                                                {% comment %} <div class="card-tools">
+                                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                                        <input type="text" name="table_search"
+                                                            class="form-control float-right" placeholder="Search">
+                                                        <div class="input-group-append">
+                                                            <button type="submit" class="btn btn-default">
+                                                                <i class="fas fa-search"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div> {% endcomment %}
+                                            </div>
+                                            <!-- /.card-header -->
+                                            <div class="card-body">
+                                                <table id="datausers" class="table table-hover"
+                                                    data-mdb-clickable-rows="true" data-mdb-selectable="true"
+                                                    data-mdb-multi="true" style="color:#878781;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Rut</th>
+                                                            <th>Razon Social</th>
+                                                            <th>Giro Empresa</th>
+                                                            <th>Direccion</th>
+                                                            <th>Numero de telefono</th>
+                                                            <th>Correo Electronico</th>
+                                                            <th>Accion</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for empresa in data.empresas %}
+
+                                                        <tr>
+                                                            <td>{{empresa.rutEmpresa}}</td>
+                                                            <td>{{empresa.razonSocial}}</td>
+                                                            <td>{{empresa.giroEmpresa}}</td>
+                                                            <td>{{empresa.direccionEmpresa}}</td>
+                                                            <td>{{empresa.numeroTelefono}}</td>
+                                                            <td>{{empresa.correoElectronicoEmpresa}}</td>
+                                                            <td>
+                                                                <a class="btn btn-primary btn-sm"
+                                                                    href="{% url 'viewEmpresa' empresa.rutEmpresa %}">
+                                                                    <i class="fas fa-folder">
+                                                                    </i>
+                                                                    Ver
+                                                                </a>
+                                                                <a class="btn btn-info btn-sm"
+                                                                    href="{% url 'EmpresaEdit' rutEmpresa=empresa.rutEmpresa %}">
+                                                                    <i class="fas fa-pencil-alt">
+                                                                    </i>
+                                                                </a>
+                                                                <a class="btn btn-danger btn-sm" href="#" onclick="confirmOption('eliminar', 'deleteEmpresaSection/{{empresa.rutEmpresa}}')">
+                                                                    <i class="fas fa-trash">
+                                                                    </i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th>Rut</th>
+                                                            <th>Razon Social</th>
+                                                            <th>Giro Empresa</th>
+                                                            <th>Direccion</th>
+                                                            <th>Numero de telefono</th>
+                                                            <th>Correo Electronico</th>
+                                                            <th>Accion</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <!-- /.card-body -->
+                                        </div>
+
+                                    </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <ul class="nav nav-pills card-header-pills">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" href="{% url 'EmpresaAdd' %}">Nueva
+                                                    Empresa</a>
+                                            </li>
+
+                                        </ul>
+                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<script type="text/javascript" language="javascript" class="init">
+    $(document).ready(function () {
+        var table = $('#datausers').DataTable({
+            scrollY: "50vh",
+            scrollCollapse: true,
+            paging: false,
+        });
+    });
+
+    function confirmOption(opcion, direccion) {
+        if (confirm("Esta seguro que desea Eliminar el registro " + opcion)) {
+            window.location.href = direccion;
+        }
+    }
+</script>
+
+
+{% endblock script %}

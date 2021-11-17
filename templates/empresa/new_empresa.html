@@ -1,0 +1,76 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block content %}
+
+
+<div class="wrapper">
+    <div class="content-wrapper" style="min-height: 2171.31px">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Creacion de usuarios</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'dashboard' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Creacion de Empresa</li>
+
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header"></div>
+                                <form method="POST" action="#">
+                                    {% csrf_token %}
+                                    <!-- card-body -->
+                                    <div class="card card-body">
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="rutEmpresa" placeholder="Rut Empresa"/>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="razoSocial" placeholder="Razon Social" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="giroEmpresa"
+                                                placeholder="Giro Empresa" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="direccionEmpresa"
+                                                placeholder="direccion" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="number" class="form-control" name="numeroTelefono"
+                                                placeholder="Numero de Telefono"/>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="correoElectronicoEmpresa"
+                                                placeholder="Correo Electronico"/>
+                                        </div>
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-info"
+                                            value="OK">Crear</button>
+                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}

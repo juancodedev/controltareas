@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="wrapper">
+    <div class="content-wrapper" style="min-height: 2171.31px">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Creacion de usuarios</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'dashboard' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Creacion de Empresa</li>
+
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header"></div>
+                                <form method="POST" action="#">
+                                    {% csrf_token %}
+                                    {% for x in datos.oneEmpresa %}
+                                    <!-- card-body -->
+                                    <div class="card card-body">
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="rutEmpresa" readonly value="{{ x.rutEmpresa }}" readonly />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="razoSocial"  readonly value="{{ x.razonSocial }}" readonly />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="giroEmpresa" readonly value="{{ x.giroEmpresa }}" readonly />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="direccionEmpresa" readonly value="{{ x.direccionEmpresa }}" readonly />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="numeroTelefono" readonly value="{{ x.numeroTelefono }}" readonly />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="correoElectronicoEmpresa" readonly value="{{ x.correoElectronicoEmpresa }}" readonly />
+                                        </div>
+                                    <!-- /.card-body -->
+                                    {% endfor %}
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-default float-right">Cancelar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}

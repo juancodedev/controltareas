@@ -257,6 +257,31 @@
                     </li>
                   </ul>
                 </li>
+                 <li class="nav-item">
+                  <a href="" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Empresas
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview" style="display: none;">
+                    <li class="nav-item">
+                      <a href="{% url 'EmpresaList' %}"
+                        class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Listar</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'workflownew' %}"
+                        class="nav-link {% if datos.menu == 'workflownew' %} active {% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Crear</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
                 <li class="nav-item">
                   <a href="#" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>

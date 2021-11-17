@@ -65,7 +65,6 @@ def tasklist(request):
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
         tarea={}
         tarea['data']= []
@@ -1263,7 +1262,9 @@ def RejectTask(request, idTask):
 def Addjustificacion(request,description,idTask):
     if authenticated:
         token = request.COOKIES.get('validate')
+        
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
 
 
         # Datos a enviar a la petición POST
@@ -1271,6 +1272,196 @@ def Addjustificacion(request,description,idTask):
                                 'Descripcion': description,
         })
         r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
+
+
+
+#CRUD EMPRESA
+def EmpresasList(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        empresas = requests.get('http://localhost:32482/api/business/',headers=headers).json()
+        listEmpresa = empresas['data']
+
+
+        context = {
+            'empresas': listEmpresa
+        }
+
+        return render(request, 'empresa/list_empresa.html',{'data':context})
+    else: 
+        return redirect('login')
+
+def AddTareaSection(request):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+
+        rutEmpresa = request.POST.get('rutEmpresa')
+        razonSocial = request.POST.get('razoSocial')
+        giroEmpresa = request.POST.get('giroEmpresa')
+        direccionEmpresa = request.POST.get('direccionEmpresa')
+        telefono = request.POST.get('numeroTelefono')
+        correoElectronico = request.POST.get('correoElectronicoEmpresa')
+
+        status = ''
+        if rutEmpresa == '' or razonSocial == '' or giroEmpresa == '' or direccionEmpresa == '' or telefono == None or correoElectronico == '':
+            status = 'ERROR'
+        elif rutEmpresa != '' or razonSocial != '' or giroEmpresa != '' or direccionEmpresa != '' or telefono != None or correoElectronico != '':
+            status = 'OK'
+        else:
+            status
+        if  status == 'OK':
+            AddEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,telefono,correoElectronico)
+        
+
+        return render(request,'empresa/new_empresa.html')
+    else:
+        return redirect('login')
+
+
+def AddEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,telefono,correoElectronico):
+    if authenticated:
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+        payload = json.dumps({
+                                'rutEmpresa':rutEmpresa,
+                                'razonSocial':razonSocial,
+                                'giroEmpresa':giroEmpresa,
+                                'direccionEmpresa':direccionEmpresa,
+                                'numeroTelefono':int(telefono),
+                                'correoElectronicoEmpresa':correoElectronico,
+        })
+
+        r = requests.post('http://localhost:32482/api/business/add/', headers=headers, data=payload)
+
+def EditEmpresaSection(request, rutEmpresa):
+    if authenticated(request):
+        status = 'NO_CONTENT'
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+        #consumo de API: oneEmpresa
+        # method: get with params
+        rutEmpresaP=str(rutEmpresa)
+        resOneEmpresa = requests.get('http://localhost:32482/api/business/oneBusiness/'+ rutEmpresaP, headers=headers).json()
+        #dataOneTarea = resOneTarea.json()
+        OneEmpresa = resOneEmpresa['data']
+
+        # ASignacion del rut a buscar
+        empresaToSearch = ''
+        for x in OneEmpresa:
+            empresaToSearch = x['rutEmpresa']
+
+        # validate data Extraction
+        if request.method == 'POST':
+            try:
+                rutEmpresa = request.POST.get('rutEmpresa')
+                razonSocial = request.POST.get('razoSocial')
+                giroEmpresa = request.POST.get('giroEmpresa')
+                direccionEmpresa = request.POST.get('direccionEmpresa')
+                numeroTelefono = request.POST.get('numeroTelefono')
+                correoElectronicoEmpresa = request.POST.get('correoElectronicoEmpresa')
+                status = 'OK'
+            except:
+                status = 'ERROR'
+        
+        # metodo update User
+            try:
+             if status == 'OK':
+              EditEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,numeroTelefono,correoElectronicoEmpresa,empresaToSearch)
+            except:
+                status = 'ERROR'
+        #print(nombreTarea,description,dateDeadline,problem_report,assignment,responsible,justification,taskState,taskPriority)    
+        context = {
+            'oneEmpresa': OneEmpresa,
+        }
+
+        # return Section
+        return render(request, 'empresa/edit_empresa.html', {'data':context})
+    else:
+        return redirect('login')
+
+
+def EditEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,numeroTelefono,correoElectronicoEmpresa,empresaToSearch):
+
+    if authenticated:
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+        
+        payload = json.dumps({
+                                'rutEmpresa':rutEmpresa,
+                                'razonSocial':razonSocial,
+                                'giroEmpresa': giroEmpresa,
+                                'direccionEmpresa': direccionEmpresa,
+                                'numeroTelefono' : int(numeroTelefono),
+                                'correoElectronicoEmpresa' : correoElectronicoEmpresa,
+        })
+        
+        print(payload)
+        r = requests.put('http://localhost:32482/api/business/update/'+empresaToSearch, headers=headers, data=payload)
+        print(r)
+
+
+def DeleteEmpresaSection(request, rutEmpresa):
+    if authenticated:
+        status = 'NO_CONTENT'
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+        # Consumo de API: Empresa
+        # METHOD: DELETE
+        payload = json.dumps({'rutEmpresa': rutEmpresa})
+        r = requests.delete('http://localhost:32482/api/business/delete/' + rutEmpresa, headers=headers, data=payload)
+
+        # Consumo API: Empresa
+        reqEmpresa = requests.get('http://localhost:32482/api/business', headers=headers)
+        dataAPI = reqEmpresa.json()
+        listEmpresa = dataAPI['data']
+
+        context = {
+            'empresa': listEmpresa, 
+            'deleteStatus': status
+        }
+
+        if r.ok:
+            status = 'DELETED'
+            print(status)
+            return redirect('EmpresaList')
+        else:
+            status = 'ERROR'
+            print(status)
+            return render(request, 'Empresas/list_empresa.html', {'data': context})
+    
+    else:
+        return redirect('login')
+
+
+
+def ViewEmpresa(request, id):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        resOneEmpresa = requests.get('http://localhost:32482/api/business/oneBusiness/'+str(id), headers=headers).json()
+        OneEmpresa = resOneEmpresa['data']
+
+        # ASignacion del rut a buscar
+        empresaToSearch = ''
+        for x in OneEmpresa:
+            empresaToSearch = x['rutEmpresa']
+
+        print(OneEmpresa)
+
+        context = {
+            'oneEmpresa': OneEmpresa,
+        }
+        return render(request, 'empresa/detail_empresa.html',{'datos': context})
+    else: 
+        return redirect('login')
+
 
 # DENNISSE SECTION
 
