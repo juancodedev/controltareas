@@ -1,3 +1,4 @@
+from django.http import request
 from django.shortcuts import redirect, render
 from controltareas.settings import EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 from email.mime.multipart import MIMEMultipart
@@ -5,7 +6,16 @@ from email.mime.text import MIMEText
 
 from django.template.loader import render_to_string
 import smtplib, ssl
-from django.http.request import HttpRequest
+import celery
+
+def testmail( data):
+    context = {
+            'evento': data['evento'], 
+            'user': data['user'],
+            'tarea': data['tarea'],
+            'prioridad': data['prioridad']
+        }
+    return render('email/email.html',context)
 
 def sendEmails(data):
     try:
@@ -23,11 +33,10 @@ def sendEmails(data):
         mensaje['Subject'] = "Sistema de notificaciones de tareas"
         
         context = {
+            'evento': data['evento'],
             'user': data['user'],
             'tarea': data['tarea'],
-            'fechaPlazo': data['fechaPlazo'],
             'prioridad': data['prioridad'],
-            'descripcion': data['descripcion'],
             }
         
         content = render_to_string('email/email.html', context)
@@ -38,29 +47,11 @@ def sendEmails(data):
                             mensaje.as_string())
         # Cierre de la conexion
         mailServer.close()
-        
-        # message = """\
-        #     Subject: Hola { "data['user']" }
 
-        #     This message is sent from Python."""
-        
-        # receiver_email = 'cl.jmunoz@gmail.com'
-        # context = ssl.create_default_context()
-        # with smtplib.SMTP_SSL(EMAIL_HOST, 465, context=context) as server:
-        #     server.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
-        #     server.sendmail(EMAIL_HOST_USER, receiver_email, message)
     except Exception as e:
         print(e)
+
+@celery.task
+def proximidad():
+    print("algo") 
         
-        
-        
-def testmail(request):
-    context = {
-            'user': 'juan muñoz',
-            'tarea': int(432),
-            'fechaPlazo': '20/12/203333',
-            'prioridad': 'alta',
-            'descripcion': 'coso',
-        }
-    
-    return render(request, 'email/email.html',context)
