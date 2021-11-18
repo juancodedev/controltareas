@@ -85,7 +85,7 @@ urlpatterns = [
     path('tareaSubordinadaSection/deleteTareaSubordinadaSection/<int:idTareaSub>', views.DeleteTareaSubordinadaSection, name="DeleteTareaSubordinadaSection"),
     path('tareaSubordinadaSection/updateTareaSubordinadaSection/<int:idTareaSub>', views.EditTareaSubordinadaSection, name="EditTareaSubordinadaSection"),
 
-    #Empresas
+    #Empresas Alejandro
     path('empresaList/',views.EmpresasList, name='EmpresaList'),
     path('addEmpresa/',views.AddEmpresaSection, name='EmpresaAdd'),
     path('editEmpresa/<str:rutEmpresa>', views.EditEmpresaSection, name='EmpresaEdit'),

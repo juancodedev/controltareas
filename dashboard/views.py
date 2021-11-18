@@ -8,8 +8,6 @@ import requests, jwt, json
 from datetime import datetime
 from random import randint
 
-from datetime import datetime
-
 #modulos extras solo para pruebas
 import random
 
@@ -334,7 +332,7 @@ def tasknew(request):
     else: 
         return redirect('login')
 
-
+#modificado por Alejandro
 def updatetask(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -363,6 +361,7 @@ def updatetask(request, id):
         return redirect('login')
 
 #Salvar datos de la nueva tarea
+#modificado por Alejandro
 def savenewtask(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -1279,7 +1278,7 @@ def Addjustificacion(request,description,idTask):
 
 
 
-#CRUD EMPRESA
+#CRUD EMPRESA Alejandro
 def EmpresasList(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
