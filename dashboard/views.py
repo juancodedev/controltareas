@@ -595,6 +595,7 @@ def createnewunits(request):
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
     payload = json.dumps({
         'NombreUnidad': request.POST.get('nombreunit'),
+        'fkRutEmpresa': request.POST.get('fkRutEmpresa'),
         'DescripcionUnidad': request.POST.get('descriptunit') 
     })
     r = requests.post('http://localhost:32482/api/unidadInterna/add/', headers=headers, data=payload)
@@ -609,10 +610,13 @@ def newunits(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        empresas = requests.get('http://localhost:32482/api/business', headers=headers).json()
         context = {
         'menu' : 'newunits',
         'email' : data['email'],
         'name': data['unique_name'],
+        'empresas': empresas['data'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
         }
@@ -648,15 +652,21 @@ def editunits(request, id):
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        empresa = requests.get('http://localhost:32482/api/business', headers=headers).json()
         for i in units['data']:
             if i['idUnidadInterna'] == id:
                 unidad = i
+
+        for x in empresa['data']:
+            if x['rutEmpresa'] == unidad['fkRutEmpresa']:
+                empresa  = x
                 
         context = {
         'menu' : 'editunits',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
+        'empresas': empresa,
         'login' : datetime.fromtimestamp(data['nbf']),
         'unidad': unidad,
         }

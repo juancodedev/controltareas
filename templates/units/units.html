@@ -40,6 +40,35 @@
                                             {% if datos.menu == 'editunits' %} value = "{{datos.unidad.nombreUnidad}}"{% endif %}
                                             />
                                         </div>
+
+                                        <div class="row">
+                                            {% if datos.menu == 'newunits' %}
+                                            <div class="col-sm-12">
+                                                <label>Nombre Empresa</label>
+                                                <select class="form-control" name="fkRutEmpresa">
+                                                    {% for empresa in datos.empresas %}
+                                                    <option value="{{empresa.rutEmpresa}}"
+                                                        {% if datos.menu == 'newunits'%} placeholder = "Rut Empresa" {% endif %} 
+                                                        >
+                                                        
+                                                        {{empresa.razonSocial}} 
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            {% endif %}
+                                            
+                                        <!--
+                                            {% if datos.menu == 'editunits' %}
+                                            <div class="col-sm-12">
+                                                <label>Nombre Empresa {{datos.empresas}}</label>
+                                                <input type="text" value="{{empresas.rutEmpresa}}">
+                                                {{empresa.razonSocial}}
+                                            </div>
+                                            {% endif %}
+                                        -->
+
+
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <!-- textarea -->
