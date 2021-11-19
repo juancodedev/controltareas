@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'login',
+    'messagesMail',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,22 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SECRET = '12381989as1938192981992as1129898911212989a9'
+
+
+# CELERY
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Santiago'
+# CELERY_IMPORTS = ('messagesMail', )
+
+#Email
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'controltareasnotificaciones@gmail.com'
+EMAIL_HOST_PASSWORD = 'olidata123'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'controltareasnotificaciones@gmail.com'

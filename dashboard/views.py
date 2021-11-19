@@ -4,9 +4,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from requests.api import delete, head, request
 from login.views import authenticated, decodered
-import requests, jwt, json
+import requests, jwt
 from datetime import datetime
 from random import randint
+from messagesMail.tasks import sendEmailTask
+
 
 #modulos extras solo para pruebas
 import random
@@ -338,6 +340,7 @@ def updatetask(request, id):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
         
 
         payload = json.dumps(
@@ -351,9 +354,20 @@ def updatetask(request, id):
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        print(update.content)
-        print(payload)
+
         if update.ok: 
+            usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('creadopor'))[0]
+            tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+
+            data = {
+                'evento': 'Actualizacion de tarea', 
+                'email': usuario['correoElectronico'],
+                'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
+                'tarea': tarea['data'][0],
+                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+            }
+            sendEmailTask.delay(data)
+
             return redirect('tasklist')
         else:
             return redirect('dashboard') #envia al dashboard si da error
@@ -1075,7 +1089,6 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
         tareaSub = str(idTareaSub)
         payload = json.dumps({'idTareaSubordinada': tareaSub})
         r = requests.delete('http://localhost:32482/api/TareaSubordinada/delete/' + tareaSub, headers=headers, data=payload)
-        print(r)
 
         # Consumo de API: Tarea Subordinada
         # Method: GET
@@ -1090,11 +1103,9 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
 
         if r.ok:
             status = 'DELETED'
-            print(status)
             return redirect('TareaSubordinadaSection')
         else: 
             status = 'ERROR'
-            print(status)
             return render(request, 'subordinatetask/list_subordinatetask.html', {'datos': context})
         
     else:
@@ -1245,27 +1256,23 @@ def AcceptTask(request, idTask):
 # Metodo Rechazar
 
 def RejectTask(request, idTask):
-    if authenticated:
-        token = request.COOKIES.get('validate')
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-        
+    if authenticated:                
         try:
             descripcion = request.POST.get('descripcion')
-            print(descripcion)
             status = ''
             if descripcion == '':
+                print("no tiene datos")   
                 status = 'ERROR'
             elif descripcion != '':
                 status = 'OK'
             else:
-                status
+                status           
+            
             if  status == 'OK':
+                print("vamos a agregar la justificacion")
                 Addjustificacion(request,descripcion,idTask)
-
-            return redirect('taskfuncionario')
-
+                return redirect('taskfuncionario')
         except:
-            print('ERROR')
             return redirect('taskfuncionario')
     
     else: 
@@ -1277,14 +1284,37 @@ def Addjustificacion(request,description,idTask):
         token = request.COOKIES.get('validate')
         
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-
-
-
+        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/' + idTask, headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        userRechazado = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
         # Datos a enviar a la petición POST
         payload = json.dumps({
-                                'Descripcion': description,
+            'Descripcion': description,
         })
         r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
+        if r.status_code == 201:
+            
+            data = {
+                'evento': 'Tarea Rechazada', 
+                'email': user['data'][0]['correoElectronico'],
+                'user': user['data'][0]['nombreUsuario'] +' '+ user['data'][0]['apellidoUsuario'],
+                'tarea': tarea['data'][0],
+                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == tarea['data'][0]['fkPrioridadTarea'])[0]['descripcion'],
+                'rechazadoPor': userRechazado['data'][0]['nombreUsuario'] +' '+ userRechazado['data'][0]['apellidoUsuario'],
+                'motivo': description, 
+            }
+            print(data)
+            sendEmailTask.delay(data)
+        #     # data = {
+            #     'evento': 'Tarea Rechazada', 
+            #     'email': usuario['correoElectronico'],
+            #     'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
+            #     'tarea': tarea['data'][0],
+            #     'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+            # }
+
 
 
 

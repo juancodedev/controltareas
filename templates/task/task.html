@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% load static %} 
+{% extends 'base.html' %} {% load static %}
 {% load parse_iso %}
 {% block content %}
 <div class="wrapper">
@@ -92,18 +92,20 @@
                                             </div>
                                             {% endif %}
                                             {% if datos.menu == 'taskedit' %}
-                                            <div class="form-group col-md-6">
+                                            {% comment %} <div class="form-group col-md-6">
                                                 <label>Fecha plazo:</label>
                                                 <div class="input-group date">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <input type="date" class="form-control" name="fechaplazo" value = "{{ datos.tareas.fechaPlazo|date:'m/d/Y' }}" >
+                                                            <input type="hidden" class="form-control" name="fechaplazo"
+                                                                value="{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}">
                                                         </div>
                                                     </div>
 
                                                 </div>
-                                            </div>
-
+                                            </div> {% endcomment %}
+                                            <input type="hidden" class="form-control" name="fechaplazo"
+                                                value="{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}">
                                             {% comment %} {% if datos.menu == 'taskedit' %} {% endcomment %}
                                             <div class="form-group col-md-6">
                                                 <label> Estado Tarea:</label>
@@ -131,7 +133,7 @@
                                                     <textarea class="form-control" rows="5"
                                                         {% if datos.menu == 'tasknew' %} placeholder="..." {% endif %}
                                                         style="resize: none;"
-                                                        name="descripciontarea">{% if datos.menu == 'taskedit' %} {{datos.tareas.descripcionTarea}} {% endif %}</textarea>
+                                                        name="descripciontarea">{% if datos.menu == 'taskedit' %}{{datos.tareas.descripcionTarea}}{% endif %}</textarea>
                                                 </div>
                                             </div>
 
