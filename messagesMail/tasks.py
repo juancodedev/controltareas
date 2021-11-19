@@ -7,7 +7,12 @@ logger = get_task_logger(__name__)
 
 @task(name="sendEmailTask")
 def sendEmailTask(data):
-    logger.info("Sent email to users")
+    if data['evento'] == 'Tarea Rechazada':
+        logger.info("Sent email --> Tarea rechazada")
+    elif data['evento'] == 'Actualizacion de tarea':
+        logger.info("Sent email --> Actualizacion de tarea")
+
+    
     return sendEmails(data)
 
 @periodic_task(

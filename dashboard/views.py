@@ -1271,30 +1271,30 @@ def Addjustificacion(request,description,idTask):
     if authenticated:
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-        # user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
-        # usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('creadopor'))[0]
         tarea = requests.get('http://localhost:32482/api/tarea/oneTask/' + idTask, headers=headers).json()
-        # prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
-
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        userRechazado = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
         # Datos a enviar a la petición POST
         payload = json.dumps({
             'Descripcion': description,
         })
         r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
-        if r.status_code == int(201):
-
-            print("paso el creado")
-            print(tarea['data'])
+        if r.status_code == 201:
+            
             data = {
                 'evento': 'Tarea Rechazada', 
-                'email': 'cl.jmunoz@gmail.com',
-                'user': 'juan muñoz',
+                'email': user['data'][0]['correoElectronico'],
+                'user': user['data'][0]['nombreUsuario'] +' '+ user['data'][0]['apellidoUsuario'],
                 'tarea': tarea['data'][0],
-                'prioridad': 'Prioridad 1',
+                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == tarea['data'][0]['fkPrioridadTarea'])[0]['descripcion'],
+                'rechazadoPor': userRechazado['data'][0]['nombreUsuario'] +' '+ userRechazado['data'][0]['apellidoUsuario'],
+                'motivo': description, 
             }
             print(data)
             sendEmailTask.delay(data)
-            # data = {
+        #     # data = {
             #     'evento': 'Tarea Rechazada', 
             #     'email': usuario['correoElectronico'],
             #     'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
