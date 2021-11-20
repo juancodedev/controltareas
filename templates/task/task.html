@@ -43,18 +43,21 @@
                                             {% if datos.menu == 'taskedit' %}
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Asignado a:</label>
-                                                <select class="form-control" name="creadopor">
-
-
-                                                    {% for creado in datos.creadopor %}
-                                                    <option value="{{creado.rutUsuario}}"
-                                                        {% if datos.menu == 'taskedit' and creado.rutUsuario == datos.tareas.fkRutUsuario %}
+                                                <select class="form-control" name="asignadoa">
+                                                    {% for asignadoa in datos.asignadoa %}
+                                                    <option value="{{asignadoa.rutUsuario}}"
+                                                        {% if datos.menu == 'taskedit' and asignadoa.rutUsuario == datos.tareas.fkRutUsuario %}
                                                         selected {% endif %}>
-                                                        {{creado.nombreUsuario}}
-                                                        {{ creado.apellidoUsuario}}</option>
+                                                        {{asignadoa.nombreUsuario}}
+                                                        {{ asignadoa.apellidoUsuario}}</option>
                                                     {% endfor %}
 
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="Proceso">Creado por</label>
+                                                <input type="text" class="form-control" name="creadopor"
+                                                    value="{{datos.creadopor}}" disabled/>
                                             </div>
                                             {% endif %}
 
@@ -104,8 +107,8 @@
 
                                                 </div>
                                             </div> {% endcomment %}
-                                            <input type="hidden" class="form-control" name="fechaplazo"
-                                                value="{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}">
+                                            <input type="date" class="form-control" name="fechaplazo"
+                                                value="{{datos.tareas.fechaPlazo}}"">
                                             {% comment %} {% if datos.menu == 'taskedit' %} {% endcomment %}
                                             <div class="form-group col-md-6">
                                                 <label> Estado Tarea:</label>

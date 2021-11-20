@@ -121,25 +121,29 @@ def taskedit(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
         estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
-        creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
+        asignadoa = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
         justificacion = requests.get('http://localhost:32482/api/justificacionTarea/', headers=headers).json()
-        tarea = list(e for e in tareas['data'] if e['idTarea']  == int(id))[0]
+        unaTarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+
         
+        creado = list(e for e in usuarios['data'] if e['rutUsuario']  == unaTarea['data'][0]['creadaPor'])
+
+        print(unaTarea['data'][0])
         context = {
         'menu' : 'taskedit',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'tareas' : tarea,
+        'tareas' : unaTarea['data'][0],
         'usuarios': usuarios['data'],
         'prioridad': prioridad['data'],
         'estado': estado['data'],
-        'creadopor': creadopor['data'],
+        'asignadoa': asignadoa['data'],
+        'creadopor': creado[0]['nombreUsuario']+' '+creado[0]['apellidoUsuario'],
         'justificacion': justificacion['data'],
         }
         return render(request, 'task/task.html',{'datos': context})
@@ -349,11 +353,14 @@ def updatetask(request, id):
             'descripcionTarea': request.POST.get('descripciontarea'),
             'fechaPlazo': request.POST.get('fechaplazo'),
             'porcentajeAvance': int(request.POST.get('porcentaje')),
-            'fkRutUsuario' : request.POST.get('creadopor'),
+            'fkRutUsuario': request.POST.get('creadopor'),  #cre
+            'fkRutUsuario' : request.POST.get('asignadoa'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
+        
+        print(update.json())
 
         if update.ok: 
             usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('creadopor'))[0]
