@@ -64,7 +64,7 @@ urlpatterns = [
     
     
     
-    path('admin/', views.admin, name='admin'), # Admin de django
+    # path('admin/', views.admin, name='admin'), # Admin de django
     path('logout/', logout, name='logout'), #cierra sesion
     #rutas funcionario
     

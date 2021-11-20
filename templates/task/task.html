@@ -57,7 +57,10 @@
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Creado por</label>
                                                 <input type="text" class="form-control" name="creadopor"
-                                                    value="{{datos.creadopor}}" disabled/>
+                                                    value="{{datos.creadopor.nombreUsuario}} {{datos.creadopor.apellidoUsuario}}" readonly />
+                                                <input type="text" class="form-control" name="creadoporRut"
+                                                    value="{{datos.creadopor.rutUsuario}}" hidden />
+
                                             </div>
                                             {% endif %}
 
@@ -107,8 +110,9 @@
 
                                                 </div>
                                             </div> {% endcomment %}
-                                            <input type="date" class="form-control" name="fechaplazo"
-                                                value="{{datos.tareas.fechaPlazo}}"">
+                                            {% comment %} <input type="date" class="form-control" name="fechaplazo" value="{{datos.tareas.fechaPlazo}}"> {% endcomment %}
+                                            <input type="text" class="form-control" value = "{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}" disabled>
+
                                             {% comment %} {% if datos.menu == 'taskedit' %} {% endcomment %}
                                             <div class="form-group col-md-6">
                                                 <label> Estado Tarea:</label>

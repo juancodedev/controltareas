@@ -131,7 +131,7 @@ def taskedit(request, id):
         
         creado = list(e for e in usuarios['data'] if e['rutUsuario']  == unaTarea['data'][0]['creadaPor'])
 
-        print(unaTarea['data'][0])
+        
         context = {
         'menu' : 'taskedit',
         'email' : data['email'],
@@ -143,7 +143,7 @@ def taskedit(request, id):
         'prioridad': prioridad['data'],
         'estado': estado['data'],
         'asignadoa': asignadoa['data'],
-        'creadopor': creado[0]['nombreUsuario']+' '+creado[0]['apellidoUsuario'],
+        'creadopor':creado[0] ,
         'justificacion': justificacion['data'],
         }
         return render(request, 'task/task.html',{'datos': context})
@@ -227,21 +227,6 @@ def teamwork(request):
                     'login' : datetime.fromtimestamp(data['nbf']),
             }
             return render(request,'teamwork/teamwork.html',{'datos': context})
-    else: 
-        return redirect('login')
-    
-def admin(request):
-    if authenticated(request):
-        token = request.COOKIES.get('validate')
-        data = decodered(token)
-        context = {
-            'menu' : 'tableTask',
-            'email' : data['email'],
-            'name': data['unique_name'],
-            'role': int(data['role']),
-            'login' : datetime.fromtimestamp(data['nbf']),
-        }
-        return render(request, 'task/tasklist.html',{'datos': context})
     else: 
         return redirect('login')
 
@@ -345,35 +330,31 @@ def updatetask(request, id):
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
-        
 
         payload = json.dumps(
         {
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
-            'fechaPlazo': request.POST.get('fechaplazo'),
+            # 'fechaPlazo': request.POST.get('fechaplazo'),
             'porcentajeAvance': int(request.POST.get('porcentaje')),
-            'fkRutUsuario': request.POST.get('creadopor'),  #cre
+            # 'creadaPor': request.POST.get('creadoporRut'),  #cre
             'fkRutUsuario' : request.POST.get('asignadoa'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        
-        print(update.json())
-
         if update.ok: 
-            usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('creadopor'))[0]
-            tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
-
-            data = {
-                'evento': 'Actualizacion de tarea', 
-                'email': usuario['correoElectronico'],
-                'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
-                'tarea': tarea['data'][0],
-                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
-            }
-            sendEmailTask.delay(data)
+            if int(request.POST.get('estadotarea'))== 2:
+                usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('asignadoa'))[0]
+                tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+                data = {
+                    'evento': 'Actualizacion de tarea', 
+                    'email': usuario['correoElectronico'],
+                    'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
+                    'tarea': tarea['data'][0],
+                    'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+                }
+                sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
 
             return redirect('tasklist')
         else:
