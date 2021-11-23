@@ -13,6 +13,8 @@ urlpatterns = [
     path('updatetask/<int:id>', views.updatetask, name='updatetask'), # Guardar tarea nueva
     path('taskedit/<int:id>', views.taskedit, name='taskedit'), # Guardar tarea nueva
     path('savenewtask/', views.savenewtask, name='savenewtask'), # Guardar tarea nueva
+    path('taskcomplete/<int:idTask>', views.taskcomplete, name="taskcomplete"), # Completa las tareas
+    
 
     path('taskdetails/<int:id>', views.taskdetails, name='taskdetails'), # Guardar tarea nueva
     path('taskdelete/<int:id>', views.taskdelete, name='taskdelete'), # Guardar tarea nueva

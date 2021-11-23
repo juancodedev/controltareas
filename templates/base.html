@@ -196,7 +196,7 @@
             <li class="nav-item">
               <a href="{% url 'tasklist' %}" class="nav-link {% if datos.menu == 'tableTask' %} active {% endif %}">
                 <i class="nav-icon fa fa-clipboard-list text-info"></i>
-                <p>Tareas</p>
+                <p>Mis Tareas asignadas</p>
               </a>
             </li>
             <li class="nav-item">
@@ -208,7 +208,7 @@
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fa fa-clipboard-list text-info"></i>
-                <p>Administración
+                <p>Recursos
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
@@ -268,14 +268,14 @@
                   <ul class="nav nav-treeview" style="display: none;">
                     <li class="nav-item">
                       <a href="{% url 'EmpresaList' %}"
-                        class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
+                        class="nav-link {% if datos.menu == 'EmpresasList' %} active {% endif %}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="{% url 'workflownew' %}"
-                        class="nav-link {% if datos.menu == 'workflownew' %} active {% endif %}">
+                        class="nav-link {% if datos.menu == 'AddEmpresaSection' %} active {% endif %}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>

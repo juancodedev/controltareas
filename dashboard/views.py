@@ -68,20 +68,38 @@ def tasklist(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
+        
+        #Se utiliza para obtener los la unidad interna del usuario
+        usuario = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(usuario['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        ls = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
+                
         tarea={}
         tarea['data']= []
+        
+        asignado = []
+        for a in usuarios['data']:
+            for b in ls:
+                if a['idUnidadInternaUsuario'] == b['idUnidadInterna']:
+                    asignado.append(a)
+        
         for datos in tareas['data']:
-            tarea['data'].append({
-            'idTarea': datos['idTarea'],
-            'nombreTarea': datos['nombreTarea'] ,
-            'descripcionTarea': datos['descripcionTarea'] ,
-            'fechaPlazo': datos['fechaPlazo'] ,
-            'fkRutUsuario': datos['fkRutUsuario'] ,
-            'fkEstadoTarea': datos['fkEstadoTarea'] ,
-            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': randint(1, 100),
-            }
-            )
+            for us in asignado:
+                if datos['fkRutUsuario'] == us['rutUsuario']:
+                    tarea['data'].append({
+                    'idTarea': datos['idTarea'],
+                    'nombreTarea': datos['nombreTarea'] ,
+                    'descripcionTarea': datos['descripcionTarea'] ,
+                    'fechaPlazo': datos['fechaPlazo'] ,
+                    'fkRutUsuario': datos['fkRutUsuario'] ,
+                    'fkEstadoTarea': datos['fkEstadoTarea'] ,
+                    'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+                    'percent': randint(1, 100),
+                    }
+                    )
         
         context = {
             'menu' : 'tableTask',
@@ -322,6 +340,25 @@ def tasknew(request):
         return render(request, 'task/task.html',{'datos': context})
     else: 
         return redirect('login')
+    
+    
+#Metodo que modifica estado de tarea a completada
+def taskcomplete(request,idTask):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        
+        finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
+        
+
+        if finishedTask.ok:
+            return redirect('tasklist')
+        else:
+            return redirect('dashboard')
+    else: 
+        return redirect('login')
+
 
 #modificado por Alejandro
 def updatetask(request, id):
