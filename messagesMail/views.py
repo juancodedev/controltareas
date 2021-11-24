@@ -9,15 +9,47 @@ import smtplib, ssl
 import celery
 
 def testmail( data):
-    
+
     print(data)
     context = {
-            'evento': data['evento'], 
-            'user': data['user'],
-            'tarea': data['tarea'],
-            'prioridad': data['prioridad']
+            'evento': 'Tarea Rechazada',
+            'user': 'Juan Muñoz',
+            'tarea': 'Tarea 1'
         }
-    return render('email/email.html',context)
+    return render(request, 'email/email.html',{'datos': context})
+
+# def sendEmails(data):
+#     try:
+#         mailServer = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+#         print(mailServer.ehlo())
+#         mailServer.starttls()
+#         print(mailServer.ehlo())
+#         mailServer.login(EMAIL_HOST_USER,EMAIL_HOST_PASSWORD)
+
+#         # Construimos el mensaje simple
+#         mensaje = MIMEMultipart()
+#         mensaje['From'] =  "Sistema de Notificaciones AdminTask"
+
+#         mensaje['To'] = data['email']
+
+#         mensaje['Subject'] = "Sistema de notificaciones de tareas"
+#         destinatarios = []
+
+
+
+#         content = render_to_string('email/email.html', context)
+#         mensaje.attach(MIMEText(content, 'html'))
+#         message = ('Subject here', 'Here is the message', EMAIL_HOST_USER, ['cl.jmunoz@gmail.com', 'juaa.munoz@duocuc.cl'])
+#         # mailServer.sendmail(EMAIL_HOST_USER,
+#         #                     destinatarios,
+#         #                     mensaje.as_string())
+#         mailServer.send_mass_mail((message), fail_silently=False)
+
+#         # Cierre de la conexion
+#         mailServer.close()
+
+#     except Exception as e:
+#         print(e)
 
 def sendEmails(data):
     try:
@@ -26,55 +58,61 @@ def sendEmails(data):
         mailServer.starttls()
         print(mailServer.ehlo())
         mailServer.login(EMAIL_HOST_USER,EMAIL_HOST_PASSWORD)
-        
-        # Construimos el mensaje simple
-        
 
+        # Construimos el mensaje simple
         mensaje = MIMEMultipart()
         mensaje['From'] =  "Sistema de Notificaciones AdminTask"
 
+        # mensaje['To'] = data['email']
+
         mensaje['Subject'] = "Sistema de notificaciones de tareas"
+        
+        destinatarios = data['email']
+        # destinatarios = ['juaa.munoz@duocuc.cl', 'cl.jmunoz@gmail.com']
+
         if data['evento'] == 'Tarea Rechazada':
-            mensaje['To'] = data['email']
             context = {
                 'evento': data['evento'],
                 'user': data['user'],
                 'tarea': data['tarea'],
-                'prioridad': data['prioridad'],
                 'rechazadoPor': data['rechazadoPor'],
                 'motivo': data['motivo']
             }
+
         elif data['evento'] == 'Actualizacion de tarea':
-            mensaje['To'] = data['email']
             context = {
                 'evento': data['evento'],
                 'user': data['user'],
                 'tarea': data['tarea'],
-                'prioridad': data['prioridad'],
             }
+
         elif data['evento'] == 'Finalización de tarea':
-            mensaje['To'] = data['email'],      
             context = {
                 'evento': data['evento'],
-                'user': data['user'],
                 'tarea': data['tarea'],
-                'prioridad': data['prioridad'],
+                'motivo': 'Finalizada por sistema'
             }
 
 
         content = render_to_string('email/email.html', context)
+
         mensaje.attach(MIMEText(content, 'html'))
 
         mailServer.sendmail(EMAIL_HOST_USER,
-                            data['email'],
+                            destinatarios,
                             mensaje.as_string())
-        # Cierre de la conexion
-        mailServer.close()
-
+        
     except Exception as e:
         print(e)
 
+
+
+
 @celery.task
 def proximidad():
-    print("algo") 
+    try:
+        token = request.COOKIES.get('validate')
         
+    except Exception as e:
+        print("No hay datos que procesar")
+

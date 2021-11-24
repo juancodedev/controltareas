@@ -11,6 +11,13 @@ def sendEmailTask(data):
         logger.info("Sent email --> Tarea rechazada")
     elif data['evento'] == 'Actualizacion de tarea':
         logger.info("Sent email --> Actualizacion de tarea")
+    elif data['evento'] == 'Finalización de tarea':
+        logger.info("Sent email --> Finalización de tarea")
+    elif data['evento'] == 'Alerta de priximidad':
+        logger.info("Sent email --> Finalización de tarea")
+    
+        
+        
 
     
     return sendEmails(data)
