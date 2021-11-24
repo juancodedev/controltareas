@@ -32,9 +32,10 @@ def sendEmails(data):
 
         mensaje = MIMEMultipart()
         mensaje['From'] =  "Sistema de Notificaciones AdminTask"
-        mensaje['To'] = data['email']
+
         mensaje['Subject'] = "Sistema de notificaciones de tareas"
         if data['evento'] == 'Tarea Rechazada':
+            mensaje['To'] = data['email']
             context = {
                 'evento': data['evento'],
                 'user': data['user'],
@@ -44,6 +45,15 @@ def sendEmails(data):
                 'motivo': data['motivo']
             }
         elif data['evento'] == 'Actualizacion de tarea':
+            mensaje['To'] = data['email']
+            context = {
+                'evento': data['evento'],
+                'user': data['user'],
+                'tarea': data['tarea'],
+                'prioridad': data['prioridad'],
+            }
+        elif data['evento'] == 'Finalización de tarea':
+            mensaje['To'] = data['email'],      
             context = {
                 'evento': data['evento'],
                 'user': data['user'],
