@@ -141,7 +141,11 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Santiago'
-# CELERY_IMPORTS = ('messagesMail', )
+
+#depuracion
+
+# CELERY_ALWAYS_EAGER = True
+
 
 #Email
 EMAIL_USE_TLS = True

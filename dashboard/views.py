@@ -1,10 +1,9 @@
-import json
+import json, requests, jwt
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from requests.api import delete, head, request
 from login.views import authenticated, decodered
-import requests, jwt
 from datetime import datetime
 from random import randint
 from messagesMail.tasks import sendEmailTask
@@ -68,20 +67,38 @@ def tasklist(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
+        
+        #Se utiliza para obtener los la unidad interna del usuario
+        usuario = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(usuario['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        ls = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
+                
         tarea={}
         tarea['data']= []
+        
+        asignado = []
+        for a in usuarios['data']:
+            for b in ls:
+                if a['idUnidadInternaUsuario'] == b['idUnidadInterna']:
+                    asignado.append(a)
+    
         for datos in tareas['data']:
-            tarea['data'].append({
-            'idTarea': datos['idTarea'],
-            'nombreTarea': datos['nombreTarea'] ,
-            'descripcionTarea': datos['descripcionTarea'] ,
-            'fechaPlazo': datos['fechaPlazo'] ,
-            'fkRutUsuario': datos['fkRutUsuario'] ,
-            'fkEstadoTarea': datos['fkEstadoTarea'] ,
-            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': randint(1, 100),
-            }
-            )
+            for us in asignado:
+                if datos['fkRutUsuario'] == us['rutUsuario']:
+                    tarea['data'].append({
+                    'idTarea': datos['idTarea'],
+                    'nombreTarea': datos['nombreTarea'] ,
+                    'descripcionTarea': datos['descripcionTarea'] ,
+                    'fechaPlazo': datos['fechaPlazo'] ,
+                    'fkRutUsuario': datos['fkRutUsuario'] ,
+                    'fkEstadoTarea': datos['fkEstadoTarea'] ,
+                    'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+                    'percent': randint(1, 100),
+                    }
+                    )
         
         context = {
             'menu' : 'tableTask',
@@ -256,8 +273,7 @@ def workload(request, id):
             'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == u['idUnidadInternaUsuario'])[0]['nombreUnidad'],
             }
             )
-        print(usuario['data'][0])
-        print(user['data'][0])
+
 
         context = {
             'menu' : 'workload',
@@ -322,6 +338,41 @@ def tasknew(request):
         return render(request, 'task/task.html',{'datos': context})
     else: 
         return redirect('login')
+    
+    
+#Metodo que modifica estado de tarea a completada
+def taskcomplete(request,idTask):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(idTask), headers=headers).json()
+        userCreate = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        
+        userAssign = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
+        finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
+        
+        destinatarios = []
+        destinatarios.append(userCreate['data'][0]['correoElectronico'])
+        destinatarios.append(userAssign['data'][0]['correoElectronico'])
+        
+        
+        if finishedTask.ok:
+# # #Aqui
+            data = {
+                'multi' : True,
+                'evento': 'Finalización de tarea',
+                'email': destinatarios,
+                'tarea': tarea['data'][0],
+            }
+            sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
+            return redirect('tasklist')
+        else:
+            return redirect('dashboard')
+    else: 
+        return redirect('login')
+
 
 #modificado por Alejandro
 def updatetask(request, id):
@@ -352,7 +403,7 @@ def updatetask(request, id):
                     'email': usuario['correoElectronico'],
                     'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
                     'tarea': tarea['data'][0],
-                    'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+                    # 'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
                 }
                 sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
 
@@ -1249,7 +1300,6 @@ def RejectTask(request, idTask):
             descripcion = request.POST.get('descripcion')
             status = ''
             if descripcion == '':
-                print("no tiene datos")   
                 status = 'ERROR'
             elif descripcion != '':
                 status = 'OK'
@@ -1257,7 +1307,6 @@ def RejectTask(request, idTask):
                 status           
             
             if  status == 'OK':
-                print("vamos a agregar la justificacion")
                 Addjustificacion(request,descripcion,idTask)
                 return redirect('taskfuncionario')
         except:
@@ -1289,19 +1338,12 @@ def Addjustificacion(request,description,idTask):
                 'email': user['data'][0]['correoElectronico'],
                 'user': user['data'][0]['nombreUsuario'] +' '+ user['data'][0]['apellidoUsuario'],
                 'tarea': tarea['data'][0],
-                'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == tarea['data'][0]['fkPrioridadTarea'])[0]['descripcion'],
+                # 'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == tarea['data'][0]['fkPrioridadTarea'])[0]['descripcion'],
                 'rechazadoPor': userRechazado['data'][0]['nombreUsuario'] +' '+ userRechazado['data'][0]['apellidoUsuario'],
                 'motivo': description, 
             }
-            print(data)
             sendEmailTask.delay(data)
-        #     # data = {
-            #     'evento': 'Tarea Rechazada', 
-            #     'email': usuario['correoElectronico'],
-            #     'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
-            #     'tarea': tarea['data'][0],
-            #     'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
-            # }
+
 
 
 
@@ -1310,23 +1352,31 @@ def Addjustificacion(request,description,idTask):
 def EmpresasList(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
+        data = decodered(token)
+        
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         empresas = requests.get('http://localhost:32482/api/business/',headers=headers).json()
         listEmpresa = empresas['data']
         data = decodered(token)
-        print(data)
 
         context = {
-            'empresas': listEmpresa
+            'menu': 'EmpresasList',
+            'empresas': listEmpresa,
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
         }
 
-        return render(request, 'empresa/list_empresa.html',{'data':context})
+        return render(request, 'empresa/list_empresa.html',{'datos':context})
     else: 
         return redirect('login')
 
 def AddEmpresaSection(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
+        data = decodered(token)
+        
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
 
         rutEmpresa = request.POST.get('rutEmpresa')
@@ -1346,8 +1396,14 @@ def AddEmpresaSection(request):
         if  status == 'OK':
             AddEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,telefono,correoElectronico)
         
-
-        return render(request,'empresa/new_empresa.html')
+        context = {
+            'menu': 'AddEmpresaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request,'empresa/new_empresa.html', {'datos':context})
     else:
         return redirect('login')
 
