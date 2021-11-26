@@ -55,6 +55,7 @@
                                                         <tr>
                                                             <th class="text-center">ID</th>
                                                             <th class="text-center">Nombre Unidad</th>
+                                                            <th class="text-center">Rut Empresa</th>
                                                             <th class="text-center">Descripcion unidad</th>
                                                             <th class="text-center">Accion</th>
 
@@ -66,6 +67,7 @@
                                                         <tr>
                                                             <td class="text-center">{{units.idUnidadInterna}}</td>
                                                             <td class="text-center">{{units.nombreUnidad}}</td>
+                                                            <td class="text-center">{{units.fkRutEmpresa}}</td>
                                                             <td class="text-center">{{units.descripcionUnidad}}</td>
                                                             <td class="text-center">
                                                                 <a class="btn btn-primary btn-sm" href="{% url 'viewunits' id=units.idUnidadInterna %}">

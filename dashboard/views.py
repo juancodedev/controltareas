@@ -1,12 +1,13 @@
-import json
+import json, requests, jwt
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from requests.api import delete, head, request
 from login.views import authenticated, decodered
-import requests, jwt, json
 from datetime import datetime
 from random import randint
+from messagesMail.tasks import sendEmailTask
+
 
 #modulos extras solo para pruebas
 import random
@@ -66,20 +67,38 @@ def tasklist(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
+        
+        #Se utiliza para obtener los la unidad interna del usuario
+        usuario = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(usuario['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        
+        ls = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
+                
         tarea={}
         tarea['data']= []
+        
+        asignado = []
+        for a in usuarios['data']:
+            for b in ls:
+                if a['idUnidadInternaUsuario'] == b['idUnidadInterna']:
+                    asignado.append(a)
+    
         for datos in tareas['data']:
-            tarea['data'].append({
-            'idTarea': datos['idTarea'],
-            'nombreTarea': datos['nombreTarea'] ,
-            'descripcionTarea': datos['descripcionTarea'] ,
-            'fechaPlazo': datos['fechaPlazo'] ,
-            'fkRutUsuario': datos['fkRutUsuario'] ,
-            'fkEstadoTarea': datos['fkEstadoTarea'] ,
-            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': randint(1, 100),
-            }
-            )
+            for us in asignado:
+                if datos['fkRutUsuario'] == us['rutUsuario']:
+                    tarea['data'].append({
+                    'idTarea': datos['idTarea'],
+                    'nombreTarea': datos['nombreTarea'] ,
+                    'descripcionTarea': datos['descripcionTarea'] ,
+                    'fechaPlazo': datos['fechaPlazo'] ,
+                    'fkRutUsuario': datos['fkRutUsuario'] ,
+                    'fkEstadoTarea': datos['fkEstadoTarea'] ,
+                    'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+                    'percent': randint(1, 100),
+                    }
+                    )
         
         context = {
             'menu' : 'tableTask',
@@ -119,13 +138,16 @@ def taskedit(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
         estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
-        creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
+        asignadoa = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
         justificacion = requests.get('http://localhost:32482/api/justificacionTarea/', headers=headers).json()
-        tarea = list(e for e in tareas['data'] if e['idTarea']  == int(id))[0]
+        unaTarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+
+        
+        creado = list(e for e in usuarios['data'] if e['rutUsuario']  == unaTarea['data'][0]['creadaPor'])
+
         
         context = {
         'menu' : 'taskedit',
@@ -133,11 +155,12 @@ def taskedit(request, id):
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'tareas' : tarea,
+        'tareas' : unaTarea['data'][0],
         'usuarios': usuarios['data'],
         'prioridad': prioridad['data'],
         'estado': estado['data'],
-        'creadopor': creadopor['data'],
+        'asignadoa': asignadoa['data'],
+        'creadopor':creado[0] ,
         'justificacion': justificacion['data'],
         }
         return render(request, 'task/task.html',{'datos': context})
@@ -223,21 +246,6 @@ def teamwork(request):
             return render(request,'teamwork/teamwork.html',{'datos': context})
     else: 
         return redirect('login')
-    
-def admin(request):
-    if authenticated(request):
-        token = request.COOKIES.get('validate')
-        data = decodered(token)
-        context = {
-            'menu' : 'tableTask',
-            'email' : data['email'],
-            'name': data['unique_name'],
-            'role': int(data['role']),
-            'login' : datetime.fromtimestamp(data['nbf']),
-        }
-        return render(request, 'task/tasklist.html',{'datos': context})
-    else: 
-        return redirect('login')
 
 def workload(request, id):
     if authenticated(request):
@@ -265,8 +273,7 @@ def workload(request, id):
             'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == u['idUnidadInternaUsuario'])[0]['nombreUnidad'],
             }
             )
-        print(usuario['data'][0])
-        print(user['data'][0])
+
 
         context = {
             'menu' : 'workload',
@@ -331,6 +338,41 @@ def tasknew(request):
         return render(request, 'task/task.html',{'datos': context})
     else: 
         return redirect('login')
+    
+    
+#Metodo que modifica estado de tarea a completada
+def taskcomplete(request,idTask):
+    if authenticated(request):
+        token = request.COOKIES.get('validate')
+
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(idTask), headers=headers).json()
+        userCreate = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        
+        userAssign = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
+        finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
+        
+        destinatarios = []
+        destinatarios.append(userCreate['data'][0]['correoElectronico'])
+        destinatarios.append(userAssign['data'][0]['correoElectronico'])
+        
+        
+        if finishedTask.ok:
+# # #Aqui
+            data = {
+                'multi' : True,
+                'evento': 'Finalización de tarea',
+                'email': destinatarios,
+                'tarea': tarea['data'][0],
+            }
+            sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
+            return redirect('tasklist')
+        else:
+            return redirect('dashboard')
+    else: 
+        return redirect('login')
+
 
 #modificado por Alejandro
 def updatetask(request, id):
@@ -338,22 +380,33 @@ def updatetask(request, id):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
 
         payload = json.dumps(
         {
             'nombreTarea':request.POST.get('nombretarea'),
             'descripcionTarea': request.POST.get('descripciontarea'),
-            'fechaPlazo': request.POST.get('fechaplazo'),
+            # 'fechaPlazo': request.POST.get('fechaplazo'),
             'porcentajeAvance': int(request.POST.get('porcentaje')),
-            'fkRutUsuario' : request.POST.get('creadopor'),
+            # 'creadaPor': request.POST.get('creadoporRut'),  #cre
+            'fkRutUsuario' : request.POST.get('asignadoa'),
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
         })
         update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
-        print(update.content)
-        print(payload)
         if update.ok: 
+            if int(request.POST.get('estadotarea'))== 2:
+                usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('asignadoa'))[0]
+                tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+                data = {
+                    'evento': 'Actualizacion de tarea', 
+                    'email': usuario['correoElectronico'],
+                    'user': usuario['nombreUsuario']+' '+ usuario['apellidoUsuario'],
+                    'tarea': tarea['data'][0],
+                    # 'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == int(request.POST.get('prioridadtarea')) )[0]['descripcion'],
+                }
+                sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
+
             return redirect('tasklist')
         else:
             return redirect('dashboard') #envia al dashboard si da error
@@ -595,6 +648,7 @@ def createnewunits(request):
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
     payload = json.dumps({
         'NombreUnidad': request.POST.get('nombreunit'),
+        'fkRutEmpresa': request.POST.get('fkRutEmpresa'),
         'DescripcionUnidad': request.POST.get('descriptunit') 
     })
     r = requests.post('http://localhost:32482/api/unidadInterna/add/', headers=headers, data=payload)
@@ -609,10 +663,13 @@ def newunits(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        empresas = requests.get('http://localhost:32482/api/business', headers=headers).json()
         context = {
         'menu' : 'newunits',
         'email' : data['email'],
         'name': data['unique_name'],
+        'empresas': empresas['data'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
         }
@@ -648,15 +705,21 @@ def editunits(request, id):
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        empresa = requests.get('http://localhost:32482/api/business', headers=headers).json()
         for i in units['data']:
             if i['idUnidadInterna'] == id:
                 unidad = i
+
+        for x in empresa['data']:
+            if x['rutEmpresa'] == unidad['fkRutEmpresa']:
+                empresa  = x
                 
         context = {
         'menu' : 'editunits',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
+        'empresas': empresa,
         'login' : datetime.fromtimestamp(data['nbf']),
         'unidad': unidad,
         }
@@ -1065,7 +1128,6 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
         tareaSub = str(idTareaSub)
         payload = json.dumps({'idTareaSubordinada': tareaSub})
         r = requests.delete('http://localhost:32482/api/TareaSubordinada/delete/' + tareaSub, headers=headers, data=payload)
-        print(r)
 
         # Consumo de API: Tarea Subordinada
         # Method: GET
@@ -1080,11 +1142,9 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
 
         if r.ok:
             status = 'DELETED'
-            print(status)
             return redirect('TareaSubordinadaSection')
         else: 
             status = 'ERROR'
-            print(status)
             return render(request, 'subordinatetask/list_subordinatetask.html', {'datos': context})
         
     else:
@@ -1235,27 +1295,21 @@ def AcceptTask(request, idTask):
 # Metodo Rechazar
 
 def RejectTask(request, idTask):
-    if authenticated:
-        token = request.COOKIES.get('validate')
-        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-        
+    if authenticated:                
         try:
             descripcion = request.POST.get('descripcion')
-            print(descripcion)
             status = ''
             if descripcion == '':
                 status = 'ERROR'
             elif descripcion != '':
                 status = 'OK'
             else:
-                status
+                status           
+            
             if  status == 'OK':
                 Addjustificacion(request,descripcion,idTask)
-
-            return redirect('taskfuncionario')
-
+                return redirect('taskfuncionario')
         except:
-            print('ERROR')
             return redirect('taskfuncionario')
     
     else: 
@@ -1267,14 +1321,30 @@ def Addjustificacion(request,description,idTask):
         token = request.COOKIES.get('validate')
         
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-
-
-
+        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/' + idTask, headers=headers).json()
+        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        userRechazado = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
         # Datos a enviar a la petición POST
         payload = json.dumps({
-                                'Descripcion': description,
+            'Descripcion': description,
         })
         r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
+        if r.status_code == 201:
+            
+            data = {
+                'evento': 'Tarea Rechazada', 
+                'email': user['data'][0]['correoElectronico'],
+                'user': user['data'][0]['nombreUsuario'] +' '+ user['data'][0]['apellidoUsuario'],
+                'tarea': tarea['data'][0],
+                # 'prioridad': list(e for e in prioridad['data'] if e['idPrioridad']  == tarea['data'][0]['fkPrioridadTarea'])[0]['descripcion'],
+                'rechazadoPor': userRechazado['data'][0]['nombreUsuario'] +' '+ userRechazado['data'][0]['apellidoUsuario'],
+                'motivo': description, 
+            }
+            sendEmailTask.delay(data)
+
+
 
 
 
@@ -1282,23 +1352,31 @@ def Addjustificacion(request,description,idTask):
 def EmpresasList(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
+        data = decodered(token)
+        
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
         empresas = requests.get('http://localhost:32482/api/business/',headers=headers).json()
         listEmpresa = empresas['data']
         data = decodered(token)
-        print(data)
 
         context = {
-            'empresas': listEmpresa
+            'menu': 'EmpresasList',
+            'empresas': listEmpresa,
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
         }
 
-        return render(request, 'empresa/list_empresa.html',{'data':context})
+        return render(request, 'empresa/list_empresa.html',{'datos':context})
     else: 
         return redirect('login')
 
 def AddEmpresaSection(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
+        data = decodered(token)
+        
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
 
         rutEmpresa = request.POST.get('rutEmpresa')
@@ -1318,8 +1396,14 @@ def AddEmpresaSection(request):
         if  status == 'OK':
             AddEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,telefono,correoElectronico)
         
-
-        return render(request,'empresa/new_empresa.html')
+        context = {
+            'menu': 'AddEmpresaSection',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+        }
+        return render(request,'empresa/new_empresa.html', {'datos':context})
     else:
         return redirect('login')
 

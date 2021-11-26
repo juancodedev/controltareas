@@ -43,9 +43,9 @@
         <li class="nav-item d-none d-sm-inline-block">
           <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
         </li>
-        <li class="nav-item d-none d-sm-inline-block">
+        {% comment %} <li class="nav-item d-none d-sm-inline-block">
           <a href="#" class="nav-link">Contacto</a>
-        </li>
+        </li> {% endcomment %}
       </ul>
 
       <!-- Right navbar links -->
@@ -98,14 +98,14 @@
               <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
 
               <p>
-                <small>Inicio de sesion {{datos.login}}</small>
+                <small>Inicio de sesion :  {{datos.login}}</small>
               </p>
             </li>
             <!-- Menu Body -->
             <li class="user-body">
               <div class="row">
                 <div class="col-12 text-center">
-                  <small>Rol:
+                  <small>Rol:  
                     {% if datos.role == 1 %}
                     Administrador
                     {% endif %}
@@ -196,7 +196,7 @@
             <li class="nav-item">
               <a href="{% url 'tasklist' %}" class="nav-link {% if datos.menu == 'tableTask' %} active {% endif %}">
                 <i class="nav-icon fa fa-clipboard-list text-info"></i>
-                <p>Tareas</p>
+                <p>Mis Tareas asignadas</p>
               </a>
             </li>
             <li class="nav-item">
@@ -208,7 +208,7 @@
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fa fa-clipboard-list text-info"></i>
-                <p>Administración
+                <p>Recursos
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
@@ -268,14 +268,14 @@
                   <ul class="nav nav-treeview" style="display: none;">
                     <li class="nav-item">
                       <a href="{% url 'EmpresaList' %}"
-                        class="nav-link {% if datos.menu == 'workflowlist' %} active {% endif %}">
+                        class="nav-link {% if datos.menu == 'EmpresasList' %} active {% endif %}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Listar</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="{% url 'workflownew' %}"
-                        class="nav-link {% if datos.menu == 'workflownew' %} active {% endif %}">
+                      <a href="{% url 'EmpresaAdd' %}"
+                        class="nav-link {% if datos.menu == 'AddEmpresaSection' %} active {% endif %}">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Crear</p>
                       </a>
