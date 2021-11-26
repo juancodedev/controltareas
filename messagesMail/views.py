@@ -96,10 +96,11 @@ def sendEmails(data):
         elif data['evento'] == 'Notificacion de Tarea':
             context = {
                 'evento': data['evento'],
+                'user': data['user'],
                 'tarea': data['tarea'],
                 'vence': data['vence'],
             }
-            print(context)
+            # print(context)
 
         content = render_to_string('email/email.html', context)
 

@@ -26,17 +26,17 @@ def sendEmailTask(data):
 #     ignore_result=True
 # )
 @periodic_task(
-    run_every=(crontab(hour=2, minute=48)),
+    run_every=(crontab(hour=7, minute=30)),
     name="taskProximidad",
     ignore_result=True
 )
 
 
-# @periodic_task(
-#     run_every=(crontab(hour=7, minute=30)),
-#     name="taskProximidad",
-#     ignore_result=True
-# )
+@periodic_task(
+    run_every=(crontab(hour=4, minute=00)),
+    name="taskProgress",
+    ignore_result=True
+)
 
 
 def taskProximidad():
@@ -49,19 +49,16 @@ def taskProximidad():
     tareasNotificar = requests.get('http://localhost:32482/api/tarea/getNotificarionTask', headers=headersToken).json()
     usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headersToken).json()
 
-    
-    Notificar = []
     for tarea in tareasNotificar['data']:
-        Notificar.append(tarea['fkRutUsuario'])
-        
-    for i in usuarios['data']:
-        if i['rutUsuario'] in Notificar:
-            data = {
-                'evento': 'Notificacion de Tarea',
-                'user': i['nombreUsuario']+' '+i['apellidoUsuario'],
-                'email': i['correoElectronico'],
-                'tarea': list(e for e in tareasNotificar['data'] if e['fkRutUsuario']  == i['rutUsuario']),
-                'vence': (datetime.strptime(list(e for e in tareasNotificar['data'] if e['fkRutUsuario']  == i['rutUsuario'])[0]['fechaPlazo'],'%Y-%m-%dT%H:%M:%S') -datetime.now()).days,
+        data = {
+            'evento': 'Notificacion de Tarea',
+            'user': list(e for e in usuarios['data'] if e['rutUsuario']  == tarea['fkRutUsuario'])[0]['nombreUsuario']+' '+list(e for e in usuarios['data'] if e['rutUsuario']  == tarea['fkRutUsuario'])[0]['apellidoUsuario'],
+            'email': list(e for e in usuarios['data'] if e['rutUsuario']  == tarea['fkRutUsuario'])[0]['correoElectronico'],
+            'tarea': tarea,
+            'vence': ((datetime.strptime(tarea['fechaPlazo'],'%Y-%m-%dT%H:%M:%S')-datetime.now()).days)+1,
             }
-            return sendEmails(data)
+        sendEmails(data)
     
+
+def taskProgress():
+    return None

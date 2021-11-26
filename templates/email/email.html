@@ -98,7 +98,7 @@
 																				<th scope="row">{{tarea.idTarea}}</th>
 																				<td>{{tarea.nombreTarea}}</td>
 																				<td>{{tarea.descripcionTarea}} </td>
-																				<td>{{tarea.fechaPlazo}}
+																				<td>{{tarea.fechaPlazo|parse_iso|date:'d/m/Y'}}
 																				</td>
 																				{% if evento == 'Tarea Rechazada' or evento == 'Finalización de tarea' %}
 																				<td>{{motivo}}</td>{% endif %}
