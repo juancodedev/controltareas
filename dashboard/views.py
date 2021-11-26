@@ -1,10 +1,9 @@
-import json
+import json, requests, jwt
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from requests.api import delete, head, request
 from login.views import authenticated, decodered
-import requests, jwt
 from datetime import datetime
 from random import randint
 from messagesMail.tasks import sendEmailTask
@@ -274,8 +273,7 @@ def workload(request, id):
             'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == u['idUnidadInternaUsuario'])[0]['nombreUnidad'],
             }
             )
-        print(usuario['data'][0])
-        print(user['data'][0])
+
 
         context = {
             'menu' : 'workload',

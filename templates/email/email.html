@@ -53,7 +53,7 @@
 											{{evento}}</h1>
 										<p
 											style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-											{% if evento == 'Tarea Rechazada' or evento == 'Actualizacion de tarea' %}
+											{% if evento == 'Tarea Rechazada' or evento == 'Actualizacion de tarea' or evento == 'Notificacion de Tarea' %}
 											Estimado(a): {{user}}. <br>
 											{% endif %}
 											<p>
@@ -62,13 +62,19 @@
 												Rechazada por el usuario <b>{{rechazadoPor}}
 											<b>
 												{% endif %}
-														{% if evento == 'Actualizacion de tarea' %}En nuestro sistema se
-														registro una tarea asignada a usted se adjuntan detalles de la tarea:{% endif %}
+												{% if evento == 'Actualizacion de tarea' %}En nuestro sistema se
+												registro una tarea asignada a usted se adjuntan detalles de la tarea:{% endif %}
+												
+												{% if evento == 'Finalización de tarea' %}
+												Se informa que la tarea <b>{{tarea.nombreTarea}}</b> fue finalizada, se
+												adjunta informacion de la tarea:
+												{% endif %}
+												{% if evento == 'Notificacion de Tarea' %}
+												Tenemos una tarea asignada a usted, la cual vence en menos de 5 dias.
+												Se adjunta informacion de la tarea:
+
+												{% endif %}
 														
-														{% if evento == 'Finalización de tarea' %}
-														Se informa que la tarea <b>{{tarea.nombreTarea}}</b> fue finalizada, se
-														adjunta informacion de la tarea:
-														{% endif %}
 														<div class="container-fluid">
 															<div class="row">
 																<div class="col-md-12 table-responsive">
@@ -82,7 +88,8 @@
 																				<th scope="col">Fecha Plazo</th>
 																				{% if evento == 'Tarea Rechazada' or evento == 'Finalización de tarea' %}
 																				<th scope="col">Motivo</th>{% endif %}
-
+																				{% if evento == 'Notificacion de Tarea' %}
+																				<th scope="col">Vence en</th>{% endif %}
 
 																			</tr>
 																		</thead>
@@ -91,10 +98,12 @@
 																				<th scope="row">{{tarea.idTarea}}</th>
 																				<td>{{tarea.nombreTarea}}</td>
 																				<td>{{tarea.descripcionTarea}} </td>
-																				<td>{{tarea.fechaPlazo|parse_iso|date:'d/m/Y'}}
+																				<td>{{tarea.fechaPlazo}}
 																				</td>
 																				{% if evento == 'Tarea Rechazada' or evento == 'Finalización de tarea' %}
 																				<td>{{motivo}}</td>{% endif %}
+																				{% if evento == 'Notificacion de Tarea' %}
+																				<td>En {{vence}} Días</td>{% endif %}
 
 																			</tr>
 																		</tbody>

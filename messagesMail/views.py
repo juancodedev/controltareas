@@ -92,7 +92,14 @@ def sendEmails(data):
                 'tarea': data['tarea'],
                 'motivo': 'Finalizada por sistema'
             }
-
+            
+        elif data['evento'] == 'Notificacion de Tarea':
+            context = {
+                'evento': data['evento'],
+                'tarea': data['tarea'],
+                'vence': data['vence'],
+            }
+            print(context)
 
         content = render_to_string('email/email.html', context)
 
@@ -104,15 +111,4 @@ def sendEmails(data):
         
     except Exception as e:
         print(e)
-
-
-
-
-@celery.task
-def proximidad():
-    try:
-        token = request.COOKIES.get('validate')
-        
-    except Exception as e:
-        print("No hay datos que procesar")
 
