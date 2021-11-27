@@ -4,12 +4,12 @@
 {% load random_numbers %}
 
 {% block content %}
-  <style type="text/css">
-  .not-active { 
-            pointer-events: none; 
-            cursor: default; 
-        } 
-  </style>
+<style type="text/css">
+  .not-active {
+    pointer-events: none;
+    cursor: default;
+  }
+</style>
 
 <body class="hold-transition sidebar-mini">
   <!-- Site wrapper -->
@@ -139,199 +139,249 @@
                       <i class="fas fa-eye"></i>
                       Ver
                     </a>
-                    
-                    <a class="btn btn-info btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}" href="{% url 'taskedit' id=tarea.idTarea %}">
+
+                    <a class="btn btn-info btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}"
+                      href="{% url 'taskedit' id=tarea.idTarea %}">
                       <i class="fas fa-pencil-alt">
                       </i>
                     </a>
-                    <a class="btn btn-danger btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}" href="{% url 'taskdelete' id=tarea.idTarea %}">
+                    <a class="btn btn-danger btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}"
+                      href="{% url 'taskdelete' id=tarea.idTarea %}">
                       <i class="fas fa-trash">
                       </i>
                     </a>
-                    <button type="button" class="btn btn-success btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}" data-toggle="modal"
-                      data-target="#modal-{{tarea.idTarea}}">
+                    <button type="button"
+                      class="btn btn-success btn-sm {% if tarea.fkEstadoTarea == 5 %}not-active{% endif %}"
+                      data-toggle="modal" data-target="#modal-{{tarea.idTarea}}">
                       <i class="fas fa-clipboard-check"> </i>
                     </button>
                     <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title">¿Confirma la finalizacion de la tarea {{tarea.nombreTarea}}?</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <div class="container-fluid">
-                              <div class="row">
-                                <div class="row">
-                                  <div class="col-12 col-sm-6">
-                                    <div class="info-box bg-light">
-                                      <div class="info-box-content">
-                                        <span class="info-box-text text-center text-muted">Fecha Plazo</span>
-                                        <span
-                                          class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-12 col-sm-6">
-                                    <div class="info-box bg-light">
-                                      <div class="info-box-content">
-                                        <span class="info-box-text text-center text-muted">Estado</span>
-                                        {% if tarea.fkEstadoTarea == 1 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Creada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 2 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Asignada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 3 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Aceptada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 4 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Rechazada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 5 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Terminada</span>{% endif %}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
 
-                                <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-                                  <h4 class="text-primary">
-                                    Descripción
-                                  </h4>
-                                  {{tarea.descripcionTarea}}
-                                </div>
-                              </div>
-
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4 class="modal-title">¿Confirma la finalizacion de la tarea {{tarea.nombreTarea}}?</h4>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                              </button>
                             </div>
-                          </div>
-                          <div class="modal-footer justify-content-between">
-                            <a type="button" class="btn btn-primary"
-                              href="{% url 'taskcomplete' idTask=tarea.idTarea  %}">Aceptar</a>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                          </div>
-                        </div>
-                        <!-- /.modal-content -->
-                      </div>
-                      <!-- /.modal-dialog -->
-                    </div>
-
-                    {% else %}
-                    <button type="button" class="btn btn-block btn-success btn-sm" data-toggle="modal"
-                      data-target="#modal-{{tarea.idTarea}}">
-                      <i class="fas fa-check-circle"></i>
-                      <span>Aceptar</span>
-                    </button>
-
-                    <button type="reset" class="btn btn-block btn-danger btn-sm" data-toggle="modal"
-                      data-target="#modal-rechazar-{{tarea.idTarea}}">
-                      <i class="fas fa-times-circle"></i>
-                      <span>Rechazar</span>
-                    </button>
-                    <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title">{{tarea.nombreTarea}}</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <div class="container-fluid">
-                              <div class="row">
-                                <div class="row">
-                                  <div class="col-12 col-sm-6">
-                                    <div class="info-box bg-light">
-                                      <div class="info-box-content">
-                                        <span class="info-box-text text-center text-muted">Fecha Plazo</span>
-                                        <span
-                                          class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-12 col-sm-6">
-                                    <div class="info-box bg-light">
-                                      <div class="info-box-content">
-                                        <span class="info-box-text text-center text-muted">Estado</span>
-
-                                        {% if tarea.fkEstadoTarea == 1 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Completada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 44 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Pendiente</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 41 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Atrasada</span>{% endif %}
-                                        {% if tarea.fkEstadoTarea == 21 %}<span
-                                          class="info-box-number text-center text-muted mb-0">Creada</span>{% endif %}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-                                  <h4 class="text-primary">
-                                    Descripción
-                                  </h4>
-                                  {{tarea.descripcionTarea}}
-                                </div>
-                              </div>
-
-                            </div>
-                          </div>
-                          <div class="modal-footer justify-content-between">
-                            <a type="button" class="btn btn-primary"
-                              href="{% url 'AcceptTask' idTask=tarea.idTarea  %}">Aceptar</a>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                          </div>
-                        </div>
-                        <!-- /.modal-content -->
-                      </div>
-                      <!-- /.modal-dialog -->
-                    </div>
-                    <div class="modal fade" id="modal-rechazar-{{tarea.idTarea}}" style="display: none;"
-                      aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h4 class="modal-title">¿Seguro que deseas rechazar la tarea {{tarea.nombreTarea}}?</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                          </div>
-                          <form method="POST" action="{% url 'RejectTask' idTask=tarea.idTarea  %}">
-                            {% csrf_token %}
+                                                    <form method="POST" action="{% url 'taskcomplete' idTask=tarea.idTarea  %}">
+                        {% csrf_token %}
                             <div class="modal-body">
-                              <div class="form-group text-left">
-                                <label>Ingrese Motivo de rechazo</label>
-                                <textarea class="form-control" rows="3" name="descripcion" placeholder="Motivo ..."
-                                  required></textarea>
+                              <div class="container-fluid">
+                                <div class="row">
+                                  <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                      <div class="info-box bg-light">
+                                        <div class="info-box-content">
+                                          <span class="info-box-text text-center text-muted">Fecha Plazo</span>
+                                          <span
+                                            class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                      <div class="info-box bg-light">
+                                        <div class="info-box-content">
+                                          <span class="info-box-text text-center text-muted">Estado</span>
+                                          {% if tarea.fkEstadoTarea == 1 %}<span
+                                            class="info-box-number text-center text-muted mb-0">Creada</span>{% endif %}
+                                          {% if tarea.fkEstadoTarea == 2 %}<span
+                                            class="info-box-number text-center text-muted mb-0">Asignada</span>{% endif %}
+                                          {% if tarea.fkEstadoTarea == 3 %}<span
+                                            class="info-box-number text-center text-muted mb-0">Aceptada</span>{% endif %}
+                                          {% if tarea.fkEstadoTarea == 4 %}<span
+                                            class="info-box-number text-center text-muted mb-0">Rechazada</span>{% endif %}
+                                          {% if tarea.fkEstadoTarea == 5 %}<span
+                                            class="info-box-number text-center text-muted mb-0">Terminada</span>{% endif %}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                                    <h4 class="text-primary">
+                                      Descripción
+                                    </h4>
+                                    <h6>
+                                      {{tarea.descripcionTarea}}
+
+                                    </h6>
+
+                                  </div>
+                                </div>
+
+
+                              </div>
+                              <div class="wrapper">
+
+
+                                <h5>¿Ha presentado algun problema con la tarea?</h5>
+                                <div class="container">
+                                  <div class="row">
+                                    <div class="col-md-12">
+
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-text">
+                                          <input class="form-check-input mt-0" type="checkbox" name="checkboxProblema"
+                                            value="ok">
+                                        </div>
+                                        <input type="text" class="form-control" aria-label="Text input with checkbox"
+                                          name="inputProblema">
+                                      </div>
+
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div class="modal-footer justify-content-between">
-                              <button type="submit" class="btn btn-primary">Aceptar</button>
-                          </form>
-                          <!--<a type="button" class="btn btn-primary" href="{% url 'RejectTask' idTask=tarea.idTarea  %}">Aceptar</a>-->
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        </div>
 
+                            <div class="container center">
+                              <div class="modal-footer justify-content-between">
+
+                                <button type="submit" class="btn btn-primary">Aceptar</button>
+                        </form>
+
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                              </div>
+                            </div>
                       </div>
                       <!-- /.modal-content -->
                     </div>
                     <!-- /.modal-dialog -->
           </div>
-          {% endif %}
-          </td>
-          </tr>
 
-          {% endfor %}
+          {% else %}
+          <button type="button" class="btn btn-block btn-success btn-sm" data-toggle="modal"
+            data-target="#modal-{{tarea.idTarea}}">
+            <i class="fas fa-check-circle"></i>
+            <span>Aceptar</span>
+          </button>
 
-          </tbody>
-          </table>
+          <button type="reset" class="btn btn-block btn-danger btn-sm" data-toggle="modal"
+            data-target="#modal-rechazar-{{tarea.idTarea}}">
+            <i class="fas fa-times-circle"></i>
+            <span>Rechazar</span>
+          </button>
+          <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{tarea.nombreTarea}}</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="row">
+                        <div class="col-12 col-sm-6">
+                          <div class="info-box bg-light">
+                            <div class="info-box-content">
+                              <span class="info-box-text text-center text-muted">Fecha Plazo</span>
+                              <span class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                          <div class="info-box bg-light">
+                            <div class="info-box-content">
+                              <span class="info-box-text text-center text-muted">Estado</span>
+
+                              {% if tarea.fkEstadoTarea == 1 %}<span
+                                class="info-box-number text-center text-muted mb-0">Completada</span>{% endif %}
+                              {% if tarea.fkEstadoTarea == 44 %}<span
+                                class="info-box-number text-center text-muted mb-0">Pendiente</span>{% endif %}
+                              {% if tarea.fkEstadoTarea == 41 %}<span
+                                class="info-box-number text-center text-muted mb-0">Atrasada</span>{% endif %}
+                              {% if tarea.fkEstadoTarea == 21 %}<span
+                                class="info-box-number text-center text-muted mb-0">Creada</span>{% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                        <h4 class="text-primary">
+                          Descripción
+                        </h4>
+                        {{tarea.descripcionTarea}}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <a type="button" class="btn btn-primary"
+                    href="{% url 'AcceptTask' idTask=tarea.idTarea  %}">Aceptar</a>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <div class="modal fade" id="modal-rechazar-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">¿Seguro que deseas rechazar la tarea {{tarea.nombreTarea}}?</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'RejectTask' idTask=tarea.idTarea  %}">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="form-group text-left">
+                      <label>Ingrese Motivo de rechazo</label>
+                      <textarea class="form-control" rows="3" name="descripcion" placeholder="Motivo ..."
+                        required></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer justify-content-between">
+                    <button type="submit" class="btn btn-primary">Aceptar</button>
+                </form>
+                <!--<a type="button" class="btn btn-primary" href="{% url 'RejectTask' idTask=tarea.idTarea  %}">Aceptar</a>-->
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+              </div>
+
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
         </div>
+        {% endif %}
+        </td>
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+        </table>
     </div>
-    </section>
-    <!-- /.content -->
+  </div>
+  </section>
+  <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
   </div>
 
 
   {% endblock content %}
+
+  {% comment %} {% block script %}
+  <script>
+    $(document).ready(function () {
+      $(".myform-submit").bind("click", function (e) {
+        e.preventDefault();
+        var $form = $(this).closest(".myform");
+        if ($("input:checkbox:checked").length) {
+          alert("submitting");
+          $form.submit();
+        }
+      });
+    });
+  </script>
+  {% endblock script %} {% endcomment %}

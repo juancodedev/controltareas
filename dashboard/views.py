@@ -74,14 +74,14 @@ def tasklist(request):
         
         unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
         
-        ls = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
-                
+        unidadPorEmpresa = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
+        
         tarea={}
         tarea['data']= []
         
         asignado = []
         for a in usuarios['data']:
-            for b in ls:
+            for b in unidadPorEmpresa:
                 if a['idUnidadInternaUsuario'] == b['idUnidadInterna']:
                     asignado.append(a)
     
@@ -96,7 +96,7 @@ def tasklist(request):
                     'fkRutUsuario': datos['fkRutUsuario'] ,
                     'fkEstadoTarea': datos['fkEstadoTarea'] ,
                     'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-                    'percent': randint(1, 100),
+                    'percent': datos['porcentajeAvance'],
                     }
                     )
         
@@ -350,6 +350,15 @@ def taskcomplete(request,idTask):
         userCreate = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
         
         userAssign = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        
+        
+        payload = json.dumps(
+        {
+            'ReporteProblema': request.POST.get('inputProblema'),
+        })
+        if request.POST.get('checkboxProblema'):
+            problema = requests.put('http://localhost:32482/api/tarea/reportProblem/'+str(idTask), headers=headers, data = payload)
+            
         
         finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
         
