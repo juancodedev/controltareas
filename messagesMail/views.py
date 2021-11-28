@@ -100,7 +100,14 @@ def sendEmails(data):
                 'tarea': data['tarea'],
                 'vence': data['vence'],
             }
-            # print(context)
+        elif data['evento'] == 'Reporte Problema':
+            context = {
+                'evento': data['evento'],
+                'user': data['user'],
+                'tarea': data['tarea'],
+                'problema': data['problema'],
+            }
+        
 
         content = render_to_string('email/email.html', context)
 

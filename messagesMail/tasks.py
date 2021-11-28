@@ -18,6 +18,8 @@ def sendEmailTask(data):
         logger.info("Sent email --> Finalización de tarea")
     elif data['evento'] == 'Alerta de priximidad':
         logger.info("Sent email --> Envio de notificaciones")
+    elif data['evento'] == 'Reporte Problema':
+        logger.info("Sent email --> Reporte Problema")
     return sendEmails(data)
 
 # @periodic_task(

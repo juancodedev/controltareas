@@ -9,22 +9,7 @@ from random import randint
 from messagesMail.tasks import sendEmailTask
 
 
-#modulos extras solo para pruebas
-import random
 
-def imgprofiletemp(largo):
-    # profile/0-41.jpg
-    img={}
-    img['results']=[]
-    for i in range(largo):
-        numero = random.randint(0,41)
-        img['results'].append({
-            'picture': {
-            'large': str(numero)+'.jpg',
-                }  
-                    }
-        )
-    return img
 
 def dashboard(request):
     if authenticated(request):
@@ -34,8 +19,6 @@ def dashboard(request):
         if int(rol) == 1:
             headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-            img = imgprofiletemp(len(dataAPI['data']))# imagenes de perfil random tomadas desde el static
-            mylist = zip(dataAPI['data'],img['results']) #Se unen las listas de imagenes random + datos de usuario y se envian al template para mostrarlos
 
             context = {
                     'menu' : 'dashboard',
@@ -44,7 +27,7 @@ def dashboard(request):
                     'role': int(data['role']),
                     'login' : datetime.fromtimestamp(data['nbf']),
 
-                    'usuarios': mylist, 
+                    'usuarios': dataAPI['data'], 
             }
             return render(request,'home/home.html',{'datos': context})
         else:
@@ -149,6 +132,7 @@ def taskedit(request, id):
         creado = list(e for e in usuarios['data'] if e['rutUsuario']  == unaTarea['data'][0]['creadaPor'])
 
         
+        
         context = {
         'menu' : 'taskedit',
         'email' : data['email'],
@@ -177,23 +161,38 @@ def teamwork(request):
             headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
             dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
             roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-            unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+            unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+            usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+            oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+            
+            unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+            unidad=[]
+        
+            for e in unidadesInternas['data']:
+                if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
+                    unidad.append(
+                        e['idUnidadInterna']
+                    )
+
+            
 
             usuario={}
             usuario['data']= []
             for datos in dataAPI['data']:
-                usuario['data'].append({
-                    'rutUsuario': datos['rutUsuario'],
-                    'nombreUsuario': datos['nombreUsuario'] ,
-                    'segundoNombre': datos['segundoNombre'] ,
-                    'apellidoUsuario': datos['apellidoUsuario'] ,
-                    'segundoApellido': datos['segundoApellido'] ,
-                    'numTelefono': datos['numTelefono'] ,
-                    'correoElectronico': datos['correoElectronico'] ,
-                    'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
-                    'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
-                }
-                )
+                if datos['idUnidadInternaUsuario'] in unidad:
+                    usuario['data'].append({
+                        'rutUsuario': datos['rutUsuario'],
+                        'nombreUsuario': datos['nombreUsuario'] ,
+                        'segundoNombre': datos['segundoNombre'] ,
+                        'apellidoUsuario': datos['apellidoUsuario'] ,
+                        'segundoApellido': datos['segundoApellido'] ,
+                        'numTelefono': datos['numTelefono'] ,
+                        'correoElectronico': datos['correoElectronico'] ,
+                        'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                        'idUnidadInternaUsuario':list(e for e in unidadesInternas['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                    }
+                    )
 
             context = {
                 'menu' : 'teamwork',
@@ -274,15 +273,21 @@ def workload(request, id):
             }
             )
 
-
+        tareas = list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario'] )
+        t = list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario'])
+        print(t)
+        
         context = {
             'menu' : 'workload',
             'email' : data['email'],
             'name': data['unique_name'],
             'role': int(data['role']),
             'login': datetime.fromtimestamp(data['nbf']),
-            'tareas': list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario']),
+            'tareas': tareas,
             'user': usuario['data'][0],
+            'asignadas': len(tareas),             
+            'atrasadas': t ,
+            'atiempo': 2, 
         }
         return render(request, 'teamwork/workload.html',{'datos': context})
     else: 
@@ -350,38 +355,47 @@ def taskcomplete(request,idTask):
         userCreate = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
         
         userAssign = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
-        
-        
-        payload = json.dumps(
-        {
-            'ReporteProblema': request.POST.get('inputProblema'),
-        })
-        if request.POST.get('checkboxProblema'):
-            problema = requests.put('http://localhost:32482/api/tarea/reportProblem/'+str(idTask), headers=headers, data = payload)
-            
-        
+
         finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
         
         destinatarios = []
         destinatarios.append(userCreate['data'][0]['correoElectronico'])
         destinatarios.append(userAssign['data'][0]['correoElectronico'])
         
-        
-        if finishedTask.ok:
-# # #Aqui
+        if request.POST.get('checkboxProblema'):
+            #Se crea el cuerpo del mensaje para el reporte problema 
+            print("tarea con problema :"+request.POST.get('inputProblema'))
+            payload = json.dumps(
+                {
+                'ReporteProblema': request.POST.get('inputProblema'),
+                })
+            problema = requests.put('http://localhost:32482/api/tarea/reportProblem/'+str(idTask), headers=headers, data = payload)
             data = {
-                'multi' : True,
+                'evento': 'Reporte Problema',
+                'user': userCreate['data'][0]['nombreUsuario']+' '+ userCreate['data'][0]['apellidoUsuario'],
+                'email': userCreate['data'][0]['correoElectronico'],
+                'tarea': tarea['data'][0],
+                'problema': request.POST.get('inputProblema'),
+                
+            }
+            
+        else:
+            data = {
                 'evento': 'Finalización de tarea',
+                'multi' : True,
                 'email': destinatarios,
                 'tarea': tarea['data'][0],
-            }
+                }
+
+        
+        if finishedTask.ok:
+            #Aqui
             sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
             return redirect('tasklist')
         else:
             return redirect('dashboard')
     else: 
         return redirect('login')
-
 
 #modificado por Alejandro
 def updatetask(request, id):
@@ -554,24 +568,35 @@ def listusers(request):
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
         
+        oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+        unidad=[]
+        
+        for e in unidadesInternas['data']:
+            if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
+                unidad.append(
+                    e['idUnidadInterna']
+                )
+            
         usuario={}
         usuario['data']= []
         for datos in usuarios['data']:
-            usuario['data'].append({
-                'rutUsuario': datos['rutUsuario'],
-                'nombreUsuario': datos['nombreUsuario'] ,
-                'segundoNombre': datos['segundoNombre'] ,
-                'apellidoUsuario': datos['apellidoUsuario'] ,
-                'segundoApellido': datos['segundoApellido'] ,
-                'numTelefono': datos['numTelefono'] ,
-                'correoElectronico': datos['correoElectronico'] ,
-                'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
-                'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
-                }
-                )
-            
+            if datos['idUnidadInternaUsuario'] in unidad:
+                usuario['data'].append({
+                    'rutUsuario': datos['rutUsuario'],
+                    'nombreUsuario': datos['nombreUsuario'] ,
+                    'segundoNombre': datos['segundoNombre'] ,
+                    'apellidoUsuario': datos['apellidoUsuario'] ,
+                    'segundoApellido': datos['segundoApellido'] ,
+                    'numTelefono': datos['numTelefono'] ,
+                    'correoElectronico': datos['correoElectronico'] ,
+                    'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                    'idUnidadInternaUsuario':list(e for e in unidadesInternas['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                    }
+                    )
         
         
         context = {

@@ -53,7 +53,7 @@
 											{{evento}}</h1>
 										<p
 											style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
-											{% if evento == 'Tarea Rechazada' or evento == 'Actualizacion de tarea' or evento == 'Notificacion de Tarea' %}
+											{% if evento == 'Tarea Rechazada' or evento == 'Actualizacion de tarea' or evento == 'Notificacion de Tarea' or evento == 'Reporte Problema'%}
 											Estimado(a): {{user}}. <br>
 											{% endif %}
 											<p>
@@ -72,6 +72,18 @@
 												{% if evento == 'Notificacion de Tarea' %}
 												Tenemos una tarea asignada a usted, la cual vence en menos de 5 o menos dias.
 												Se adjunta informacion de la tarea:
+
+												{% endif %}
+												{% if evento == 'Reporte Problema' %}
+												En nuestro sistema se ha reportado un problema con la tarea que se adjunta, favor dar seguimiento para su pronta resolucion.
+												<div>
+													Esta tarea presento el siguiente problema<br><br>
+
+												</div>
+
+												<strong> {{problema}}</strong><br>
+
+												<br>Informacion de la tarea:<br>
 
 												{% endif %}
 														
