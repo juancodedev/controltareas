@@ -93,6 +93,9 @@ urlpatterns = [
     path('editEmpresa/<str:rutEmpresa>', views.EditEmpresaSection, name='EmpresaEdit'),
     path('empresaList/deleteEmpresaSection/<str:rutEmpresa>', views.DeleteEmpresaSection, name='deleteEmpresaSection'),
     path('viewEmpresa/<str:id>', views.ViewEmpresa, name='viewEmpresa'),
+
+    # progress
+    path('progress/(?P<idTask>[0-9]+)$', views.ProgressTask, name='Progress'),
     
     
 ]
