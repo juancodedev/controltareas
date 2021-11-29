@@ -59,6 +59,10 @@ def tasklist(request):
         
         unidadPorEmpresa = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
         
+        semaforo = 0
+        
+        
+        
         tarea={}
         tarea['data']= []
         
@@ -71,6 +75,14 @@ def tasklist(request):
         for datos in tareas['data']:
             for us in asignado:
                 if datos['fkRutUsuario'] == us['rutUsuario']:
+                    dias = int((datetime.strptime(datos['fechaPlazo'] , '%Y-%m-%dT%H:%M:%S') - datetime.now()).days)
+                    if dias > 7:
+                        semaforo = 1
+                    elif dias < 7 and dias > 0 : 
+                        semaforo = 2
+                    elif dias < 0:
+                        semaforo = 3
+                        
                     tarea['data'].append({
                     'idTarea': datos['idTarea'],
                     'nombreTarea': datos['nombreTarea'] ,
@@ -80,6 +92,7 @@ def tasklist(request):
                     'fkEstadoTarea': datos['fkEstadoTarea'] ,
                     'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
                     'percent': datos['porcentajeAvance'],
+                    'semaforo':  semaforo,
                     }
                     )
         
@@ -96,9 +109,6 @@ def tasklist(request):
     else: 
         return redirect('login')
     
-
-
-
 def taskdelete(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -255,6 +265,29 @@ def workload(request, id):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
         unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
         roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        
+        
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        
+        unidad=[]
+
+        for e in unidadesInternas['data']:
+            if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
+                unidad.append(
+                    e['idUnidadInterna']
+                )
+        
+        
+        t = []
+        for e in usuarios['data']:
+            if e['idUnidadInternaUsuario'] in unidad:
+                t.append(
+                    e['rutUsuario']
+                )
+        
+        tempresa = list(e for e in tareas['data'] if e['fkRutUsuario'] in t)
         
         u = user['data'][0]
         
@@ -272,10 +305,10 @@ def workload(request, id):
             'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == u['idUnidadInternaUsuario'])[0]['nombreUnidad'],
             }
             )
-
-        tareas = list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario'] )
-        t = list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario'])
-        print(t)
+        
+        ontime = len(list(e for e in tareas['data'] if datetime.strptime(e['fechaPlazo'], '%Y-%m-%dT%H:%M:%S') >= datetime.now() and e['fkRutUsuario']  == user['data'][0]['rutUsuario'] and e['porcentajeAvance'] <100 ))
+        atrasadas = len(list(e for e in tareas['data'] if datetime.strptime(e['fechaPlazo'], '%Y-%m-%dT%H:%M:%S') < datetime.now() and e['fkRutUsuario']  == user['data'][0]['rutUsuario'] and e['porcentajeAvance'] <100  ))
+        asignadas = list(e for e in tareas['data'] if e['fkRutUsuario']  == user['data'][0]['rutUsuario'] and e['porcentajeAvance'] <100)
         
         context = {
             'menu' : 'workload',
@@ -283,11 +316,15 @@ def workload(request, id):
             'name': data['unique_name'],
             'role': int(data['role']),
             'login': datetime.fromtimestamp(data['nbf']),
-            'tareas': tareas,
+            'tareas': asignadas,
             'user': usuario['data'][0],
-            'asignadas': len(tareas),             
-            'atrasadas': t ,
-            'atiempo': 2, 
+            'asignadas': len(asignadas),             
+            'atrasadas': atrasadas,
+            'atiempo': ontime,
+            'pAtrasadas': float((100*int(atrasadas))/int(len(asignadas))),
+            'pTAsignadas': float((100*int(len(asignadas)))/int(len(tempresa))),
+            'pOntime': float((100*int(ontime))/int(len(asignadas))) ,
+                
         }
         return render(request, 'teamwork/workload.html',{'datos': context})
     else: 

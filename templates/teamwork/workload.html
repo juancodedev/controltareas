@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load parse_iso %}
-{% load static %} 
+{% load static %}
 {% block content %}
 
 <div class="wrapper">
@@ -35,31 +35,29 @@
             <div class="card card-primary card-outline">
               <div class="card-body box-profile">
                 <div class="text-center">
-                  <img
-                    class="profile-user-img img-fluid img-circle"
-                    src="{% static '/img/user2-160x160.jpg' %}"
-                    alt="User profile picture"
-                  />
+                  <img class="profile-user-img img-fluid img-circle" src="{% static '/img/user2-160x160.jpg' %}"
+                    alt="User profile picture" />
                 </div>
 
                 <h3 class="profile-username text-center"></h3>
 
                 <p class="text-muted text-center">{{datos.user.nombreUsuario}} {{datos.user.apellidoUsuario}}</p>
-                <p class="text-muted text-center">Email: {{datos.user.correoElectronico}} Rol: {{datos.user.idRolUsuario}}</p>
+                <p class="text-muted text-center">Email: {{datos.user.correoElectronico}} Rol:
+                  {{datos.user.idRolUsuario}}</p>
 
                 <ul class="list-group list-group-unbordered mb-3">
                   <li class="list-group-item">
-                    <b>Tareas a tiempo</b> <a class="float-right">32</a>
+                    <b>Tareas a tiempo</b> <a class="float-right">{{datos.atiempo}}</a>
                   </li>
                   <li class="list-group-item">
-                    <b>Tareas Atrasadas</b> <a class="float-right">8</a>
+                    <b>Tareas Atrasadas</b> <a class="float-right">{{datos.atrasadas}}</a>
                   </li>
                   <li class="list-group-item">
-                    <b>Tareas Asignadas</b> <a class="float-right">{{datos.tareas}}</a>
+                    <b>Tareas Asignadas</b> <a class="float-right">{{datos.asignadas}}</a>
                   </li>
                 </ul>
 
- 
+
               </div>
               <!-- /.card-body -->
             </div>
@@ -86,88 +84,97 @@
                   <div class="active tab-pane" id="tareas">
                     <!-- Tareas -->
                     <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">ID Tarea</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Descripcion</th>
-                                <th scope="col">Deadline</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                            {% for tarea in datos.tareas %}
-                            
-                              <tr>
-                                <th scope="row">{{tarea.idTarea}}</th>
-                                <td>{{tarea.nombreTarea}}</td>
-                                <td>{{tarea.descripcionTarea}}</td>
-                                <td>{{tarea.fechaPlazo|parse_iso|date:'d/m/Y'}}</td>
-                              </tr>
-                            {% endfor %}
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID Tarea</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Descripcion</th>
+                            <th scope="col">Deadline</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for tarea in datos.tareas %}
 
-                            </tbody>
-                          </table>
+                          <tr>
+                            <th scope="row">{{tarea.idTarea}}</th>
+                            <td>{{tarea.nombreTarea}}</td>
+                            <td>{{tarea.descripcionTarea}}</td>
+                            <td>{{tarea.fechaPlazo|parse_iso|date:'d/m/Y'}}</td>
+                          </tr>
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                   <!-- /.tab-pane -->
                   <div class="tab-pane" id="evolucion">
                     <div class="card">
-                        <div class="card-header">
-                          <h3 class="card-title">
-                            <i class="far fa-chart-bar"></i>
-                            Porcentaje de avances
-                          </h3>
-          
-                          <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                              <i class="fas fa-minus"></i>
-                            </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="remove">
-                              <i class="fas fa-times"></i>
-                            </button>
-                          </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-6 col-md-3 text-center">
-                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
-                                <input type="text" class="knob" value="6.5%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#3c8dbc" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(60, 141, 188); padding: 0px; appearance: none;"></div>
-                              <div class="knob-label">% de Tareas Asignadas</div>
-                              
-                            </div>
-                            <!-- ./col -->
-                            <div class="col-6 col-md-3 text-center">
-                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
-                              <input type="text" class="knob" value="1.6%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#f56954" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(245, 105, 84); padding: 0px; appearance: none;">
-                              </div>
-          
-                              <div class="knob-label"> % de Tareas Atrasadas</div>
-                            </div>
-                            <!-- ./col -->
-                            <div class="col-6 col-md-3 text-center">
-                              <div style="display:inline;width:90px;height:90px;"><canvas width="90" height="90"></canvas>
-                            <input type="text" class="knob" value="91%" data-skin="tron" data-thickness="0.1"  data-width="120" data-height="120" data-fgcolor="#00a65a" style="width: 64px; height: 40px; position: absolute; vertical-align: middle; margin-top: 40px; margin-left: -92px; border: 0px; background: none; font: bold 24px Arial; text-align: center; color: rgb(0, 166, 90); padding: 0px; appearance: none;">
-                              </div>
-          
-                              <div class="knob-label">% de Tareas a tiempo</div>
-                            </div>
-                          </div>
+                      <div class="card-header">
+                        <h3 class="card-title">
+                          <i class="far fa-chart-bar"></i>
+                          Porcentaje de avances
+                        </h3>
 
+                        <div class="card-tools">
+                          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                          </button>
+                          <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                          </button>
                         </div>
-                        <!-- /.card-body -->
                       </div>
+                      <!-- /.card-header -->
+                      <div class="card-body">
+
+                        <div class="row">
+                          <div class="col-4 text-center">
+                            <div style="display:inline;width:90px;height:90px;">
+                              <canvas width="90" height="90"></canvas>
+                              <input type="text" class="knob" data-readonly="true" data-skin="tron"
+                                value="{{datos.pTAsignadas}}" data-width="90" data-max="100" data-height="90"
+                                data-fgcolor="#3c8dbc" readonly="readonly"
+                                style="width: 34px; height: 20px; position: absolute; vertical-align: middle; margin-top: 20px; margin-left: -47px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(60, 141, 188); padding: 0px; appearance: none;">
+                            </div>
+                            <div class="text-white">Tareas Asignadas</div>
+                          </div>
+                          <!-- ./col -->
+                          <div class="col-4 text-center">
+                            <div style="display:inline;width:90px;height:90px;"><canvas width="90"
+                                height="90"></canvas><input type="text" class="knob" data-readonly="true" value="{{datos.pAtrasadas}}"
+                                data-width="90" data-height="90" data-fgcolor="#f56954" readonly="readonly"
+                                style="width: 34px; height: 20px; position: absolute; vertical-align: middle; margin-top: 20px; margin-left: -47px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(245, 105, 84); padding: 0px; appearance: none;">
+                            </div>
+
+                            <div class="text-white">Tareas Atrasadas</div>
+                          </div>
+                          <!-- ./col -->
+                          <div class="col-4 text-center">
+                            <div style="display:inline;width:90px;height:90px;"><canvas width="90"
+                                height="90"></canvas><input type="text" class="knob" data-readonly="true" value="{{datos.pOntime}}"
+                                data-width="90" data-height="90" data-fgcolor="#00a65a" readonly="readonly"
+                                style="width: 34px; height: 20px; position: absolute; vertical-align: middle; margin-top: 20px; margin-left: -47px; border: 0px; background: none; font: bold 12px Arial; text-align: center; color: rgb(0, 166, 90); padding: 0px; appearance: none;">
+                            </div>
+
+                            <div class="text-white">Tareas a tiempo</div>
+                          </div>
+                          <!-- ./col -->
+                        </div>
+                      </div>
+                      <!-- /.card-body -->
+                    </div>
                   </div>
 
                   <!-- /.tab-pane -->
                 </div>
               </div>
               <!-- /.card-body -->
-                                        <div class="car-footer d-flex align-items-end flex-column">
-                                <button type="button" class="btn btn-secondary " onclick="history.back()" >Volver</button>
+              <div class="car-footer d-flex align-items-end flex-column">
+                <button type="button" class="btn btn-secondary " onclick="history.back()">Volver</button>
+              </div>
             </div>
-                            </div>
             <!-- /.card -->
           </div>
           <!-- /.col -->
@@ -183,3 +190,9 @@
 <!-- ./wrapper -->
 
 {% endblock content %}
+
+{% block script %}
+<script>
+  $(".knob").knob();
+</script>
+{% endblock script %}

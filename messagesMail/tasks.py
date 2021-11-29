@@ -27,19 +27,13 @@ def sendEmailTask(data):
 #     name="taskProximidad",
 #     ignore_result=True
 # )
+
+
 @periodic_task(
     run_every=(crontab(hour=7, minute=30)),
     name="taskProximidad",
     ignore_result=True
 )
-
-
-@periodic_task(
-    run_every=(crontab(hour=4, minute=00)),
-    name="taskProgress",
-    ignore_result=True
-)
-
 
 def taskProximidad():
     logger.info("Enviando notificaciones de proximidad")
@@ -61,6 +55,19 @@ def taskProximidad():
             }
         sendEmails(data)
     
-
+@periodic_task(
+    run_every=(crontab(hour=9, minute=55)),
+    name="taskProgress",
+    ignore_result=True
+)
 def taskProgress():
+    logger.info("Procesando tareas Atrasadas")
+    payload = json.dumps({'email': 'admin@admintask.com', 'password': 'olidata123'})
+    headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*'}
+    tokenAPI = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload).json()
+    headersToken = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+tokenAPI['data']['token']}        
+    overDueTask = requests.post('http://localhost:32482/api/tarea/listenToDelayedTask/', headers=headersToken)
+    
+    if overDueTask.ok:
+        logger.info("Proceso tareas Atrasadas concluido")
     return None

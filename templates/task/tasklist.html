@@ -9,6 +9,32 @@
     pointer-events: none;
     cursor: default;
   }
+
+  .semaforo {
+    background-color: #212121;
+    text-align: center;
+    border-radius: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+  }
+
+  .active-red {
+    color: rgb(229, 57, 53);
+  }
+
+  .active-green {
+    color: rgb(67, 160, 71);
+  }
+
+  .active-yellow {
+    color: rgb(253, 216, 53);
+  }
+  .active-gray {
+    color: rgb(133, 130, 130);
+  }
 </style>
 
 <body class="hold-transition sidebar-mini">
@@ -61,16 +87,19 @@
                   <th style="width: 1%">
                     #
                   </th>
-                  <th style="width: 20%">
+                  <th style="width: 15%">
                     Nombre
                   </th>
-                  <th style="width: 30%">
+                  <th style="width: 15%">
                     Asignada a
+                  </th>
+                  <th style="width: 15%">
+                    Situacion Tarea
                   </th>
                   <th>
                     Progreso de tarea
                   </th>
-                  <th style="width: 8%" class="text-center">
+                  <th style="width: 10%" class="text-center">
                     Estado
                   </th>
                   <th style="width: 20%">
@@ -95,26 +124,34 @@
                   </td>
                   <td>
                     <ul class="list-inline">
-                      {% comment %} <li class="list-inline-item">
-                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar.png' %}">
-                      </li> {% endcomment %}
                       {% for us in datos.usuarios %}
-
                       {% if  us.rutUsuario == tarea.fkRutUsuario %}
                       {{us.nombreUsuario}} {{us.apellidoUsuario}}
                       {% endif %}
                       {% endfor %}
-
-                      {% comment %} <li class="list-inline-item">
-                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar2.png' %}">
-                      </li>
-                      <li class="list-inline-item">
-                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar3.png' %}">
-                      </li>
-                      <li class="list-inline-item">
-                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar4.png' %}">
-                      </li> {% endcomment %}
                     </ul>
+                  </td>
+                  <td>
+                    <!--  Parte velocimetro -->
+                    <div class="semaforo">
+                      {% if tarea.semaforo == 1%}
+                      <i class="fas fa-circle active-green" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      {% endif %}
+                      {% if tarea.semaforo == 2%}
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-yellow" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      {% endif %}
+                      {% if tarea.semaforo == 3%}
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i> 
+                      <i class="fas fa-circle active-red" style="font-size: 35px;"></i>
+                      {% endif %}
+
+                    </div>
+                    <!-- fin Parte velocimetro -->
                   </td>
                   <td class="project_progress">
                     <div class="progress progress-sm">
@@ -127,11 +164,14 @@
                     </small>
                   </td>
                   <td class="project-state">
-                    {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-secondary">Creada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-primary">Asignada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-info">Aceptada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 5 %}<span class="badge badge-success">Terminada</span>{% endif %}
+                    <h5>
+                      {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-secondary">Creada</span>{% endif %}
+                      {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-secondary">Asignada</span>{% endif %}
+                      {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-secondary">Aceptada</span>{% endif %}
+                      {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazada</span>{% endif %}
+                      {% if tarea.fkEstadoTarea == 5 %}<span class="badge badge-success">Terminada</span>{% endif %}
+                      {% if tarea.fkEstadoTarea == 6 %}<span class="badge badge-secondary">Atrasada</span>{% endif %}
+                    </h5>
                   </td>
                   <td class="project-actions">
                     {% if  datos.role == 1 %}
@@ -158,15 +198,15 @@
                     <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
 
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h4 class="modal-title">¿Confirma la finalizacion de la tarea {{tarea.nombreTarea}}?</h4>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                              </button>
-                            </div>
-                                                    <form method="POST" action="{% url 'taskcomplete' idTask=tarea.idTarea  %}">
-                        {% csrf_token %}
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title">¿Confirma la finalizacion de la tarea {{tarea.nombreTarea}}?</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">×</span>
+                            </button>
+                          </div>
+                          <form method="POST" action="{% url 'taskcomplete' idTask=tarea.idTarea  %}">
+                            {% csrf_token %}
                             <div class="modal-body">
                               <div class="container-fluid">
                                 <div class="row">
@@ -240,127 +280,125 @@
                               <div class="modal-footer justify-content-between">
 
                                 <button type="submit" class="btn btn-primary">Aceptar</button>
-                        </form>
+                          </form>
 
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                              </div>
-                            </div>
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
                       </div>
-                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog -->
+                    <!-- /.modal-content -->
           </div>
+          <!-- /.modal-dialog -->
+        </div>
 
-          {% else %}
-          <button type="button" class="btn btn-block btn-success btn-sm" data-toggle="modal"
-            data-target="#modal-{{tarea.idTarea}}">
-            <i class="fas fa-check-circle"></i>
-            <span>Aceptar</span>
-          </button>
+        {% else %}
+        <button type="button" class="btn btn-block btn-success btn-sm" data-toggle="modal"
+          data-target="#modal-{{tarea.idTarea}}">
+          <i class="fas fa-check-circle"></i>
+          <span>Aceptar</span>
+        </button>
 
-          <button type="reset" class="btn btn-block btn-danger btn-sm" data-toggle="modal"
-            data-target="#modal-rechazar-{{tarea.idTarea}}">
-            <i class="fas fa-times-circle"></i>
-            <span>Rechazar</span>
-          </button>
-          <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">{{tarea.nombreTarea}}</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="container-fluid">
+        <button type="reset" class="btn btn-block btn-danger btn-sm" data-toggle="modal"
+          data-target="#modal-rechazar-{{tarea.idTarea}}">
+          <i class="fas fa-times-circle"></i>
+          <span>Rechazar</span>
+        </button>
+        <div class="modal fade" id="modal-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">{{tarea.nombreTarea}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="container-fluid">
+                  <div class="row">
                     <div class="row">
-                      <div class="row">
-                        <div class="col-12 col-sm-6">
-                          <div class="info-box bg-light">
-                            <div class="info-box-content">
-                              <span class="info-box-text text-center text-muted">Fecha Plazo</span>
-                              <span class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                          <div class="info-box bg-light">
-                            <div class="info-box-content">
-                              <span class="info-box-text text-center text-muted">Estado</span>
-
-                              {% if tarea.fkEstadoTarea == 1 %}<span
-                                class="info-box-number text-center text-muted mb-0">Completada</span>{% endif %}
-                              {% if tarea.fkEstadoTarea == 44 %}<span
-                                class="info-box-number text-center text-muted mb-0">Pendiente</span>{% endif %}
-                              {% if tarea.fkEstadoTarea == 41 %}<span
-                                class="info-box-number text-center text-muted mb-0">Atrasada</span>{% endif %}
-                              {% if tarea.fkEstadoTarea == 21 %}<span
-                                class="info-box-number text-center text-muted mb-0">Creada</span>{% endif %}
-                            </div>
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-text text-center text-muted">Fecha Plazo</span>
+                            <span class="info-box-number text-center text-muted mb-0">{{tarea.fechaPlazo}}</span>
                           </div>
                         </div>
                       </div>
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-text text-center text-muted">Estado</span>
 
-                      <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-                        <h4 class="text-primary">
-                          Descripción
-                        </h4>
-                        {{tarea.descripcionTarea}}
+                            {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-secondary">Creada</span>{% endif %}
+                            {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-secondary">Asignada</span>{% endif %}
+                            {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-secondary">Aceptada</span>{% endif %}
+                            {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazada</span>{% endif %}
+                            {% if tarea.fkEstadoTarea == 5 %}<span class="badge badge-success">Terminada</span>{% endif %}
+                            {% if tarea.fkEstadoTarea == 6 %}<span class="badge badge-secondary">Atrasada</span>{% endif %}
+
+                          </div>
+                        </div>
                       </div>
                     </div>
 
+                    <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                      <h4 class="text-primary">
+                        Descripción
+                      </h4>
+                      {{tarea.descripcionTarea}}
+                    </div>
                   </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                  <a type="button" class="btn btn-primary"
-                    href="{% url 'AcceptTask' idTask=tarea.idTarea  %}">Aceptar</a>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
                 </div>
               </div>
-              <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-          </div>
-          <div class="modal fade" id="modal-rechazar-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">¿Seguro que deseas rechazar la tarea {{tarea.nombreTarea}}?</h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                  </button>
-                </div>
-                <form method="POST" action="{% url 'RejectTask' idTask=tarea.idTarea  %}">
-                  {% csrf_token %}
-                  <div class="modal-body">
-                    <div class="form-group text-left">
-                      <label>Ingrese Motivo de rechazo</label>
-                      <textarea class="form-control" rows="3" name="descripcion" placeholder="Motivo ..."
-                        required></textarea>
-                    </div>
-                  </div>
-                  <div class="modal-footer justify-content-between">
-                    <button type="submit" class="btn btn-primary">Aceptar</button>
-                </form>
-                <!--<a type="button" class="btn btn-primary" href="{% url 'RejectTask' idTask=tarea.idTarea  %}">Aceptar</a>-->
+              <div class="modal-footer justify-content-between">
+                <a type="button" class="btn btn-primary" href="{% url 'AcceptTask' idTask=tarea.idTarea  %}">Aceptar</a>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
               </div>
-
             </div>
             <!-- /.modal-content -->
           </div>
           <!-- /.modal-dialog -->
         </div>
-        {% endif %}
-        </td>
-        </tr>
+        <div class="modal fade" id="modal-rechazar-{{tarea.idTarea}}" style="display: none;" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">¿Seguro que deseas rechazar la tarea {{tarea.nombreTarea}}?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <form method="POST" action="{% url 'RejectTask' idTask=tarea.idTarea  %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                  <div class="form-group text-left">
+                    <label>Ingrese Motivo de rechazo</label>
+                    <textarea class="form-control" rows="3" name="descripcion" placeholder="Motivo ..."
+                      required></textarea>
+                  </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="submit" class="btn btn-primary">Aceptar</button>
+              </form>
+              <!--<a type="button" class="btn btn-primary" href="{% url 'RejectTask' idTask=tarea.idTarea  %}">Aceptar</a>-->
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
 
-        {% endfor %}
-
-        </tbody>
-        </table>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
+    {% endif %}
+    </td>
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+    </table>
+  </div>
   </div>
   </section>
   <!-- /.content -->
