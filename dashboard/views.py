@@ -16,29 +16,39 @@ def dashboard(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         rol = data['role']
+        headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
+        dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         if int(rol) == 1:
-            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-
             context = {
                     'menu' : 'dashboard',
                     'email' : data['email'],
                     'name': data['unique_name'],
                     'role': int(data['role']),
                     'login' : datetime.fromtimestamp(data['nbf']),
-
                     'usuarios': dataAPI['data'], 
             }
-            return render(request,'home/home.html',{'datos': context})
-        else:
+        
+        elif int(rol) == 2:
             context = {
-                    'menu' : 'dashboard',
+                    'menu' : 'dashboardFuncionario',
                     'email' : data['email'],
                     'name': data['unique_name'],
                     'role': int(data['role']),
                     'login' : datetime.fromtimestamp(data['nbf']),
+                    'usuarios': dataAPI['data'], 
             }
-            return render(request,'home/home.html',{'datos': context})
+        else:
+            context = {
+                    'menu' : 'dashboardFuncionario',
+                    'email' : data['email'],
+                    'name': data['unique_name'],
+                    'role': int(data['role']),
+                    'login' : datetime.fromtimestamp(data['nbf']),
+                    'usuarios': dataAPI['data'], 
+            }
+            
+        return render(request,'home/home.html',{'datos': context})
+    
     else:
         return redirect('login')
 
@@ -167,25 +177,23 @@ def teamwork(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         rol = data['role']
-        if int(rol) == 1:
-            headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-            roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-            unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-            usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-            oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
-            
-            unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+        dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        unidad=[]
         
-            unidad=[]
-        
-            for e in unidadesInternas['data']:
-                if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
-                    unidad.append(
-                        e['idUnidadInterna']
-                    )
+        for e in unidadesInternas['data']:
+            if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
+                unidad.append(
+                    e['idUnidadInterna']
+                )
 
-            
+                
+        
+        if int(rol) == 1:
 
             usuario={}
             usuario['data']= []
@@ -204,55 +212,36 @@ def teamwork(request):
                     }
                     )
 
-            context = {
-                'menu' : 'teamwork',
-                'email' : data['email'],
-                'name': data['unique_name'],
-                'role': int(data['role']),
-                'login' : datetime.fromtimestamp(data['nbf']),
-                'teams': usuario['data'],
-                # 'teams': myList,
-            }
-            return render(request, 'teamwork/teamwork.html',{'datos': context})
         elif int(rol) == 2:
-            headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-            dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-            roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-            unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+
             usuario={}
             usuario['data']= []
             for datos in dataAPI['data']:
-                usuario['data'].append({
-                    'rutUsuario': datos['rutUsuario'],
-                    'nombreUsuario': datos['nombreUsuario'] ,
-                    'segundoNombre': datos['segundoNombre'] ,
-                    'apellidoUsuario': datos['apellidoUsuario'] ,
-                    'segundoApellido': datos['segundoApellido'] ,
-                    'numTelefono': datos['numTelefono'] ,
-                    'correoElectronico': datos['correoElectronico'] ,
-                    'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
-                    'idUnidadInternaUsuario':list(e for e in unidadinterna['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
-                }
-                )
-            context = {
-                'menu' : 'teamwork',
-                'email' : data['email'],
-                'name': data['unique_name'],
-                'role': int(data['role']),
-                'login' : datetime.fromtimestamp(data['nbf']),
-                'teams': usuario['data'],
+                if datos['idUnidadInternaUsuario'] in unidad:
+                    usuario['data'].append({
+                        'rutUsuario': datos['rutUsuario'],
+                        'nombreUsuario': datos['nombreUsuario'] ,
+                        'segundoNombre': datos['segundoNombre'] ,
+                        'apellidoUsuario': datos['apellidoUsuario'] ,
+                        'segundoApellido': datos['segundoApellido'] ,
+                        'numTelefono': datos['numTelefono'] ,
+                        'correoElectronico': datos['correoElectronico'] ,
+                        'idRolUsuario': list(e for e in roles['data'] if e['rolId']  == datos['idRolUsuario'])[0]['nombreRol'],
+                        'idUnidadInternaUsuario':list(e for e in unidadesInternas['data'] if e['idUnidadInterna']  == datos['idUnidadInternaUsuario'])[0]['nombreUnidad'],
+                    }
+                    )
+                    
+        context = {
+            'menu' : 'teamwork',
+            'email' : data['email'],
+            'name': data['unique_name'],
+            'role': int(data['role']),
+            'login' : datetime.fromtimestamp(data['nbf']),
+            'teams': usuario['data'],
 
-            }
-            return render(request, 'teamwork/teamwork.html',{'datos': context})
-        else:
-            context = {
-                    'menu' : 'dashboard',
-                    'email' : data['email'],
-                    'name': data['unique_name'],
-                    'role': int(data['role']),
-                    'login' : datetime.fromtimestamp(data['nbf']),
-            }
-            return render(request,'teamwork/teamwork.html',{'datos': context})
+        }
+
+        return render(request,'teamwork/teamwork.html',{'datos': context})
     else: 
         return redirect('login')
 
@@ -824,7 +813,6 @@ def deleteunits(request, id):
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
         deleted = requests.delete('http://localhost:32482/api/unidadInterna/delete/'+str(id), headers=headers)
         
-        print(deleted)
 
         if deleted.ok:
             message  = "Eliminado correctamente"
@@ -839,16 +827,26 @@ def listunits(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
-        headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
+        headers = {'Accept-Encoding': 'UTF-8','Content-Type': 'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
         units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        
+        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+data['nameid'], headers=headers).json()
+        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+                
+        unidad=[]
+
+        for e in units['data']:
+            if e['fkRutEmpresa'] == unidadInterna['data'][0]['fkRutEmpresa']:
+                unidad.append(
+                    e['idUnidadInterna']
+                )
+                
         context = {
         'menu' : 'listunits',
         'email' : data['email'],
         'name': data['unique_name'],
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
-        'unidades': units['data'],
+        'unidades': list(e for e in units['data'] if e['idUnidadInterna'] in unidad),
         }
         return render(request, 'units/unitslist.html',{'datos': context})
     else: 
@@ -1052,7 +1050,7 @@ def taskfuncionario(request):
             'fkRutUsuario': datos['fkRutUsuario'] ,
             'fkEstadoTarea': datos['fkEstadoTarea'] ,
             'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': randint(1, 100),
+            'percent': datos['porcentajeAvance'],
             }
             )
 
