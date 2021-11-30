@@ -1000,7 +1000,7 @@ def taskfuncionario(request):
             'percent': datos['porcentajeAvance'],
             }
             )
-        print(tareasf)
+        
 
         context = {
         'menu' : 'taskfuncionario',
@@ -1574,54 +1574,38 @@ def ProgressTask(request, idTask):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        resOneTask = requests.get('http://localhost:32482/api/tarea/oneTask/' + idTask, headers=headers).json()
-        OneTask = resOneTask['data']
-
         
 
         if request.method == 'POST':
-            
             try:
-                for x in OneTask:
-                    nombreTarea = x['nombreTarea']
-                    description = x['descripcionTarea']
-                    dateDeadline = x['fechaPlazo']
-                    rutUsuario = x['fkRutUsuario']
-                    porcentaje = request.POST.get('progreso')
-                    taskState = x['fkEstadoTarea']
-                    taskPriority = x['fkPrioridadTarea']
+                if(int(request.POST.get('progreso')) > 0):
+                    horaAvance = request.POST.get('progreso')
                     status = 'OK'
             except:
                 status = 'ERROR'
-            print(status)
+            
             try:
+                
                 if status == 'OK':
-                    EnviarProgreso(request,nombreTarea,description,dateDeadline,rutUsuario,porcentaje,taskState,taskPriority,idTask)
+                    
+                    EnviarProgreso(request,idTask,horaAvance)
             except:
                 status = 'ERROR'
+
         return redirect('taskfuncionario')       
     else:
         return redirect('login')
 
-def EnviarProgreso(request,nombreTarea,description,dateDeadline,rutUsuario,porcentaje,taskState,taskPriority,idTask):
+def EnviarProgreso(request,idTask,horaAvance):
 
     if authenticated:
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
 
         
-        payload = json.dumps({
-                                'nombreTarea':nombreTarea,
-                                'descripcionTarea': description,
-                                'fechaPlazo': dateDeadline,
-                                'fkRutUsuario' : rutUsuario,
-                                'porcentajeAvance' : int(porcentaje),
-                                'fechaCreacion': dateDeadline,
-                                'fkEstadoTarea' : int(taskState),
-                                'fkPrioridadTarea' : int(taskPriority),
-        })
-        tareaP=str(idTask)
-        r = requests.put('http://localhost:32482/api/tarea/update/'+tareaP, headers=headers, data=payload)
+        payload = horaAvance
+
+        r = requests.put('http://localhost:32482/api/tarea/taskProgress/'+idTask, headers=headers, data=payload)
         print(r)
 
 
