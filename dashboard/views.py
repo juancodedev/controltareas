@@ -385,9 +385,8 @@ def taskcomplete(request,idTask):
         destinatarios.append(userCreate['data'][0]['correoElectronico'])
         destinatarios.append(userAssign['data'][0]['correoElectronico'])
         
-        if request.POST.get('checkboxProblema'):
+        if request.POST.get('checkboxProblema') or request.POST.get('inputProblema'):
             #Se crea el cuerpo del mensaje para el reporte problema 
-            print("tarea con problema :"+request.POST.get('inputProblema'))
             payload = json.dumps(
                 {
                 'ReporteProblema': request.POST.get('inputProblema'),
@@ -401,17 +400,20 @@ def taskcomplete(request,idTask):
                 'problema': request.POST.get('inputProblema'),
                 
             }
+
             
-        else:
+        else:            
             data = {
                 'evento': 'Finalización de tarea',
                 'multi' : True,
                 'email': destinatarios,
                 'tarea': tarea['data'][0],
                 }
-
         
-        if finishedTask.ok:
+        if 'taskfuncionario' in request.META['HTTP_REFERER']:
+            sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
+            return redirect('taskfuncionario')
+        elif 'tasklist' in request.META['HTTP_REFERER'] and finishedTask.ok:
             #Aqui
             sendEmailTask.delay(data) #Notifica al usuario que tiene asignada la tarea
             return redirect('tasklist')
@@ -1034,7 +1036,7 @@ def taskfuncionario(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
-        tareasf2 = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] != 2 )
+        tareasf2 = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'])
 
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
         tarea={}
@@ -1055,17 +1057,18 @@ def taskfuncionario(request):
         tarea2={}
         tarea2['data']= []
         for datos in tareasf2:
-            tarea2['data'].append({
-            'idTarea': datos['idTarea'],
-            'nombreTarea': datos['nombreTarea'] ,
-            'descripcionTarea': datos['descripcionTarea'] ,
-            'fechaPlazo': datos['fechaPlazo'],
-            'fkRutUsuario': datos['fkRutUsuario'] ,
-            'fkEstadoTarea': datos['fkEstadoTarea'] ,
-            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
-            'percent': datos['porcentajeAvance'],
-            }
-            )
+            if datos['fkEstadoTarea'] == 3 or datos['fkEstadoTarea'] == 6 or datos['fkEstadoTarea'] == 5:
+                tarea2['data'].append({
+                'idTarea': datos['idTarea'],
+                'nombreTarea': datos['nombreTarea'] ,
+                'descripcionTarea': datos['descripcionTarea'] ,
+                'fechaPlazo': datos['fechaPlazo'],
+                'fkRutUsuario': datos['fkRutUsuario'] ,
+                'fkEstadoTarea': datos['fkEstadoTarea'] ,
+                'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+                'percent': datos['porcentajeAvance'],
+                }
+                )
         
 
         context = {
@@ -1634,7 +1637,7 @@ def ViewEmpresa(request, id):
         return redirect('login')
 
 
-def ProgressTask(request, idTask):
+def progressTask(request, idTask):
     if authenticated(request):
         status = 'NO_CONTENT'
         token = request.COOKIES.get('validate')
