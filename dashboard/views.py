@@ -1037,11 +1037,18 @@ def taskfuncionario(request):
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
         tareasf2 = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'])
-
+        semaforo = 0
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
         tarea={}
         tarea['data']= []
         for datos in tareasf:
+            dias = int((datetime.strptime(datos['fechaPlazo'] , '%Y-%m-%dT%H:%M:%S') - datetime.now()).days)
+            if dias > 7:
+                semaforo = 1
+            elif dias < 7 and dias > 0 : 
+                semaforo = 2
+            elif dias < 0:
+                semaforo = 3
             tarea['data'].append({
             'idTarea': datos['idTarea'],
             'nombreTarea': datos['nombreTarea'] ,
@@ -1051,6 +1058,7 @@ def taskfuncionario(request):
             'fkEstadoTarea': datos['fkEstadoTarea'] ,
             'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
             'percent': datos['porcentajeAvance'],
+            'semaforo': semaforo,
             }
             )
 
@@ -1058,6 +1066,13 @@ def taskfuncionario(request):
         tarea2['data']= []
         for datos in tareasf2:
             if datos['fkEstadoTarea'] == 3 or datos['fkEstadoTarea'] == 6 or datos['fkEstadoTarea'] == 5:
+                dias = int((datetime.strptime(datos['fechaPlazo'] , '%Y-%m-%dT%H:%M:%S') - datetime.now()).days)
+                if dias > 7:
+                    semaforo = 1
+                elif dias < 7 and dias > 0 : 
+                    semaforo = 2
+                elif dias < 0:
+                    semaforo = 3
                 tarea2['data'].append({
                 'idTarea': datos['idTarea'],
                 'nombreTarea': datos['nombreTarea'] ,
@@ -1067,6 +1082,8 @@ def taskfuncionario(request):
                 'fkEstadoTarea': datos['fkEstadoTarea'] ,
                 'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
                 'percent': datos['porcentajeAvance'],
+                'semaforo': semaforo,
+                
                 }
                 )
         

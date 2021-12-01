@@ -448,16 +448,19 @@
                   <th style="width: 1%">
                     #
                   </th>
-                  <th style="width: 20%">
+                  <th style="width: 15%">
                     Nombre
                   </th>
-                  <th style="width: 30%">
+                  <th style="width: 15%">
                     Asignada a
+                  </th>
+                  <th style="width: 15%">
+                    Situacion Tarea
                   </th>
                   <th>
                     Progreso de tarea
                   </th>
-                  <th style="width: 8%" class="text-center">
+                  <th style="width: 10%" class="text-center">
                     Estado
                   </th>
                   <th style="width: 20%">
@@ -482,15 +485,34 @@
                   </td>
                   <td>
                     <ul class="list-inline">
-                      {% comment %} <li class="list-inline-item">
-                        <img alt="Avatar" class="table-avatar" src="{% static 'img/avatar.png' %}">
-                      </li> {% endcomment %}
                       {% for us in datos.usuarios %}
                       {% if  us.rutUsuario == tarea.fkRutUsuario %}
                       {{us.nombreUsuario}} {{us.apellidoUsuario}}
                       {% endif %}
                       {% endfor %}
                     </ul>
+                  </td>
+                  <td>
+                    <!--  Parte velocimetro -->
+                    <div class="semaforo">
+                      {% if tarea.semaforo == 1%}
+                      <i class="fas fa-circle active-green" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      {% endif %}
+                      {% if tarea.semaforo == 2%}
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-yellow" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      {% endif %}
+                      {% if tarea.semaforo == 3%}
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-gray" style="font-size: 35px;"></i>
+                      <i class="fas fa-circle active-red" style="font-size: 35px;"></i>
+                      {% endif %}
+
+                    </div>
+                    <!-- fin Parte velocimetro -->
                   </td>
                   <td class="project_progress">
                     <div class="progress progress-sm">
