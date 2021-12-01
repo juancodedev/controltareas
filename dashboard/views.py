@@ -8,9 +8,6 @@ from datetime import datetime
 from random import randint
 from messagesMail.tasks import sendEmailTask
 
-
-
-
 def dashboard(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
@@ -1037,6 +1034,7 @@ def taskfuncionario(request):
         tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
         usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
+        tareasf2 = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] != 2 )
 
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
         tarea={}
@@ -1054,6 +1052,21 @@ def taskfuncionario(request):
             }
             )
 
+        tarea2={}
+        tarea2['data']= []
+        for datos in tareasf2:
+            tarea2['data'].append({
+            'idTarea': datos['idTarea'],
+            'nombreTarea': datos['nombreTarea'] ,
+            'descripcionTarea': datos['descripcionTarea'] ,
+            'fechaPlazo': datos['fechaPlazo'],
+            'fkRutUsuario': datos['fkRutUsuario'] ,
+            'fkEstadoTarea': datos['fkEstadoTarea'] ,
+            'fkPrioridadTarea': datos['fkPrioridadTarea'] ,
+            'percent': datos['porcentajeAvance'],
+            }
+            )
+        
 
         context = {
         'menu' : 'taskfuncionario',
@@ -1062,6 +1075,7 @@ def taskfuncionario(request):
         'role': int(data['role']),
         'login' : datetime.fromtimestamp(data['nbf']),
         'tk': tarea['data'],
+        'tk2': tarea2['data'],
         'usuarios': usuarios['data']
         }
         return render(request, 'task/tasklist.html',{'datos': context})
@@ -1618,6 +1632,50 @@ def ViewEmpresa(request, id):
         return render(request, 'empresa/detail_empresa.html',{'datos': context})
     else: 
         return redirect('login')
+
+
+def ProgressTask(request, idTask):
+    if authenticated(request):
+        status = 'NO_CONTENT'
+        token = request.COOKIES.get('validate')
+        data = decodered(token)
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
+        
+
+        if request.method == 'POST':
+            try:
+                if(int(request.POST.get('progreso')) > 0):
+                    horaAvance = request.POST.get('progreso')
+                    status = 'OK'
+            except:
+                status = 'ERROR'
+            
+            try:
+                
+                if status == 'OK':
+                    
+                    EnviarProgreso(request,idTask,horaAvance)
+            except:
+                status = 'ERROR'
+
+        return redirect('taskfuncionario')       
+    else:
+        return redirect('login')
+
+def EnviarProgreso(request,idTask,horaAvance):
+
+    if authenticated:
+        token = request.COOKIES.get('validate')
+        headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
+
+        
+        payload = horaAvance
+
+        r = requests.put('http://localhost:32482/api/tarea/taskProgress/'+idTask, headers=headers, data=payload)
+        print(r)
+
+
+
 
 
 # DENNISSE SECTION
