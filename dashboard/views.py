@@ -1654,7 +1654,7 @@ def ViewEmpresa(request, id):
         return redirect('login')
 
 
-def progressTask(request, idTask):
+def ProgressTask(request, idTask):
     if authenticated(request):
         status = 'NO_CONTENT'
         token = request.COOKIES.get('validate')
@@ -1670,13 +1670,19 @@ def progressTask(request, idTask):
             except:
                 status = 'ERROR'
             
+            # Este está OK
+            #print(status)
+            
             try:
                 
                 if status == 'OK':
+                    EnviarProgreso(request, idTask, horaAvance)
+                    print('pasa')
                     
-                    EnviarProgreso(request,idTask,horaAvance)
             except:
                 status = 'ERROR'
+
+            
 
         return redirect('taskfuncionario')       
     else:
@@ -1688,10 +1694,10 @@ def EnviarProgreso(request,idTask,horaAvance):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
 
-        
+
         payload = horaAvance
 
-        r = requests.put('http://localhost:32482/api/tarea/taskProgress/'+idTask, headers=headers, data=payload)
+        r = requests.put('http://localhost:32482/api/tarea/taskProgress/'+ idTask, headers=headers, data=payload)
         print(r)
 
 
