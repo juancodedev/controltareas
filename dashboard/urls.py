@@ -94,7 +94,7 @@ urlpatterns = [
     path('empresaList/deleteEmpresaSection/<str:rutEmpresa>', views.DeleteEmpresaSection, name='deleteEmpresaSection'),
     path('viewEmpresa/<str:id>', views.ViewEmpresa, name='viewEmpresa'),
     
-    path('progressTask/(?P<idTask>[0-9]+)$', views.ProgressTask, name='progressTask'),
+    path('progressTask/<str:idTask>', views.ProgressTask, name='progressTask'),
     #path('progressTask/(?P<idTask>[0-9]+)$', views.progressTask, name='progressTask'),
     
 ]

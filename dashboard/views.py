@@ -15,6 +15,12 @@ def dashboard(request):
         rol = data['role']
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
         dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        allTask = requests.get('http://localhost:32482/api/tarea', headers=headers).json()
+        
+        taskeOnExecute = list(e for e in allTask['data'] if e['fkEstadoTarea']  ==  2 or e['fkEstadoTarea']  ==  3 )
+        taskFinished = list(e for e in allTask['data'] if e['fkEstadoTarea']  == 5  )
+        taskOverDue = list(e for e in allTask['data'] if e['fkEstadoTarea']  == 6  )
+        
         if int(rol) == 1:
             context = {
                     'menu' : 'dashboard',
@@ -22,7 +28,15 @@ def dashboard(request):
                     'name': data['unique_name'],
                     'role': int(data['role']),
                     'login' : datetime.fromtimestamp(data['nbf']),
-                    'usuarios': dataAPI['data'], 
+                    'usuarios': dataAPI['data'],
+                    'allTaskOnExecute': len(taskeOnExecute),
+                    'allTask': len(allTask['data']),
+                    'percentOnExecute': int((len(taskeOnExecute)*100)/len(allTask['data'])),
+                    'percentFinished': int((len(taskFinished)*100)/len(allTask['data'])),
+                    'percentOverDue': int((len(taskOverDue)*100)/len(allTask['data'])),
+                    'taskFinished': len(taskFinished), 
+                    'taskOverDue': len(taskOverDue),
+                    'task': allTask['data'],
             }
         
         elif int(rol) == 2:

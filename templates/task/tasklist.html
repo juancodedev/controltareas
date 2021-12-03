@@ -63,7 +63,6 @@
       </section>
 
       <!-- Main content -->
-      {% if not datos.tk|length == 0 %}
       <section class="content">
 
         <!-- Default box -->
@@ -89,6 +88,8 @@
             </div>
           </div>
           <div class="card-body p-0">
+            {% if not datos.tk|length == 0 %}
+
             <table class="table table-hover projects">
               <thead>
                 <tr>
@@ -406,13 +407,14 @@
                 {% endfor %}
               </tbody>
             </table>
+            {% endif %}
+
           </div>
 
 
 
         </div>
       </section>
-      {% endif %}
 
       <!-- tareas aceptadas -->
       {% if not datos.tk2|length == 0 %}
@@ -528,9 +530,13 @@
                     {% if tarea.fkEstadoTarea == 1 %}<span class="badge badge-secondary">Creada</span>{% endif %}
                     {% if tarea.fkEstadoTarea == 2 %}<span class="badge badge-primary">Asignada</span>{% endif %}
                     {% if tarea.fkEstadoTarea == 3 %}<span class="badge badge-info">Aceptada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-danger">Rechazada</span>{% endif %}
-                    {% if tarea.fkEstadoTarea == 5 %}<span class="badge badge-success">Atrasada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 4 %}<span class="badge badge-warning">Rechazada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 5 %}<span class="badge badge-danger">Atrasada</span>{% endif %}
                     {% if tarea.fkEstadoTarea == 6 %}<span class="badge badge-success">Completada</span>{% endif %}
+                    {% if tarea.fkEstadoTarea == 7 %}<span class="badge badge-danger">Problemas</span>{% endif %}
+
+
+
                   </td>
                   <td class="project-actions">
                     {% if  datos.role == 1 %}

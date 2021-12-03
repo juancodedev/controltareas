@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load parse_iso %}
 {% load static %}
 
 {% block content %}
@@ -36,7 +37,7 @@
               <div class="info-box-content">
                 <span class="info-box-text">Total de Tareas</span>
                 <span class="info-box-number">
-                  3.804
+                  {{datos.allTask|floatformat}}
                   <!-- 10
                   <small>%</small> -->
                 </span>
@@ -56,7 +57,7 @@
 
               <div class="info-box-content">
                 <span class="info-box-text">Tareas concluidas</span>
-                <span class="info-box-number">499</span>
+                <span class="info-box-number">{{datos.taskFinished|floatformat}}</span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -73,7 +74,7 @@
 
               <div class="info-box-content">
                 <span class="info-box-text">Tareas Atrasadas</span>
-                <span class="info-box-number">760</span>
+                <span class="info-box-number">{{datos.taskOverDue|floatformat}}</span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -87,7 +88,7 @@
 
               <div class="info-box-content">
                 <span class="info-box-text">Tareas en ejecución</span>
-                <span class="info-box-number">43</span>
+                <span class="info-box-number">{{datos.allTaskOnExecute|floatformat}}</span>
               </div>
               <!-- /.info-box-content -->
             </div>
@@ -144,13 +145,38 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-8">
-                    <p class="text-center">
-                      <strong>Tareas: 1 Agosto, 2021 - 31 Agosto, 2021</strong>
-                    </p>
 
-                    <div class="chart">
-                      <!-- Sales Chart Canvas -->
-                      <canvas id="salesChart" height="180" style="height: 180px;"></canvas>
+                    <div class="table-responsive">
+                      <table class="table m-0">
+                        <thead>
+                        <tr>
+                          <th>Tarea ID</th>
+                          <th>Descripcion</th>
+                          <th>Status</th>
+                          <th>Fecha Plazo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {% for tareas in datos.task %}
+                        <tr>
+                          <td>{{tareas.idTarea}}</td>
+                          <td>{{tareas.nombreTarea}}</td>
+                          <td>
+                            {% if tareas.fkEstadoTarea == 1 %}<span class="badge badge-secondary">Creada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 2 %}<span class="badge badge-primary">Asignada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 3 %}<span class="badge badge-info">Aceptada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 4 %}<span class="badge badge-warning">Rechazada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 5 %}<span class="badge badge-danger">Atrasada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 6 %}<span class="badge badge-success">Completada</span>{% endif %}
+                            {% if tareas.fkEstadoTarea == 7 %}<span class="badge badge-danger">Problemas</span>{% endif %}
+                          </td>
+                          <td>
+                            <div class="sparkbar" data-color="#00a65a" data-height="20">{{tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}</div>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
                     </div>
                     <!-- /.chart-responsive -->
                   </div>
@@ -162,26 +188,26 @@
                     <!-- /.progress-group -->
                     <div class="progress-group">
                       Tareas Atrasadas
-                      <span class="float-right"><b>760</b>/3.804</span>
+                      <span class="float-right"><b>{{datos.taskOverDue}}</b>/{{datos.allTask|floatformat}}</span>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-danger" style="width: 20%"></div>
+                        <div class="progress-bar bg-danger" style="width: {{datos.percentOverDue|floatformat}}%"></div>
                       </div>
                     </div>
                     <!-- /.progress-group -->
                     <div class="progress-group">
                       <span class="progress-text">Tareas concluidas</span>
-                      <span class="float-right"><b>499</b>/3.804</span>
+                      <span class="float-right"><b>{{datos.taskFinished}}</b>/{{datos.allTask|floatformat}}</span>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-success" style="width: 65%"></div>
+                        <div class="progress-bar bg-success" style="width: {{datos.percentFinished|floatformat}}%"></div>
                       </div>
                     </div>
 
                     <!-- /.progress-group -->
                     <div class="progress-group">
                       Tareas en ejecución
-                      <span class="float-right"><b>43</b>/3.804</span>
+                      <span class="float-right"><b>{{datos.allTaskOnExecute}}</b>/{{datos.allTask}}</span>
                       <div class="progress progress-sm">
-                        <div class="progress-bar bg-warning" style="width: 2%"></div>
+                        <div class="progress-bar bg-warning" style="width: {{datos.percentOnExecute|floatformat}}%"></div>
                       </div>
                     </div>
                     <!-- /.progress-group -->
@@ -198,69 +224,6 @@
         </div>
         <!-- /.row -->
         <!-- Main row -->
-        {% comment %} {% if datos.role == 1 %}
-        <div class="row">
-          <!-- Left col -->
-          <div class="col-md-12">
-            <!-- /.card -->
-            <!-- /.col -->
-            <div class="col-md-">
-              <!-- USERS LIST -->
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Equipo</h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body p-0">
-                  <ul class="users-list clearfix">
-                    {% for team,img in datos.usuarios %}
-                    <li>
-                    
-                      <img src="{% static 'img/profile/' %}{{img.picture.large}}" alt="User Image">
-                      <a class="users-list-name" href="#">{{team.nombreUsuario}} {{team.apellidoUsuario}}
-                      </a>
-                      <span class="users-list-date">Email : {{team.correoElectronico}}</span>
-
-                      <span class="users-list-date">Rol :
-                        {% if team.idRolUsuario == 1 %}
-                        Administrador
-                        {% endif %}
-                        {% if team.idRolUsuario == 2 %}
-                        Funcionario
-                        {% endif %}
-                        {% if team.idRolUsuario == 3 %}
-                        Diseñador
-                        {% endif %}
-                      </span>
-                    </li>
-                    {% endfor %}
-
-                  </ul>
-                  <!-- /.users-list -->
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer text-center">
-                  <a href="javascript:">Ver todo el Equipo</a>
-                </div>
-                <!-- /.card-footer -->
-              </div>
-              <!--/.card -->
-            </div>
-            <!-- /.col -->
-            <!-- /.row -->
-
-          </div>
-          <!-- /.col -->
-        </div>
-        {% endif %} {% endcomment %}
         <!-- /.row -->
       </div>
       <!--/. container-fluid -->

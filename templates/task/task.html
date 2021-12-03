@@ -7,7 +7,13 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        {% if datos.menu == 'tasknew' %}
                         <h1>Creacion de tarea</h1>
+                        {% elif datos.menu == 'taskedit' %}
+                        <h1>Edición de tarea</h1>
+                        {% endif %}
+
+
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -57,7 +63,8 @@
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Creado por</label>
                                                 <input type="text" class="form-control" name="creadopor"
-                                                    value="{{datos.creadopor.nombreUsuario}} {{datos.creadopor.apellidoUsuario}}" readonly />
+                                                    value="{{datos.creadopor.nombreUsuario}} {{datos.creadopor.apellidoUsuario}}"
+                                                    readonly />
                                                 <input type="text" class="form-control" name="creadoporRut"
                                                     value="{{datos.creadopor.rutUsuario}}" hidden />
 
@@ -67,7 +74,8 @@
                                             {% if datos.menu == 'taskedit' %}
                                             <div class="form-group col-md-6">
                                                 <label for="Proceso">Porcentaje avance:</label>
-                                                <input type="number" class="form-control" name= "porcentaje" min="0" max="100" value="{{ datos.tareas.porcentajeAvance }}">
+                                                <input type="number" class="form-control" name="porcentaje" min="0"
+                                                    max="100" value="{{ datos.tareas.porcentajeAvance }}" readonly>
                                             </div>
                                             {% endif %}
 
@@ -98,22 +106,23 @@
                                             </div>
                                             {% endif %}
                                             {% if datos.menu == 'taskedit' %}
-                                            {% comment %} <div class="form-group col-md-6">
+
+
+                                            <div class="form-group col-md-6">
                                                 <label>Fecha plazo:</label>
                                                 <div class="input-group date">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <input type="hidden" class="form-control" name="fechaplazo"
-                                                                value="{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}">
+                                                            <input type="text" class="form-control"
+                                                                value="{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}"
+                                                                disabled>
+
                                                         </div>
                                                     </div>
 
                                                 </div>
-                                            </div> {% endcomment %}
-                                            {% comment %} <input type="date" class="form-control" name="fechaplazo" value="{{datos.tareas.fechaPlazo}}"> {% endcomment %}
-                                            <input type="text" class="form-control" value = "{{datos.tareas.fechaPlazo|parse_iso|date:'d/m/Y'}}" disabled>
+                                            </div>
 
-                                            {% comment %} {% if datos.menu == 'taskedit' %} {% endcomment %}
                                             <div class="form-group col-md-6">
                                                 <label> Estado Tarea:</label>
                                                 <select class="form-control" name="estadotarea">
