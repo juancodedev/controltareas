@@ -1,7 +1,7 @@
 #!/bin/bash
 DJANGODIR=$(dirname $(cd `dirname $0` && pwd))
-DJANGO_SETTINGS_MODULE=config.settings
+DJANGO_SETTINGS_MODULE=controltareas.settings
 cd $DJANGODIR
 source env/bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
-exec python3 manage.py runserver 0:9000
+exec python3 manage.py runserver 0:8000
