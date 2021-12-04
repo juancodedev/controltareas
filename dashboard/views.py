@@ -1,4 +1,5 @@
 import json, requests, jwt
+from controltareas.settings import API
 from django.http.request import HttpHeaders
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -14,8 +15,8 @@ def dashboard(request):
         data = decodered(token)
         rol = data['role']
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        allTask = requests.get('http://localhost:32482/api/tarea', headers=headers).json()
+        dataAPI = requests.get(API+'usuario/', headers=headers).json()
+        allTask = requests.get(API+'tarea', headers=headers).json()
         
         taskeOnExecute = list(e for e in allTask['data'] if e['fkEstadoTarea']  ==  2 or e['fkEstadoTarea']  ==  3 )
         taskFinished = list(e for e in allTask['data'] if e['fkEstadoTarea']  == 5  )
@@ -68,15 +69,15 @@ def tasklist(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        tareas = requests.get(API+'tarea/', headers=headers ).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
         #se edita el diccionario agregando porcentaje de avance de la tarea como un diccionario nuevo
         
         #Se utiliza para obtener los la unidad interna del usuario
-        usuario = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
-        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(usuario['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        usuario = requests.get(API+'usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get(API+'unidadInterna/oneUnidadInterna/'+str(usuario['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
         
-        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        unidadesInternas = requests.get(API+'unidadInterna/', headers=headers).json()
         
         unidadPorEmpresa = list(e for e in unidadesInternas['data'] if e['fkRutEmpresa']  == unidadInterna['data'][0]['fkRutEmpresa'])
         
@@ -134,7 +135,7 @@ def taskdelete(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        deleted = requests.delete('http://localhost:32482/api/tarea/delete/'+str(id), headers=headers)
+        deleted = requests.delete(API+'tarea/delete/'+str(id), headers=headers)
         
         print(deleted.status_code)
         if deleted.ok:
@@ -152,12 +153,12 @@ def taskedit(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
-        estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
-        asignadoa = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
-        justificacion = requests.get('http://localhost:32482/api/justificacionTarea/', headers=headers).json()
-        unaTarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
+        prioridad = requests.get(API+'prioridadTarea', headers=headers).json()
+        estado = requests.get(API+'estadoTarea', headers=headers).json()
+        asignadoa = requests.get(API+'usuario', headers=headers).json()
+        justificacion = requests.get(API+'justificacionTarea/', headers=headers).json()
+        unaTarea = requests.get(API+'tarea/oneTask/'+str(id), headers=headers).json()
 
         
         creado = list(e for e in usuarios['data'] if e['rutUsuario']  == unaTarea['data'][0]['creadaPor'])
@@ -189,11 +190,11 @@ def teamwork(request):
         data = decodered(token)
         rol = data['role']
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-        dataAPI = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
-        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        dataAPI = requests.get(API+'usuario/', headers=headers).json()
+        roles = requests.get(API+'rol/', headers=headers).json()
+        oneUser = requests.get(API+'usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadesInternas = requests.get(API+'unidadInterna/', headers=headers).json()
+        unidadInterna = requests.get(API+'unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
         unidad=[]
         
         for e in unidadesInternas['data']:
@@ -261,15 +262,15 @@ def workload(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
-        unidadinterna = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        user = requests.get(API+'usuario/oneUser/'+str(id), headers=headers).json()
+        tareas = requests.get(API+'tarea/', headers=headers).json()
+        unidadinterna = requests.get(API+'unidadInterna/', headers=headers).json()
+        roles = requests.get(API+'rol/', headers=headers).json()
+        unidadesInternas = requests.get(API+'unidadInterna/', headers=headers).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
         
         
-        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        unidadInterna = requests.get(API+'unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
         
         unidad=[]
 
@@ -336,9 +337,9 @@ def taskdetails(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        justificacion = requests.get('http://localhost:32482/api/justificacionTarea', headers=headers).json()
+        tareas = requests.get(API+'tarea/', headers=headers ).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
+        justificacion = requests.get(API+'justificacionTarea', headers=headers).json()
         tareasDetalle = list(e for e in tareas['data'] if e['idTarea']  == int(id))[0]
         
         context = {
@@ -361,10 +362,10 @@ def tasknew(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
-        estado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers).json()
-        creadopor = requests.get('http://localhost:32482/api/usuario', headers=headers).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
+        prioridad = requests.get(API+'prioridadTarea', headers=headers).json()
+        estado = requests.get(API+'estadoTarea', headers=headers).json()
+        creadopor = requests.get(API+'usuario', headers=headers).json()
                 
         context = {
             'menu' : 'tasknew',
@@ -388,12 +389,12 @@ def taskcomplete(request,idTask):
         token = request.COOKIES.get('validate')
 
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(idTask), headers=headers).json()
-        userCreate = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        tarea = requests.get(API+'tarea/oneTask/'+str(idTask), headers=headers).json()
+        userCreate = requests.get(API+'usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
         
-        userAssign = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        userAssign = requests.get(API+'usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
 
-        finishedTask = requests.put('http://localhost:32482/api/tarea/finishedTask/'+str(idTask), headers=headers)
+        finishedTask = requests.put(API+'tarea/finishedTask/'+str(idTask), headers=headers)
         
         destinatarios = []
         destinatarios.append(userCreate['data'][0]['correoElectronico'])
@@ -405,7 +406,7 @@ def taskcomplete(request,idTask):
                 {
                 'ReporteProblema': request.POST.get('inputProblema'),
                 })
-            problema = requests.put('http://localhost:32482/api/tarea/reportProblem/'+str(idTask), headers=headers, data = payload)
+            problema = requests.put(API+'tarea/reportProblem/'+str(idTask), headers=headers, data = payload)
             data = {
                 'evento': 'Reporte Problema',
                 'user': userCreate['data'][0]['nombreUsuario']+' '+ userCreate['data'][0]['apellidoUsuario'],
@@ -441,8 +442,8 @@ def updatetask(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
+        user = requests.get(API+'usuario/', headers=headers).json()
+        prioridad = requests.get(API+'prioridadTarea', headers=headers).json()
 
         payload = json.dumps(
         {
@@ -455,11 +456,11 @@ def updatetask(request, id):
             'fkEstadoTarea': int(request.POST.get('estadotarea')),
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
         })
-        update = requests.put('http://localhost:32482/api/tarea/update/'+str(id), headers=headers, data = payload)
+        update = requests.put(API+'tarea/update/'+str(id), headers=headers, data = payload)
         if update.ok: 
             if int(request.POST.get('estadotarea'))== 2:
                 usuario = list(e for e in user['data'] if e['rutUsuario']  == request.POST.get('asignadoa'))[0]
-                tarea = requests.get('http://localhost:32482/api/tarea/oneTask/'+str(id), headers=headers).json()
+                tarea = requests.get(API+'tarea/oneTask/'+str(id), headers=headers).json()
                 data = {
                     'evento': 'Actualizacion de tarea', 
                     'email': usuario['correoElectronico'],
@@ -481,7 +482,7 @@ def savenewtask(request):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        user = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        user = requests.get(API+'usuario/', headers=headers).json()
         data = decodered(token)
 
         # print(asignadoa)
@@ -497,7 +498,7 @@ def savenewtask(request):
             'fkPrioridadTarea' : int(request.POST.get('prioridadtarea')),
 
         })
-        r = requests.post('http://localhost:32482/api/tarea/add', headers=headers, data=payload)
+        r = requests.post(API+'tarea/add', headers=headers, data=payload)
         print(r.content)
         if r.ok:
             print('Tarea creado correctamente')
@@ -532,7 +533,7 @@ def createnewuser(request):
             
         })
 
-        r = requests.post('http://localhost:32482/api/usuario/add', headers=headers, data=payload)
+        r = requests.post(API+'usuario/add', headers=headers, data=payload)
 
         if r.ok:
             print('Usuario creado correctamente')
@@ -561,8 +562,8 @@ def newuser(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        rol = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        unidades = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        rol = requests.get(API+'rol/', headers=headers).json()
+        unidades = requests.get(API+'unidadInterna/', headers=headers).json()
         context = {
             'menu' : 'newuser',
             'email' : data['email'],
@@ -582,8 +583,8 @@ def viewusers(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers).json()
+        user = requests.get(API+'usuario/oneUser/'+str(id), headers=headers).json()
+        tareas = requests.get(API+'tarea/', headers=headers).json()
 
 
         context = {
@@ -605,12 +606,12 @@ def listusers(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
-        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        unidadesInternas = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
+        roles = requests.get(API+'rol/', headers=headers).json()
+        unidadesInternas = requests.get(API+'unidadInterna/', headers=headers).json()
         
-        oneUser = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(data['nameid']), headers=headers).json()
-        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        oneUser = requests.get(API+'usuario/oneUser/'+str(data['nameid']), headers=headers).json()
+        unidadInterna = requests.get(API+'unidadInterna/oneUnidadInterna/'+str(oneUser['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
         
         unidad=[]
         
@@ -655,9 +656,9 @@ def editusers(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(id), headers=headers).json()
-        rol = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
-        unidades = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        user = requests.get(API+'usuario/oneUser/'+str(id), headers=headers).json()
+        rol = requests.get(API+'rol/', headers=headers).json()
+        unidades = requests.get(API+'unidadInterna/', headers=headers).json()
         
         context = {
         'menu' : 'editusers',
@@ -678,7 +679,7 @@ def deleteusers(request, id):
         token = request.COOKIES.get('validate')
         payload = json.dumps({'IdUnidadInterna': id})
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
-        deleted = requests.delete('http://localhost:32482/api/usuario/delete/'+str(id), headers=headers)
+        deleted = requests.delete(API+'usuario/delete/'+str(id), headers=headers)
         if deleted.ok:
             message  = "Eliminado correctamente"
         else:
@@ -707,7 +708,7 @@ def updateusers(request, id):
             'idUnidadInternaUsuario': int(request.POST.get('unidadInterna'))
         }
             )
-        update = requests.put('http://localhost:32482/api/usuario/update/'+str(id), headers=headers, data = payload)
+        update = requests.put(API+'usuario/update/'+str(id), headers=headers, data = payload)
         if update.ok:
             return redirect('listusers')
         else:
@@ -724,7 +725,7 @@ def createnewunits(request):
         'fkRutEmpresa': request.POST.get('fkRutEmpresa'),
         'DescripcionUnidad': request.POST.get('descriptunit') 
     })
-    r = requests.post('http://localhost:32482/api/unidadInterna/add/', headers=headers, data=payload)
+    r = requests.post(API+'unidadInterna/add/', headers=headers, data=payload)
     if r.ok:
 
         return redirect('listunits')
@@ -737,7 +738,7 @@ def newunits(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        empresas = requests.get('http://localhost:32482/api/business', headers=headers).json()
+        empresas = requests.get(API+'business', headers=headers).json()
         context = {
         'menu' : 'newunits',
         'email' : data['email'],
@@ -755,7 +756,7 @@ def viewunits(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
+        units = requests.get(API+'unidadInterna/', headers=headers).json()
         for i in units['data']:
             if i['idUnidadInterna'] == id:
                 unidad = i
@@ -777,8 +778,8 @@ def editunits(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        empresa = requests.get('http://localhost:32482/api/business', headers=headers).json()
+        units = requests.get(API+'unidadInterna/', headers=headers).json()
+        empresa = requests.get(API+'business', headers=headers).json()
         for i in units['data']:
             if i['idUnidadInterna'] == id:
                 unidad = i
@@ -811,7 +812,7 @@ def updateunits(request, id):
         'DescripcionUnidad': request.POST.get('descriptunit') 
         }
             )
-        update = requests.put('http://localhost:32482/api/unidadInterna/update/'+str(id), headers=headers, data = payload)
+        update = requests.put(API+'unidadInterna/update/'+str(id), headers=headers, data = payload)
         if update.ok:
             return redirect('listunits')
         else:
@@ -824,7 +825,7 @@ def deleteunits(request, id):
         token = request.COOKIES.get('validate')
         payload = json.dumps({'IdUnidadInterna': id})
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
-        deleted = requests.delete('http://localhost:32482/api/unidadInterna/delete/'+str(id), headers=headers)
+        deleted = requests.delete(API+'unidadInterna/delete/'+str(id), headers=headers)
         
 
         if deleted.ok:
@@ -841,9 +842,9 @@ def listunits(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8','Content-Type': 'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
-        units = requests.get('http://localhost:32482/api/unidadInterna/', headers=headers).json()
-        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+data['nameid'], headers=headers).json()
-        unidadInterna = requests.get('http://localhost:32482/api/unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
+        units = requests.get(API+'unidadInterna/', headers=headers).json()
+        user = requests.get(API+'usuario/oneUser/'+data['nameid'], headers=headers).json()
+        unidadInterna = requests.get(API+'unidadInterna/oneUnidadInterna/'+str(user['data'][0]['idUnidadInternaUsuario']) , headers=headers).json()
                 
         unidad=[]
 
@@ -887,7 +888,7 @@ def viewrole(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        rollist = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        rollist = requests.get(API+'rol/', headers=headers).json()
         print(rollist)
         for i in rollist['data']:
             if i['rolId'] == id:
@@ -911,7 +912,7 @@ def editrole(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Content-Type':'application/json', 'Authorization': 'Bearer '+token}
-        rollist = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        rollist = requests.get(API+'rol/', headers=headers).json()
         print(rollist)
         for i in rollist['data']:
             if i['rolId'] == id:
@@ -940,7 +941,7 @@ def updaterole(request, id):
         'DescripcionRol': request.POST.get('descriptrole') 
         }
             )
-        update = requests.put('http://localhost:32482/api/rol/update/'+str(id), headers=headers, data = payload)
+        update = requests.put(API+'rol/update/'+str(id), headers=headers, data = payload)
         if update.ok:
             return redirect('listrole')
         else:
@@ -952,7 +953,7 @@ def deleterole(request, id):
     if authenticated(request):
         token = request.COOKIES.get('validate')
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
-        deleted = requests.delete('http://localhost:32482/api/rol/delete/'+str(id), headers=headers)
+        deleted = requests.delete(API+'rol/delete/'+str(id), headers=headers)
 
         if deleted.ok:
             message  = "Eliminado correctamente"
@@ -968,7 +969,7 @@ def listrole(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers={'Accept-Encoding': 'UTF-8','Content-Type':'application/json','Accept': '*/*' ,'Authorization': 'Bearer '+token}
-        roles = requests.get('http://localhost:32482/api/rol/', headers=headers).json()
+        roles = requests.get(API+'rol/', headers=headers).json()
         context = {
         'menu' : 'listrole',
         'email' : data['email'],
@@ -988,7 +989,7 @@ def createnewrole(request):
         'nombreRol': request.POST.get('nombrerol'),
         'DescripcionRol': request.POST.get('descriptrole') 
     })
-    r = requests.post('http://localhost:32482/api/rol/add/', headers=headers, data=payload)
+    r = requests.post(API+'rol/add/', headers=headers, data=payload)
     print(r.content)
     if r.ok:
 
@@ -1047,8 +1048,8 @@ def taskfuncionario(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        tareas = requests.get('http://localhost:32482/api/tarea/', headers=headers ).json()
-        usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headers).json()
+        tareas = requests.get(API+'tarea/', headers=headers ).json()
+        usuarios = requests.get(API+'usuario/', headers=headers).json()
         tareasf = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'] and e['fkEstadoTarea'] == 2 )
         tareasf2 = list(e for e in tareas['data'] if e['fkRutUsuario']  == data['nameid'])
         semaforo = 0
@@ -1155,7 +1156,7 @@ def TareaSubordinadaSection(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
-        dataAPI = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers).json()
+        dataAPI = requests.get(API+'TareaSubordinada', headers=headers).json()
         listTareaSubordinada = dataAPI['data']
 
         # Variables con data a enviar a la vista
@@ -1179,19 +1180,19 @@ def AddTareaSubordinadaSection(request):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Content-Type':'application/json', 'Authorization': 'Bearer '+ token}
-        resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
+        resTarea = requests.get(API+'tarea', headers=headers)
         dataTarea = resTarea.json()
         listTarea = dataTarea['data']
 
         # Consumo de API: Prioridad Tarea
         # Method: GET
-        resPrioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers)
+        resPrioridad = requests.get(API+'prioridadTarea', headers=headers)
         dataPrioridad = resPrioridad.json()
         listPrioridad = dataPrioridad['data']
 
         # Consumo de API: Estado Tarea
         # Method: GET
-        resEstado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers)
+        resEstado = requests.get(API+'estadoTarea', headers=headers)
         dataEstado = resEstado.json()
         listEstado = dataEstado['data']
 
@@ -1244,11 +1245,11 @@ def DeleteTareaSubordinadaSection(request, idTareaSub):
         # Method: DELETE
         tareaSub = str(idTareaSub)
         payload = json.dumps({'idTareaSubordinada': tareaSub})
-        r = requests.delete('http://localhost:32482/api/TareaSubordinada/delete/' + tareaSub, headers=headers, data=payload)
+        r = requests.delete(API+'TareaSubordinada/delete/' + tareaSub, headers=headers, data=payload)
 
         # Consumo de API: Tarea Subordinada
         # Method: GET
-        reqTareaSubordinada = requests.get('http://localhost:32482/api/TareaSubordinada', headers=headers)
+        reqTareaSubordinada = requests.get(API+'TareaSubordinada', headers=headers)
         dataAPI = reqTareaSubordinada.json()
         listTareaSubordinada = dataAPI['data']
 
@@ -1278,26 +1279,26 @@ def EditTareaSubordinadaSection(request, idTareaSub):
 
         # Consumo de API: Tarea
         # Method: GET
-        resTarea = requests.get('http://localhost:32482/api/tarea', headers=headers)
+        resTarea = requests.get(API+'tarea', headers=headers)
         dataTarea = resTarea.json()
         listTarea = dataTarea['data']
 
         # Consumo de API: OneTareaSubordinada
         # Method: GET with Params
         tareaSub = str(idTareaSub)
-        resOneTareaSub = requests.get('http://localhost:32482/api/TareaSubordinada/oneTareaSubordinada/'+ tareaSub, headers=headers)
+        resOneTareaSub = requests.get(API+'TareaSubordinada/oneTareaSubordinada/'+ tareaSub, headers=headers)
         dataTareaSub = resOneTareaSub.json()
         OneTareaSubordinada = dataTareaSub['data']
 
         # Consumo de API: Estado Tarea
         # Method: GET
-        resEstado = requests.get('http://localhost:32482/api/estadoTarea', headers=headers)
+        resEstado = requests.get(API+'estadoTarea', headers=headers)
         dataEstado = resEstado.json()
         listEstado = dataEstado['data']
 
         # Consumo de API: Prioridad Tarea
         # Method: GET
-        resPrioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers)
+        resPrioridad = requests.get(API+'prioridadTarea', headers=headers)
         dataPrioridad = resPrioridad.json()
         listPrioridad = dataPrioridad['data']
 
@@ -1371,7 +1372,7 @@ def AddTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, tar
                               'fkEstadoTarea': int(estadoFk),
                               'fkIdTarea': int(tareaFk),
         })
-        r = requests.post('http://localhost:32482/api/TareaSubordinada/add', headers=headers, data=payload)
+        r = requests.post(API+'TareaSubordinada/add', headers=headers, data=payload)
 
 
 # METHOD: PUT
@@ -1389,7 +1390,7 @@ def EditTareaSubordinada(request, nombre, descripcion, prioridadFk, estadoFk, ta
                               'fkIdTarea': int(tareaFk),
         })
 
-        r = requests.put('http://localhost:32482/api/TareaSubordinada/update/' + str(idTareaSubordinadaToSearch), headers=headers, data=payload)
+        r = requests.put(API+'TareaSubordinada/update/' + str(idTareaSubordinadaToSearch), headers=headers, data=payload)
 
 
 # Método para Aceptar Tareas
@@ -1398,7 +1399,7 @@ def AcceptTask(request, idTask):
         try:
             token = request.COOKIES.get('validate')
             headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-            reqAcceptTask = requests.put('http://localhost:32482/api/tarea/acceptTask/' + idTask, headers=headers)
+            reqAcceptTask = requests.put(API+'tarea/acceptTask/' + idTask, headers=headers)
             print(reqAcceptTask)
             return redirect('taskfuncionario')
 
@@ -1438,16 +1439,16 @@ def Addjustificacion(request,description,idTask):
         token = request.COOKIES.get('validate')
         
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token,'Accept': '*/*' }
-        tarea = requests.get('http://localhost:32482/api/tarea/oneTask/' + idTask, headers=headers).json()
-        prioridad = requests.get('http://localhost:32482/api/prioridadTarea', headers=headers).json()
-        user = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
-        userRechazado = requests.get('http://localhost:32482/api/usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
+        tarea = requests.get(API+'tarea/oneTask/' + idTask, headers=headers).json()
+        prioridad = requests.get(API+'prioridadTarea', headers=headers).json()
+        user = requests.get(API+'usuario/oneUser/'+str(tarea['data'][0]['creadaPor']), headers=headers).json()
+        userRechazado = requests.get(API+'usuario/oneUser/'+str(tarea['data'][0]['fkRutUsuario']), headers=headers).json()
         
         # Datos a enviar a la petición POST
         payload = json.dumps({
             'Descripcion': description,
         })
-        r = requests.post('http://localhost:32482/api/justificacionTarea/add/' + idTask, headers=headers, data=payload)
+        r = requests.post(API+'justificacionTarea/add/' + idTask, headers=headers, data=payload)
         if r.status_code == 201:
             
             data = {
@@ -1472,7 +1473,7 @@ def EmpresasList(request):
         data = decodered(token)
         
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        empresas = requests.get('http://localhost:32482/api/business/',headers=headers).json()
+        empresas = requests.get(API+'business/',headers=headers).json()
         listEmpresa = empresas['data']
         data = decodered(token)
 
@@ -1539,7 +1540,7 @@ def AddEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,telef
                                 'correoElectronicoEmpresa':correoElectronico,
         })
 
-        r = requests.post('http://localhost:32482/api/business/add/', headers=headers, data=payload)
+        r = requests.post(API+'business/add/', headers=headers, data=payload)
 
 def EditEmpresaSection(request, rutEmpresa):
     if authenticated(request):
@@ -1550,7 +1551,7 @@ def EditEmpresaSection(request, rutEmpresa):
         #consumo de API: oneEmpresa
         # method: get with params
         rutEmpresaP=str(rutEmpresa)
-        resOneEmpresa = requests.get('http://localhost:32482/api/business/oneBusiness/'+ rutEmpresaP, headers=headers).json()
+        resOneEmpresa = requests.get(API+'business/oneBusiness/'+ rutEmpresaP, headers=headers).json()
         #dataOneTarea = resOneTarea.json()
         OneEmpresa = resOneEmpresa['data']
 
@@ -1606,7 +1607,7 @@ def EditEmpresa(request,rutEmpresa,razonSocial,giroEmpresa,direccionEmpresa,nume
         })
         
         print(payload)
-        r = requests.put('http://localhost:32482/api/business/update/'+empresaToSearch, headers=headers, data=payload)
+        r = requests.put(API+'business/update/'+empresaToSearch, headers=headers, data=payload)
         print(r)
 
 
@@ -1619,10 +1620,10 @@ def DeleteEmpresaSection(request, rutEmpresa):
         # Consumo de API: Empresa
         # METHOD: DELETE
         payload = json.dumps({'rutEmpresa': rutEmpresa})
-        r = requests.delete('http://localhost:32482/api/business/delete/' + rutEmpresa, headers=headers, data=payload)
+        r = requests.delete(API+'business/delete/' + rutEmpresa, headers=headers, data=payload)
 
         # Consumo API: Empresa
-        reqEmpresa = requests.get('http://localhost:32482/api/business', headers=headers)
+        reqEmpresa = requests.get(API+'business', headers=headers)
         dataAPI = reqEmpresa.json()
         listEmpresa = dataAPI['data']
 
@@ -1650,7 +1651,7 @@ def ViewEmpresa(request, id):
         token = request.COOKIES.get('validate')
         data = decodered(token)
         headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+token}
-        resOneEmpresa = requests.get('http://localhost:32482/api/business/oneBusiness/'+str(id), headers=headers).json()
+        resOneEmpresa = requests.get(API+'business/oneBusiness/'+str(id), headers=headers).json()
         OneEmpresa = resOneEmpresa['data']
 
         # ASignacion del rut a buscar
@@ -1711,7 +1712,7 @@ def EnviarProgreso(request,idTask,horaAvance):
 
         payload = horaAvance
 
-        r = requests.put('http://localhost:32482/api/tarea/taskProgress/'+ idTask, headers=headers, data=payload)
+        r = requests.put(API+'tarea/taskProgress/'+ idTask, headers=headers, data=payload)
         print(r)
 
 

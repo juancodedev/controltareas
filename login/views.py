@@ -1,4 +1,4 @@
-from controltareas.settings import SECRET
+from controltareas.settings import SECRET, API
 from django.http import response
 from typing import Any
 from django.http.request import HttpRequest
@@ -43,7 +43,7 @@ def validate(request):
     password = request.POST.get('password')
     payload = json.dumps({'email': email, 'password': password})
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'email': email, 'password': password}
-    r = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload)
+    r = requests.post(API+'login/addlogin/', headers=headers, data=payload)
     if r.ok:
         tokenAPI = r.json()
         obj = setcookie(tokenAPI['data']['token'])

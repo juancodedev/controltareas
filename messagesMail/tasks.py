@@ -1,5 +1,7 @@
 from datetime import datetime
 import json, requests, jwt
+from controltareas.settings import API
+
 
 from celery.schedules import crontab
 from celery.decorators import task, periodic_task
@@ -40,10 +42,10 @@ def taskProximidad():
     
     payload = json.dumps({'email': 'admin@admintask.com', 'password': 'olidata123'})
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*'}
-    tokenAPI = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload).json()
+    tokenAPI = requests.post(API+'login/addlogin/', headers=headers, data=payload).json()
     headersToken = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+tokenAPI['data']['token']}        
-    tareasNotificar = requests.get('http://localhost:32482/api/tarea/getNotificarionTask', headers=headersToken).json()
-    usuarios = requests.get('http://localhost:32482/api/usuario/', headers=headersToken).json()
+    tareasNotificar = requests.get(API+'tarea/getNotificarionTask', headers=headersToken).json()
+    usuarios = requests.get(API+'usuario/', headers=headersToken).json()
 
     for tarea in tareasNotificar['data']:
         data = {
@@ -64,9 +66,9 @@ def taskProgress():
     logger.info("Procesando tareas Atrasadas")
     payload = json.dumps({'email': 'admin@admintask.com', 'password': 'olidata123'})
     headers = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*'}
-    tokenAPI = requests.post('http://localhost:32482/api/login/addlogin/', headers=headers, data=payload).json()
+    tokenAPI = requests.post(API+'login/addlogin/', headers=headers, data=payload).json()
     headersToken = {'Accept-Encoding': 'UTF-8', 'Content-Type': 'application/json', 'Accept': '*/*', 'Authorization': 'Bearer '+tokenAPI['data']['token']}        
-    overDueTask = requests.post('http://localhost:32482/api/tarea/listenToDelayedTask/', headers=headersToken)
+    overDueTask = requests.post(API+'tarea/listenToDelayedTask/', headers=headersToken)
     
     if overDueTask.ok:
         logger.info("Proceso tareas Atrasadas concluido")
