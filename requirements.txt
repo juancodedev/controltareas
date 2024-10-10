@@ -11,7 +11,7 @@ click-repl==0.2.0
 Deprecated==1.2.13
 Django==4.2.16
 djangorestframework==3.12.4
-idna==3.2
+idna==3.7
 kombu==4.6.11
 prompt-toolkit==3.0.22
 PyJWT==2.4.0
